@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 
 import sys, getopt
+from lxml import etree
 
 def main(argv):
     infile = ''
@@ -25,27 +26,26 @@ def main(argv):
         elif opt in ("-o", "--ofile"):
             outfile = arg
 
-    print('Input file is', infile)
-    print('Stylesheet is', stylesheet)
-    print('Outfile is', outfile)
-
     migrate_questions(infile, stylesheet, outfile)
 
 def migrate_questions(infile, stylesheet, outfile):
     write_result(transform_data(load_source(infile), stylesheet), outfile)
-    print('Questions migrated')
+    #print('Questions migrated')
 
-def load_source(src_file):
-    print(''.join(['Source [', src_file, '] loaded']))
-    return 'data'
+def load_source(infile):
+    print('\nLoading datafile: ' + infile + '...')
+    dom = etree.parse(infile)
+    print('...done.')
+    return dom
 
 def transform_data(data, stylesheet):
-    print(''.join(['Stylesheet [', stylesheet, '] loaded']))
-    print('Data transformed')
+    #print(''.join(['Stylesheet [', stylesheet, '] loaded']))
+    #print('Data transformed')
     return 'transformed data'
 
 def write_result(data, outfile):
-    print(data + ' written to ' + outfile)
+    #print(data + ' written to ' + outfile)
+    pass
 
 if __name__ == "__main__":
     main(sys.argv[1:])
