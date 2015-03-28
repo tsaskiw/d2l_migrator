@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-import sys, getopt
+import sys, getopt, StringIO
 from lxml import etree
 
 def main(argv):
@@ -30,21 +30,24 @@ def main(argv):
 
 def migrate_questions(infile, stylesheet, outfile):
     write_result(transform_data(load_source(infile), stylesheet), outfile)
-    #print('Questions migrated')
 
 def load_source(infile):
-    print('\nLoading datafile: ' + infile + '...')
     dom = etree.parse(infile)
-    print('...done.')
     return dom
 
-def transform_data(data, stylesheet):
-    #print(''.join(['Stylesheet [', stylesheet, '] loaded']))
-    #print('Data transformed')
-    return 'transformed data'
+def transform_data(dom, stylesheet):
+    xslt = etree.parse(stylesheet)
+    transform = etree.XSLT(xslt)
+    newdom = transform(dom)
+    return newdom
 
-def write_result(data, outfile):
-    #print(data + ' written to ' + outfile)
+def write_result(dom, outfile_path):
+    outfile = open(outfile_path, 'w')
+    out = StringIO.StringIO()
+    print(dom)
+    #dom.write(outfile)
+    #dom.write(out)
+    outfile.close()
     pass
 
 if __name__ == "__main__":
