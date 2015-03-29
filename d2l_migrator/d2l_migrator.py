@@ -4,20 +4,28 @@ import sys, getopt, StringIO
 from lxml import etree
 
 def main(argv):
+    collected_input = collect_input(argv)
+    print(collected_input)
+    if '' in collected_input:
+        print_usage()
+        sys.exit()
+
+def collect_input(argv):
     infile = ''
     stylesheet = ''
     outfile = ''
+    base_url = ''
     try:
-        opts, args = getopt.getopt(argv,"hi:s:o:",["ifile=","sfile=","ofile="])
+        opts, args = getopt.getopt(argv,"hi:s:o:b:",["ifile=","sfile=","ofile=","base_url="])
     except getopt.GetoptError:
-        print('d2l_migrator.py -i <inputfile> -s <stylesheet> -o <outputfile>')
+        print_usage()
         sys.exit(2)
     if len(opts) == 0:
-        print('d2l_migrator.py -i <inputfile> -s <stylesheet> -o <outputfile>')
+        print_usage()
         sys.exit()
     for opt, arg in opts:
         if opt == '-h':
-            print('d2l_migrator.py -i <inputfile> -s <stylesheet> -o <outputfile')
+            print_usage()
             sys.exit()
         elif opt in ("-i", "--ifile"):
             infile = arg
@@ -25,8 +33,14 @@ def main(argv):
             stylesheet = arg
         elif opt in ("-o", "--ofile"):
             outfile = arg
+        elif opt in ("-b", "--base_url"):
+            base_url = arg
 
-    migrate_questions(infile, stylesheet, outfile)
+    return (infile, stylesheet, outfile, base_url)
+
+def print_usage():
+    print('d2l_migrator.py -i <inputfile> -s <stylesheet> -o <outputfile> -b <baseurl>')
+
 
 def migrate_questions(infile, stylesheet, outfile):
     write_result(transform_data(load_source(infile), stylesheet), outfile)
