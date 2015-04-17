@@ -38,12 +38,12 @@
                 </response_extension>
                 <response_lid ident="{$lid_ident}" rcardinality="Single">
                     <render_choice shuffle="no">
-                        <xsl:for-each select="Parts/QuestionPart/Choices/QuestionChoice">
+                        <xsl:for-each select="pp_answers/pp_answer">
                             <flow_label class="Block">
-                                <response_label ident="QUES_TLM_{ancestor::Question/child::ID}_RESP_{ID}">
+                                <response_label ident="QUES_TLM_{ancestor::Question/child::ID}_RESP_{id}">
                                     <flow_mat>
                                         <material>
-                                            <mattext texttype="text/html">&lt;p&gt;<xsl:value-of select="Text" />&lt;/p&gt;</mattext>
+                                            <mattext texttype="text/html">&lt;p&gt;<xsl:value-of select="text" />&lt;/p&gt;</mattext>
                                         </material>
                                     </flow_mat>
                                 </response_label>
@@ -54,26 +54,37 @@
             </flow>
         </presentation>
         <resprocessing>
-            <xsl:for-each select="Parts/QuestionPart/Answers/QuestionAnswer">
-                <xsl:variable name="resp_ident" select="concat('QUES_TLM_', ancestor::Question/child::ID, '_RESP_', position())" />
-                <xsl:variable name="fb_ident" select="concat('QUES_TLM_', ancestor::Question/child::ID, '_FB_', position())" />
-                <respcondition title="Response Condition {position()}">
+            <xsl:for-each select="pp_answers/pp_answer">
+                <xsl:variable name="fb_ident" select="concat('QUES_TLM_', ancestor::Question/child::ID, '_FB_', id)" />
+                <xsl:variable name="resp_ident" select="concat('QUES_TLM_', ancestor::Question/child::ID, '_RESP_', id)" />
+                <respcondition title="Response Condition {number}">
                     <conditionvar>
                         <varequal respident="{$lid_ident}"><xsl:value-of select="$resp_ident" /></varequal>
                     </conditionvar>
-                    <xsl:if test="Value = 1">
+                    <xsl:if test="value = 1">
                         <setvar action="Set">100.000000000</setvar>
                     </xsl:if>
-                    <xsl:if test="Value = 0">
+                    <xsl:if test="value = 0">
                         <setvar action="Set">0.000000000</setvar>
                     </xsl:if>
                     <displayfeedback feedbacktype="Response" linkrefid="{$fb_ident}" />
                 </respcondition>
             </xsl:for-each>
-            <!--<xsl:for-each select="Parts/QuestionPart/Answers/QuestionAnswer">
-                <fb/>
-            </xsl:for-each>-->
         </resprocessing>
+        <xsl:for-each select="pp_answers/pp_answer">
+            <xsl:variable name="fb_ident" select="concat('QUES_TLM_', ancestor::Question/child::ID, '_FB_', id)" />
+                <itemfeedback ident="{$fb_ident}">
+                    <material>
+                        <xsl:variable name="fb" select="feedback" />
+                        <xsl:if test="not($fb = '')">
+                            <mattext texttype="text/html">&lt;p&gt;<xsl:value-of select="$fb" />&lt;/p&gt;</mattext>
+                        </xsl:if>
+                        <xsl:if test="$fb = ''">
+                            <mattext texttype="text/html" />
+                        </xsl:if>
+                    </material>
+                </itemfeedback>
+        </xsl:for-each>
     </item>
 </xsl:template>
 
