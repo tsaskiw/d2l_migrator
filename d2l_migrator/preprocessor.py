@@ -1,18 +1,19 @@
 import sys
 from lxml import etree
+import image_processor
 
 Q_TYPE_MULTICHOICE = 'MULTICHOICE'
 Q_TYPE_TRUEFALSE = 'TRUEFALSE'
 QUESTION_TYPES = {'1': Q_TYPE_MULTICHOICE, '4': Q_TYPE_TRUEFALSE}
 
-def process(infile_path):
+def process(infile_path, base_url, outdir):
     parser = etree.XMLParser(remove_blank_text=True)
     source_etree = etree.parse(infile_path, parser)
-    result_etree = process_questions(source_etree)
+    result_etree = process_questions(source_etree, base_url, outdir)
     return result_etree
 
-def process_questions(intree):
-    mc_tf_questions = intree.xpath('//Question[Type=1 or Type=4]')
+def process_questions(intree, base_url, outdir):
+    mc_tf_questions = intree.xpath('//Question[ancestor::Assessment and (Type=1 or Type=4)]')
     for question in mc_tf_questions:
         pp_answers = etree.Element('pp_answers')
         for question_choice in question.xpath('Parts/QuestionPart/Choices/QuestionChoice'):
@@ -24,6 +25,7 @@ def process_questions(intree):
                 pp_answer = process_tf_question(question, question_choice, pp_answer)
             pp_answers.append(pp_answer)
         question.insert(0, pp_answers)
+        image_processor.process_images(question, base_url, outdir)
     return intree
 
 def process_mc_question(question, question_choice, pp_answer):

@@ -1,12 +1,13 @@
 #! /usr/bin/env python
 
-import sys
+import sys, os.path
 from lxml import etree
 import input_management, transformer, preprocessor
 
 def main(argv):
     infile_path, stylesheet_path, outfile_path, base_url = get_input(argv)
-    preprocessed_dom = preprocessor.process(infile_path)
+    outdir = os.path.dirname(outfile_path)
+    preprocessed_dom = preprocessor.process(infile_path, base_url, outdir)
     write_result(preprocessed_dom, 'pp_source.xml')
     result_etree = transformer.transform_data(preprocessed_dom, stylesheet_path)
     write_result(result_etree, outfile_path)
