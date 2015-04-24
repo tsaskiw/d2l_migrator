@@ -4,7 +4,7 @@
 
 
 <xsl:template match="Question[Type=1 or Type=4]">
-    <xsl:variable name="lid_ident" select="concat('QUES_TLM_', ID, '_LID')" />
+    <xsl:variable name="lid_ident" select="concat('TLM_QUES_', ID, '_LID')" />
     <item xmlns:d2l_2p0="http://desire2learn.com/xsd/d2lcp_v2p0" ident="TLM_QUES_{ID}" d2l_2p0:page="1" title="{Title}">
         <itemmetadata>
           <qtimetadata>
@@ -45,7 +45,7 @@
                     <render_choice shuffle="no">
                         <xsl:for-each select="pp_answers/pp_answer">
                             <flow_label class="Block">
-                                <response_label ident="QUES_TLM_{ancestor::Question/child::ID}_RESP_{id}">
+                                <response_label ident="TLM_QUES_{ancestor::Question/child::ID}_RESP_{id}">
                                     <flow_mat>
                                         <material>
                                             <xsl:if test="responsetype = 'text/html'">
@@ -65,8 +65,8 @@
         </presentation>
         <resprocessing>
             <xsl:for-each select="pp_answers/pp_answer">
-                <xsl:variable name="fb_ident" select="concat('QUES_TLM_', ancestor::Question/child::ID, '_FB_', id)" />
-                <xsl:variable name="resp_ident" select="concat('QUES_TLM_', ancestor::Question/child::ID, '_RESP_', id)" />
+                <xsl:variable name="fb_ident" select="concat('TLM_QUES_', ancestor::Question/child::ID, '_FB_', id)" />
+                <xsl:variable name="resp_ident" select="concat('TLM_QUES_', ancestor::Question/child::ID, '_RESP_', id)" />
                 <respcondition title="Response Condition {number}">
                     <conditionvar>
                         <varequal respident="{$lid_ident}"><xsl:value-of select="$resp_ident" /></varequal>
@@ -82,7 +82,7 @@
             </xsl:for-each>
         </resprocessing>
         <xsl:for-each select="pp_answers/pp_answer">
-            <xsl:variable name="fb_ident" select="concat('QUES_TLM_', ancestor::Question/child::ID, '_FB_', id)" />
+            <xsl:variable name="fb_ident" select="concat('TLM_QUES_', ancestor::Question/child::ID, '_FB_', id)" />
                 <itemfeedback ident="{$fb_ident}">
                     <material>
                         <xsl:variable name="fb" select="feedback" />

@@ -4,6 +4,7 @@ from lxml import etree
 QUESTION = None
 BASE_URL = None
 IMAGE_OUTDIR_PATH = None
+TEMP = None
 
 def process_images(question, base_url, outdir):
     global QUESTION
@@ -22,6 +23,8 @@ def make_image_outdir(outdir):
     return image_outdir_path
 
 def get_question_text_elt(question):
+    global TEMP
+    TEMP = question.findtext('Title')
     question_text_elts = question.xpath('Parts/QuestionPart/Text')
     if question_text_elts:
         question_text_elt = question_text_elts[0]

@@ -4,10 +4,10 @@ import d2l_migrator
 def collect_input(argv):
     infile = ''
     stylesheet = ''
-    outfile = ''
+    outdir = ''
     base_url = ''
     try:
-        opts, args = getopt.getopt(argv,"hi:s:o:b:",["ifile=","sfile=","ofile=","base_url="])
+        opts, args = getopt.getopt(argv,"hi:s:o:b:",["ifile=","sfile=","odir=","base_url="])
     except getopt.GetoptError:
         d2l_migrator.print_usage()
         sys.exit(2)
@@ -22,20 +22,25 @@ def collect_input(argv):
             infile = arg
         elif opt in ("-s", "--sfile"):
             stylesheet = arg
-        elif opt in ("-o", "--ofile"):
-            outfile = arg
+        elif opt in ("-o", "--odir"):
+            outdir = arg
         elif opt in ("-b", "--base_url"):
             base_url = arg
 
-    return (infile, stylesheet, outfile, base_url)
+    return (infile, stylesheet, outdir, base_url)
 
-def validate_input(infile, stylesheet, base_url):
+def validate_input(infile, stylesheet, outdir, base_url):
     input_is_valid = True
     invalid_params = []
     if file_doesnt_exist(infile):
         invalid_params.append(infile)
     if file_doesnt_exist(stylesheet):
         invalid_params.append(stylesheet)
+    if dir_doesnt_exist(outdir):
+        try:
+            os.makedirs(outdir)
+        except OSError:
+            invalid_params.append(outdir)
     if dir_doesnt_exist(base_url):
         invalid_params.append(base_url)
     if len(invalid_params) > 0:

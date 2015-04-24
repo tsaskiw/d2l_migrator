@@ -6,10 +6,12 @@
 !_TAG_PROGRAM_VERSION	5.8	//
 BASE_URL	image_processor.py	/^BASE_URL = None$/;"	v
 IMAGE_OUTDIR_PATH	image_processor.py	/^IMAGE_OUTDIR_PATH = None$/;"	v
+MANIFEST_STYLESHEET_PATH	packager.py	/^MANIFEST_STYLESHEET_PATH = '..\/stylesheets\/imsmanifest.xsl'$/;"	v
 QUESTION	image_processor.py	/^QUESTION = None$/;"	v
 QUESTION_TYPES	preprocessor.py	/^QUESTION_TYPES = {'1': Q_TYPE_MULTICHOICE, '4': Q_TYPE_TRUEFALSE}$/;"	v
 Q_TYPE_MULTICHOICE	preprocessor.py	/^Q_TYPE_MULTICHOICE = 'MULTICHOICE'$/;"	v
 Q_TYPE_TRUEFALSE	preprocessor.py	/^Q_TYPE_TRUEFALSE = 'TRUEFALSE'$/;"	v
+TEMP	image_processor.py	/^TEMP = None$/;"	v
 add_answer_elt	preprocessor.py	/^def add_answer_elt(question_choice, pp_answer, src_elt_name, dest_elt_name):$/;"	f
 add_mc_answer_letter	preprocessor.py	/^def add_mc_answer_letter(question_choice, pp_answer):$/;"	f
 add_mc_response_type	preprocessor.py	/^def add_mc_response_type(pp_answer):$/;"	f
@@ -22,15 +24,19 @@ add_tf_response_type	preprocessor.py	/^def add_tf_response_type(pp_answer):$/;"	
 add_tf_text_letter_value_and_feedback	preprocessor.py	/^def add_tf_text_letter_value_and_feedback(question, pp_answer):$/;"	f
 archive_contains_image_file	image_processor.py	/^def archive_contains_image_file(archive_path, image_file_name):$/;"	f
 build_archive_path	image_processor.py	/^def build_archive_path(image_id):$/;"	f
-build_resource_paths	transformer.py	/^def build_resource_paths(result_etree, base_url):$/;"	f
+build_assessment_etree	packager.py	/^def build_assessment_etree(etree, index_of_assessment_to_package):$/;"	f
+build_manifest_etree	packager.py	/^def build_manifest_etree(assessment_ident, assessment_title, file_name):$/;"	f
 collect_input	input_management.py	/^def collect_input(argv):$/;"	f
 copy_image_file	image_processor.py	/^def copy_image_file(image_id):$/;"	f
 copy_image_file_and_replace_img_src	image_processor.py	/^def copy_image_file_and_replace_img_src(image_text_match):$/;"	f
 copy_image_files_and_replace_img_srcs	image_processor.py	/^def copy_image_files_and_replace_img_srcs(question_text_elt):$/;"	f
 d2l_migrator	input_management.py	/^import d2l_migrator$/;"	i
+deepcopy	packager.py	/^from copy import deepcopy$/;"	i
+delete_temp_dir	packager.py	/^def delete_temp_dir(temp_dir_path):$/;"	f
 dir_doesnt_exist	input_management.py	/^def dir_doesnt_exist(dir_path):$/;"	f
 etree	d2l_migrator.py	/^from lxml import etree$/;"	i
 etree	image_processor.py	/^from lxml import etree$/;"	i
+etree	packager.py	/^from lxml import etree$/;"	i
 etree	preprocessor.py	/^from lxml import etree$/;"	i
 etree	transformer.py	/^from lxml import etree$/;"	i
 file_doesnt_exist	input_management.py	/^def file_doesnt_exist(file_path):$/;"	f
@@ -41,16 +47,22 @@ get_input	d2l_migrator.py	/^def get_input(argv):$/;"	f
 get_question_text_elt	image_processor.py	/^def get_question_text_elt(question):$/;"	f
 getopt	input_management.py	/^import sys, getopt, os.path$/;"	i
 image_processor	preprocessor.py	/^import image_processor$/;"	i
-input_management	d2l_migrator.py	/^import input_management, transformer, preprocessor$/;"	i
+input_management	d2l_migrator.py	/^import input_management, transformer, preprocessor, packager$/;"	i
 main	d2l_migrator.py	/^def main(argv):$/;"	f
 make_image_outdir	image_processor.py	/^def make_image_outdir(outdir):$/;"	f
+make_temp_dir	packager.py	/^def make_temp_dir(name, outdir_path):$/;"	f
 os	d2l_migrator.py	/^import sys, os.path$/;"	i
 os	image_processor.py	/^import sys, re, os, os.path, shutil, zipfile$/;"	i
 os	input_management.py	/^import sys, getopt, os.path$/;"	i
+os	packager.py	/^import sys, os.path, zipfile, shutil$/;"	i
+package_assessment	packager.py	/^def package_assessment(etree, index_of_assessment_to_package, outdir_path):$/;"	f
+package_assessments	packager.py	/^def package_assessments(etree, outdir_path):$/;"	f
+packager	d2l_migrator.py	/^import input_management, transformer, preprocessor, packager$/;"	i
 path	d2l_migrator.py	/^import sys, os.path$/;"	i
 path	image_processor.py	/^import sys, re, os, os.path, shutil, zipfile$/;"	i
 path	input_management.py	/^import sys, getopt, os.path$/;"	i
-preprocessor	d2l_migrator.py	/^import input_management, transformer, preprocessor$/;"	i
+path	packager.py	/^import sys, os.path, zipfile, shutil$/;"	i
+preprocessor	d2l_migrator.py	/^import input_management, transformer, preprocessor, packager$/;"	i
 print_usage	d2l_migrator.py	/^def print_usage(msg='Usage:'):$/;"	f
 process	preprocessor.py	/^def process(infile_path, base_url, outdir):$/;"	f
 process_images	image_processor.py	/^def process_images(question, base_url, outdir):$/;"	f
@@ -60,12 +72,19 @@ process_tf_question	preprocessor.py	/^def process_tf_question(question, question
 re	image_processor.py	/^import sys, re, os, os.path, shutil, zipfile$/;"	i
 rename_image_file	image_processor.py	/^def rename_image_file(image_file_path, image_id):$/;"	f
 shutil	image_processor.py	/^import sys, re, os, os.path, shutil, zipfile$/;"	i
+shutil	packager.py	/^import sys, os.path, zipfile, shutil$/;"	i
 sys	d2l_migrator.py	/^import sys, os.path$/;"	i
 sys	image_processor.py	/^import sys, re, os, os.path, shutil, zipfile$/;"	i
 sys	input_management.py	/^import sys, getopt, os.path$/;"	i
+sys	packager.py	/^import sys, os.path, zipfile, shutil$/;"	i
 sys	preprocessor.py	/^import sys$/;"	i
 transform_data	transformer.py	/^def transform_data(source_etree, stylesheet):$/;"	f
-transformer	d2l_migrator.py	/^import input_management, transformer, preprocessor$/;"	i
-validate_input	input_management.py	/^def validate_input(infile, stylesheet, base_url):$/;"	f
+transformer	d2l_migrator.py	/^import input_management, transformer, preprocessor, packager$/;"	i
+transformer	packager.py	/^import transformer$/;"	i
+validate_input	input_management.py	/^def validate_input(infile, stylesheet, outdir, base_url):$/;"	f
+write_archive	packager.py	/^def write_archive(assessment_xml_doc_path, manifest_file_path, archive_path):$/;"	f
+write_assessment_xml_doc	packager.py	/^def write_assessment_xml_doc(assessment_etree, outdir_path):$/;"	f
+write_manifest_file	packager.py	/^def write_manifest_file(assessment_ident, assessment_title, assessment_xml_doc_path, temp_dir_path):$/;"	f
 write_result	d2l_migrator.py	/^def write_result(dom, outfile_path):$/;"	f
 zipfile	image_processor.py	/^import sys, re, os, os.path, shutil, zipfile$/;"	i
+zipfile	packager.py	/^import sys, os.path, zipfile, shutil$/;"	i

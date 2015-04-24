@@ -6,8 +6,7 @@
 
 <xsl:template match="/">
 <questestinterop xmlns:d2l_2p0="http://desire2learn.com/xsd/d2lcp_v2p0">
-    <xsl:for-each select="TLMPackage/Assessment[1]">
-<!--<xsl:for-each select="TLMPackage/Assessment"> -->
+    <xsl:for-each select="TLMPackage/Assessment">
         <assessment d2l_2p0:id="{position()}" title="{Title}" ident="TLM_{ID}"> 
             <xsl:apply-templates select="." />
         </assessment>
