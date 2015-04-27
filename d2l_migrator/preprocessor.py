@@ -1,4 +1,4 @@
-import sys
+import sys, logging
 from lxml import etree
 import image_processor
 
@@ -9,10 +9,16 @@ QUESTION_TYPES = {'1': Q_TYPE_MULTICHOICE, '4': Q_TYPE_TRUEFALSE}
 def process(infile_path, base_url, outdir):
     parser = etree.XMLParser(remove_blank_text=True)
     source_etree = etree.parse(infile_path, parser)
+    course_code = source_etree.findtext('ECourse/Code')
+    logging.info('\nProcessing ' + course_code)
+    assessment_count = source_etree.xpath('count(/TLMPackage/Assessment)')
+    logging.info('assessments: ' + str(int(assessment_count)))
     result_etree = process_questions(source_etree, base_url, outdir)
     return result_etree
 
 def process_questions(intree, base_url, outdir):
+    mc_question_count = 0
+    tf_question_count = 0
     mc_tf_questions = intree.xpath('//Question[ancestor::Assessment and (Type=1 or Type=4)]')
     for question in mc_tf_questions:
         pp_answers = etree.Element('pp_answers')
@@ -21,11 +27,14 @@ def process_questions(intree, base_url, outdir):
             pp_answer = etree.Element('pp_answer')
             if question_type == Q_TYPE_MULTICHOICE:
                 pp_answer = process_mc_question(question, question_choice, pp_answer)
+                mc_question_count += 1
             elif question_type == Q_TYPE_TRUEFALSE:
                 pp_answer = process_tf_question(question, question_choice, pp_answer)
+                tf_question_count += 1
             pp_answers.append(pp_answer)
         question.insert(0, pp_answers)
         image_processor.process_images(question, base_url, outdir)
+    logging.info('mc = ' + str(mc_question_count) + ' tf = ' + str(tf_question_count) + ' tot = ' + str((mc_question_count + tf_question_count)))
     return intree
 
 def process_mc_question(question, question_choice, pp_answer):

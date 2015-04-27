@@ -48,17 +48,19 @@ get_question_text_elt	image_processor.py	/^def get_question_text_elt(question):$
 getopt	input_management.py	/^import sys, getopt, os.path$/;"	i
 image_processor	preprocessor.py	/^import image_processor$/;"	i
 input_management	d2l_migrator.py	/^import input_management, transformer, preprocessor, packager$/;"	i
+logging	d2l_migrator.py	/^import sys, os.path, logging$/;"	i
+logging	preprocessor.py	/^import sys, logging$/;"	i
 main	d2l_migrator.py	/^def main(argv):$/;"	f
 make_image_outdir	image_processor.py	/^def make_image_outdir(outdir):$/;"	f
 make_temp_dir	packager.py	/^def make_temp_dir(name, outdir_path):$/;"	f
-os	d2l_migrator.py	/^import sys, os.path$/;"	i
+os	d2l_migrator.py	/^import sys, os.path, logging$/;"	i
 os	image_processor.py	/^import sys, re, os, os.path, shutil, zipfile$/;"	i
 os	input_management.py	/^import sys, getopt, os.path$/;"	i
 os	packager.py	/^import sys, os.path, zipfile, shutil$/;"	i
 package_assessment	packager.py	/^def package_assessment(etree, index_of_assessment_to_package, outdir_path):$/;"	f
 package_assessments	packager.py	/^def package_assessments(etree, outdir_path):$/;"	f
 packager	d2l_migrator.py	/^import input_management, transformer, preprocessor, packager$/;"	i
-path	d2l_migrator.py	/^import sys, os.path$/;"	i
+path	d2l_migrator.py	/^import sys, os.path, logging$/;"	i
 path	image_processor.py	/^import sys, re, os, os.path, shutil, zipfile$/;"	i
 path	input_management.py	/^import sys, getopt, os.path$/;"	i
 path	packager.py	/^import sys, os.path, zipfile, shutil$/;"	i
@@ -73,11 +75,11 @@ re	image_processor.py	/^import sys, re, os, os.path, shutil, zipfile$/;"	i
 rename_image_file	image_processor.py	/^def rename_image_file(image_file_path, image_id):$/;"	f
 shutil	image_processor.py	/^import sys, re, os, os.path, shutil, zipfile$/;"	i
 shutil	packager.py	/^import sys, os.path, zipfile, shutil$/;"	i
-sys	d2l_migrator.py	/^import sys, os.path$/;"	i
+sys	d2l_migrator.py	/^import sys, os.path, logging$/;"	i
 sys	image_processor.py	/^import sys, re, os, os.path, shutil, zipfile$/;"	i
 sys	input_management.py	/^import sys, getopt, os.path$/;"	i
 sys	packager.py	/^import sys, os.path, zipfile, shutil$/;"	i
-sys	preprocessor.py	/^import sys$/;"	i
+sys	preprocessor.py	/^import sys, logging$/;"	i
 transform_data	transformer.py	/^def transform_data(source_etree, stylesheet):$/;"	f
 transformer	d2l_migrator.py	/^import input_management, transformer, preprocessor, packager$/;"	i
 transformer	packager.py	/^import transformer$/;"	i
@@ -85,6 +87,6 @@ validate_input	input_management.py	/^def validate_input(infile, stylesheet, outd
 write_archive	packager.py	/^def write_archive(assessment_xml_doc_path, manifest_file_path, archive_path):$/;"	f
 write_assessment_xml_doc	packager.py	/^def write_assessment_xml_doc(assessment_etree, outdir_path):$/;"	f
 write_manifest_file	packager.py	/^def write_manifest_file(assessment_ident, assessment_title, assessment_xml_doc_path, temp_dir_path):$/;"	f
-write_result	d2l_migrator.py	/^def write_result(dom, outfile_path):$/;"	f
+write_outfile	d2l_migrator.py	/^def write_outfile(dom, outfile_path):$/;"	f
 zipfile	image_processor.py	/^import sys, re, os, os.path, shutil, zipfile$/;"	i
 zipfile	packager.py	/^import sys, os.path, zipfile, shutil$/;"	i

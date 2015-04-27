@@ -2,7 +2,6 @@
 
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
-
 <xsl:template match="Question[Type=1 or Type=4]">
     <xsl:variable name="lid_ident" select="concat('TLM_QUES_', ID, '_LID')" />
     <item xmlns:d2l_2p0="http://desire2learn.com/xsd/d2lcp_v2p0" ident="TLM_QUES_{ID}" d2l_2p0:page="1" title="{Title}">

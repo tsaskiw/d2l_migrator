@@ -42,7 +42,7 @@ def copy_image_file_and_replace_img_src(image_text_match):
     image_id = image_text_match.group(3)
     image_file_name = copy_image_file(image_id)
     if image_file_name:
-        new_image_text = image_text_match.group(1) + image_file_name + image_text_match.group(4)
+        new_image_text = '/images/' + image_text_match.group(1) + image_file_name + image_text_match.group(4)
     return new_image_text
 
 def copy_image_file(image_id):
