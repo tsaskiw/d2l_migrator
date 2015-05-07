@@ -8,7 +8,7 @@ def main(argv):
     infile_path, stylesheet_path, outdir_path, base_url = get_input(argv)
     logging.basicConfig(filename=os.path.join(outdir_path, 'migrator.log'), level=logging.INFO)
     preprocessed_dom = preprocessor.process(infile_path, base_url, outdir_path)
-#    write_outfile(preprocessed_dom, 'pp_source.xml')
+    write_outfile(preprocessed_dom, 'pp_source.xml')
     transformed_etree = transformer.transform_data(preprocessed_dom, stylesheet_path)
 #    write_outfile(transformed_etree, os.path.join(outdir_path, 'out.xml'))
     packager.package_assessments(transformed_etree, outdir_path)
