@@ -28,7 +28,6 @@ def process_questions(intree, base_url, outdir):
 
     for question in questions:
         question_type = QUESTION_TYPES[question.findtext('Type')]
-
         if question_type == Q_TYPE_MULTICHOICE:
             process_mc_question(question)
             mc_question_count += 1
@@ -40,7 +39,7 @@ def process_questions(intree, base_url, outdir):
             tf_question_count += 1
 
         image_processor.process_images(question, base_url, outdir)
-    logging.info('mc = ' + str(mc_question_count) + ' tf = ' + str(tf_question_count) + ' tot = ' + str((mc_question_count + tf_question_count)))
+    logging.info('mc = ' + str(mc_question_count) + ' tf = ' + str(tf_question_count) + ' sa = ' + str(sa_question_count) + ' tot = ' + str((mc_question_count + tf_question_count + sa_question_count)))
     return intree
 
 def process_mc_question(question):
@@ -76,26 +75,74 @@ def process_tf_answer(question, question_choice):
     return pp_answer
 
 def process_sa_question(question):
-    pp_answers = etree.Element('pp_answers')
-    pp_feedback = etree.Element('pp_feedback')
-    for question_answer in question.xpath('Parts/QuestionPart/Answers/QuestionAnswer'):
-        pp_answer = process_sa_answer(question, question_answer)
-        pp_feedback = process_sa_feedback(question_answer, pp_feedback)
-        pp_answers.append(pp_answer)
-    question.insert(0, pp_answers)
-    question.insert(1, pp_feedback)
+    pp_ignore_case = etree.Element('pp_ignore_case')
+    pp_ignore_case.text = get_ignore_case(question)
 
-def process_sa_answer(question, question_answer):
+    pp_answers = etree.Element('pp_answers')
+    pp_feedback = init_sa_feedback()
+
+    for question_answer in question.xpath('Parts/QuestionPart/Answers/QuestionAnswer'):
+        if is_sa_answer(question_answer):
+            answer = process_sa_answer(question_answer)
+            pp_answers.append(answer)
+        elif is_sa_feedback(question_answer):
+            update_sa_feedback(question_answer, pp_feedback)
+
+    question.insert(0, pp_ignore_case)
+    question.insert(1, pp_answers)
+    question.insert(2, pp_feedback)
+
+def is_sa_answer(question_answer):
+    return is_sa_element(question_answer, 'Text')
+
+def is_sa_feedback(question_answer):
+    return is_sa_element(question_answer, 'Feedback')
+
+def is_sa_element(question_answer, element_name):
+    is_sa_element = len(question_answer.findtext(element_name)) > 0
+    return is_sa_element
+
+def process_sa_answer(question_answer):
     pp_answer = etree.Element('pp_answer')
-# add text
-# add value
+    add_sa_answer_text(question_answer, pp_answer)
+    add_sa_answer_value(question_answer, pp_answer)
     return pp_answer
 
-def process_sa_feedback(question_answer, pp_feedback):
+def add_sa_answer_text(question_answer, pp_answer):
+    add_sa_text(question_answer, pp_answer, 'Text')
+
+def add_sa_answer_value(question_answer, pp_answer):
+    pp_value = etree.Element('value')
+    pp_value.text = question_answer.findtext('Value')
+    pp_answer.append(pp_value)
+
+def init_sa_feedback():
+    pp_feedback = etree.Element('pp_feedback')
+    pp_text = etree.Element('text')
+    pp_text.text = ''
+    pp_feedback.append(pp_text)
+    return pp_feedback
+
+def update_sa_feedback(question_answer, pp_feedback):
     feedback = question_answer.findtext('Feedback')
     if feedback:
-        pp_feedback.text = feedback
-    return pp_feedback
+        text_elt = pp_feedback.find('text')
+        if text_elt is not None:
+            text_elt.text = feedback
+
+def add_sa_feedback_text(question_answer, pp_answer):
+    add_sa_text(question_answer, pp_answer, 'Feedback')
+
+def add_sa_text(question_answer, pp_answer, text_elt_name):
+    pp_text = etree.Element('text')
+    pp_text.text = question_answer.findtext(text_elt_name)
+    pp_answer.append(pp_text)
+
+def get_ignore_case(question):
+    ignore_case = question.findtext('Parts/QuestionPart/ShortAnsIgnoreCase')
+    if not ignore_case:
+        ignore_case = 'False'
+    return ignore_case
 
 def add_sa_text_value_and_feedback(question, pp_answer):
     matching_question_answer_elt = find_question_answer_elt_by_text_value(question, choice_letter)

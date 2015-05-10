@@ -10,7 +10,7 @@ def main(argv):
     preprocessed_dom = preprocessor.process(infile_path, base_url, outdir_path)
     write_outfile(preprocessed_dom, 'pp_source.xml')
     transformed_etree = transformer.transform_data(preprocessed_dom, stylesheet_path)
-#    write_outfile(transformed_etree, os.path.join(outdir_path, 'out.xml'))
+    write_outfile(transformed_etree, os.path.join(outdir_path, 'out.xml'))
     packager.package_assessments(transformed_etree, outdir_path)
 
 def get_input(argv):

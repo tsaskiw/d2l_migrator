@@ -4,7 +4,7 @@
 
 <xsl:template match="Question[Type=1 or Type=4]">
     <xsl:variable name="lid_ident" select="concat('TLM_QUES_', ID, '_LID')" />
-    <item xmlns:d2l_2p0="http://desire2learn.com/xsd/d2lcp_v2p0" ident="TLM_QUES_{ID}" d2l_2p0:page="1" title="{Title}">
+    <item xmlns:d2l_2p0="http://desire2learn.com/xsd/d2lcp_v2p0" ident="TLM_OBJ_{ID}" label="TLM_QUES_{ID}" d2l_2p0:page="1" title="{Title}">
         <itemmetadata>
           <qtimetadata>
             <qti_metadatafield>
