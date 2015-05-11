@@ -2,22 +2,41 @@ import sys, logging
 from lxml import etree
 import image_processor
 
+Q_TYPE_ALL = 'ALL'
 Q_TYPE_MULTICHOICE = 'MULTICHOICE'
 Q_TYPE_TRUEFALSE = 'TRUEFALSE'
 Q_TYPE_SHORTANSWER = 'SHORTANSWER'
 QUESTION_TYPES = {'1': Q_TYPE_MULTICHOICE, '3': Q_TYPE_SHORTANSWER, '4': Q_TYPE_TRUEFALSE}
+QUESTION_TYPE_NUMBERS = {name: num for num, name in QUESTION_TYPES.items()}
 
-def process(infile_path, base_url, outdir):
+def process(infile_path, base_url, outdir, question_type):
+    ques_type = get_question_type(question_type)
     parser = etree.XMLParser(remove_blank_text=True)
     source_etree = etree.parse(infile_path, parser)
 
     course_code = source_etree.findtext('ECourse/Code')
     logging.info('\nProcessing ' + course_code)
+
+    remove_assessments_without_question_type(ques_type, source_etree)
+
     assessment_count = source_etree.xpath('count(/TLMPackage/Assessment)')
     logging.info('assessments: ' + str(int(assessment_count)))
 
     result_etree = process_questions(source_etree, base_url, outdir)
     return result_etree
+
+def get_question_type(question_type):
+    ques_types = {'all': Q_TYPE_ALL, 'mc': Q_TYPE_MULTICHOICE, 'sa': Q_TYPE_SHORTANSWER, 'tf': Q_TYPE_TRUEFALSE}
+    return ques_types[question_type]
+
+def remove_assessments_without_question_type(question_type, source_etree):
+    if question_type != Q_TYPE_ALL:
+        assessments = source_etree.findall('//Assessment')
+        question_type_number = QUESTION_TYPE_NUMBERS[question_type]
+        for assessment in assessments:
+            questions = assessment.xpath('descendant::Question[Type=' + question_type_number + ']')
+            if not questions:
+                assessment.getparent().remove(assessment)
 
 def process_questions(intree, base_url, outdir):
     mc_question_count = 0
@@ -25,7 +44,6 @@ def process_questions(intree, base_url, outdir):
     sa_question_count = 0
 
     questions = intree.xpath('//Question[ancestor::Assessment and (Type=1 or Type=3 or Type=4)]')
-
     for question in questions:
         question_type = QUESTION_TYPES[question.findtext('Type')]
         if question_type == Q_TYPE_MULTICHOICE:
@@ -37,8 +55,8 @@ def process_questions(intree, base_url, outdir):
         elif question_type == Q_TYPE_TRUEFALSE:
             process_tf_question(question)
             tf_question_count += 1
-
         image_processor.process_images(question, base_url, outdir)
+
     logging.info('mc = ' + str(mc_question_count) + ' tf = ' + str(tf_question_count) + ' sa = ' + str(sa_question_count) + ' tot = ' + str((mc_question_count + tf_question_count + sa_question_count)))
     return intree
 

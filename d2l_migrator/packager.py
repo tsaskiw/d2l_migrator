@@ -8,7 +8,7 @@ MANIFEST_STYLESHEET_PATH = '../stylesheets/imsmanifest.xsl'
 def package_assessments(etree, outdir_path):
     num_assessments = int(etree.xpath('count(//assessment)'))
     for index_of_assessment_to_package in range(1, num_assessments + 1):
-        archive_path = package_assessment(etree, index_of_assessment_to_package, outdir_path)
+        package_assessment(etree, index_of_assessment_to_package, outdir_path)
 
 def package_assessment(etree, index_of_assessment_to_package, outdir_path):
     assessment_etree = build_assessment_etree(etree, index_of_assessment_to_package)
@@ -23,8 +23,6 @@ def package_assessment(etree, index_of_assessment_to_package, outdir_path):
         delete_temp_dir(temp_dir_path)
     else:
         print 'failed to archive assessment ' + assessment_ident + '. Please create manually'
-        archive_path = None
-    return archive_path
 
 def build_assessment_etree(etree, index_of_assessment_to_package):
     assessment_etree = deepcopy(etree)
