@@ -93,6 +93,7 @@ question_type_not_found	input_management.py	/^def question_type_not_found(questi
 re	image_processor.py	/^import sys, re, os, os.path, shutil, zipfile$/;"	i
 re	packager.py	/^import sys, os.path, zipfile, shutil, re$/;"	i
 remove_assessments_without_question_type	preprocessor.py	/^def remove_assessments_without_question_type(question_type, source_etree):$/;"	f
+remove_questions_other_than	preprocessor.py	/^def remove_questions_other_than(question_type, source_etree):$/;"	f
 rename_image_file	image_processor.py	/^def rename_image_file(image_file_path, image_id):$/;"	f
 shutil	image_processor.py	/^import sys, re, os, os.path, shutil, zipfile$/;"	i
 shutil	packager.py	/^import sys, os.path, zipfile, shutil, re$/;"	i

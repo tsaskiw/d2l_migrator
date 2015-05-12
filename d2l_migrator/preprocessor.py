@@ -18,6 +18,7 @@ def process(infile_path, base_url, outdir, question_type):
     logging.info('\nProcessing ' + course_code)
 
     remove_assessments_without_question_type(ques_type, source_etree)
+    remove_questions_other_than(ques_type, source_etree)
 
     assessment_count = source_etree.xpath('count(/TLMPackage/Assessment)')
     logging.info('assessments: ' + str(int(assessment_count)))
@@ -37,6 +38,15 @@ def remove_assessments_without_question_type(question_type, source_etree):
             questions = assessment.xpath('descendant::Question[Type=' + question_type_number + ']')
             if not questions:
                 assessment.getparent().remove(assessment)
+
+def remove_questions_other_than(question_type, source_etree):
+    if question_type != Q_TYPE_ALL:
+        assessments = source_etree.findall('//Assessment')
+        question_type_number = QUESTION_TYPE_NUMBERS[question_type]
+        for assessment in assessments:
+            questions = assessment.xpath('descendant::Question[Type!=' + question_type_number + ']')
+            for question in questions:
+                question.getparent().remove(question)
 
 def process_questions(intree, base_url, outdir):
     mc_question_count = 0
