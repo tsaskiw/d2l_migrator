@@ -4,13 +4,15 @@ import image_processor
 
 Q_TYPE_ALL = 'ALL'
 Q_TYPE_MULTICHOICE = 'MULTICHOICE'
+Q_TYPE_MULTIRESPONSE = 'MULTIRESPONSE'
 Q_TYPE_TRUEFALSE = 'TRUEFALSE'
 Q_TYPE_SHORTANSWER = 'SHORTANSWER'
-QUESTION_TYPES = {'1': Q_TYPE_MULTICHOICE, '3': Q_TYPE_SHORTANSWER, '4': Q_TYPE_TRUEFALSE}
+QUESTION_TYPES = {'1': Q_TYPE_MULTICHOICE, '2': Q_TYPE_MULTIRESPONSE, '3': Q_TYPE_SHORTANSWER, '4': Q_TYPE_TRUEFALSE}
 QUESTION_TYPE_NUMBERS = {name: num for num, name in QUESTION_TYPES.items()}
 
 def process(infile_path, base_url, outdir, question_type):
     ques_type = get_question_type(question_type)
+
     parser = etree.XMLParser(remove_blank_text=True)
     source_etree = etree.parse(infile_path, parser)
 
@@ -20,29 +22,35 @@ def process(infile_path, base_url, outdir, question_type):
     remove_assessments_without_question_type(ques_type, source_etree)
     remove_questions_other_than(ques_type, source_etree)
 
-    assessment_count = source_etree.xpath('count(/TLMPackage/Assessment)')
-    logging.info('assessments: ' + str(int(assessment_count)))
+    assessment_count = int(source_etree.xpath('count(/TLMPackage/Assessment)'))
+    logging.info('assessments: ' + str(assessment_count))
 
     result_etree = process_questions(source_etree, base_url, outdir)
+
     return result_etree
 
 def get_question_type(question_type):
-    ques_types = {'all': Q_TYPE_ALL, 'mc': Q_TYPE_MULTICHOICE, 'sa': Q_TYPE_SHORTANSWER, 'tf': Q_TYPE_TRUEFALSE}
+    ques_types = {'all': Q_TYPE_ALL, 'mc': Q_TYPE_MULTICHOICE, 'mr': Q_TYPE_MULTIRESPONSE, 'sa': Q_TYPE_SHORTANSWER, 'tf': Q_TYPE_TRUEFALSE}
+
     return ques_types[question_type]
 
 def remove_assessments_without_question_type(question_type, source_etree):
     if question_type != Q_TYPE_ALL:
         assessments = source_etree.findall('//Assessment')
         question_type_number = QUESTION_TYPE_NUMBERS[question_type]
+
         for assessment in assessments:
             questions = assessment.xpath('descendant::Question[Type=' + question_type_number + ']')
+
             if not questions:
                 assessment.getparent().remove(assessment)
+            else:
+                logging.info(''.join([assessment.findtext('Title'), ' : ', str(len(questions))]))
 
 def remove_questions_other_than(question_type, source_etree):
     if question_type != Q_TYPE_ALL:
-        assessments = source_etree.findall('//Assessment')
         question_type_number = QUESTION_TYPE_NUMBERS[question_type]
+        assessments = source_etree.findall('//Assessment')
         for assessment in assessments:
             questions = assessment.xpath('descendant::Question[Type!=' + question_type_number + ']')
             for question in questions:
@@ -50,15 +58,19 @@ def remove_questions_other_than(question_type, source_etree):
 
 def process_questions(intree, base_url, outdir):
     mc_question_count = 0
+    mr_question_count = 0
     tf_question_count = 0
     sa_question_count = 0
 
-    questions = intree.xpath('//Question[ancestor::Assessment and (Type=1 or Type=3 or Type=4)]')
+    questions = intree.xpath('//Question[ancestor::Assessment and (Type=1 or Type=2 or Type=3 or Type=4)]')
     for question in questions:
         question_type = QUESTION_TYPES[question.findtext('Type')]
         if question_type == Q_TYPE_MULTICHOICE:
             process_mc_question(question)
             mc_question_count += 1
+        if question_type == Q_TYPE_MULTIRESPONSE:
+            process_mr_question(question)
+            mr_question_count += 1
         elif question_type == Q_TYPE_SHORTANSWER:
             process_sa_question(question)
             sa_question_count += 1
@@ -67,7 +79,7 @@ def process_questions(intree, base_url, outdir):
             tf_question_count += 1
         image_processor.process_images(question, base_url, outdir)
 
-    logging.info('mc = ' + str(mc_question_count) + ' tf = ' + str(tf_question_count) + ' sa = ' + str(sa_question_count) + ' tot = ' + str((mc_question_count + tf_question_count + sa_question_count)))
+    logging.info('mc = ' + str(mc_question_count) + ' mr = ' + str(mr_question_count) + ' tf = ' + str(tf_question_count) + ' sa = ' + str(sa_question_count) + ' tot = ' + str((mc_question_count + tf_question_count + sa_question_count)))
     return intree
 
 def process_mc_question(question):
@@ -87,19 +99,25 @@ def process_mc_answer(question, question_choice):
     pp_answer = add_mc_value_and_feedback(question, pp_answer, pp_answer.findtext('letter'))
     return pp_answer
 
+def process_mr_question(question):
+    process_mc_question(question)
+
 def process_tf_question(question):
     pp_answers = etree.Element('pp_answers')
-    for question_choice in question.xpath('Parts/QuestionPart/Choices/QuestionChoice'):
-        pp_answer = process_tf_answer(question, question_choice)
+    for question_answer in question.xpath('Parts/QuestionPart/Answers/QuestionAnswer'):
+        pp_answer = process_tf_answer(question, question_answer)
         pp_answers.append(pp_answer)
     question.insert(0, pp_answers)
 
-def process_tf_answer(question, question_choice):
+def process_tf_answer(question, question_answer):
     pp_answer = etree.Element('pp_answer')
-    pp_answer = add_answer_elt(question_choice, pp_answer, 'Number', 'number')
-    pp_answer = add_answer_elt(question_choice, pp_answer, 'ID', 'id')
-    pp_answer = add_tf_text_letter_value_and_feedback(question, pp_answer)
+    pp_answer = add_tf_response_number(question_answer, pp_answer)
+    pp_answer = add_answer_elt(question_answer, pp_answer, 'ID', 'id')
+    pp_answer = add_answer_elt(question_answer, pp_answer, 'Value', 'value')
+    pp_answer = add_answer_elt(question_answer, pp_answer, 'Feedback', 'feedback')
+    pp_answer = add_tf_response_text(question_answer, pp_answer)
     pp_answer = add_tf_response_type(pp_answer)
+#    pp_answer = add_tf_text_letter_value_and_feedback(question, pp_answer)
     return pp_answer
 
 def process_sa_question(question):
@@ -248,10 +266,27 @@ def add_mc_response_type(pp_answer):
     pp_answer.append(response_type_elt)
     return pp_answer
 
+def add_tf_response_number(question_answer, pp_answer):
+    response_number_elt = etree.Element('number')
+    response_number_elt.text = str(question_answer.getparent().index(question_answer) + 1)
+    pp_answer.append(response_number_elt)
+    return pp_answer
+
 def add_tf_response_type(pp_answer):
     response_type_elt = etree.Element('responsetype')
     response_type_elt.text = 'text/plain'
     pp_answer.append(response_type_elt)
+    return pp_answer
+
+def add_tf_response_text(question_answer, pp_answer):
+    resp_text = question_answer.findtext('Text')
+    if resp_text.lower() == 't':
+        resp_text = 'True'
+    elif resp_text.lower() == 'f':
+        resp_text = 'False'
+    resp_text_elt = etree.Element('text')
+    resp_text_elt.text = resp_text
+    pp_answer.append(resp_text_elt)
     return pp_answer
 
 def add_answer_elt(question_choice, pp_answer, src_elt_name, dest_elt_name):

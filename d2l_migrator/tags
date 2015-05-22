@@ -8,10 +8,11 @@ BASE_URL	image_processor.py	/^BASE_URL = None$/;"	v
 IMAGE_OUTDIR_PATH	image_processor.py	/^IMAGE_OUTDIR_PATH = None$/;"	v
 MANIFEST_STYLESHEET_PATH	packager.py	/^MANIFEST_STYLESHEET_PATH = '..\/stylesheets\/imsmanifest.xsl'$/;"	v
 QUESTION	image_processor.py	/^QUESTION = None$/;"	v
-QUESTION_TYPES	preprocessor.py	/^QUESTION_TYPES = {'1': Q_TYPE_MULTICHOICE, '3': Q_TYPE_SHORTANSWER, '4': Q_TYPE_TRUEFALSE}$/;"	v
+QUESTION_TYPES	preprocessor.py	/^QUESTION_TYPES = {'1': Q_TYPE_MULTICHOICE, '2': Q_TYPE_MULTIRESPONSE, '3': Q_TYPE_SHORTANSWER, '4': Q_TYPE_TRUEFALSE}$/;"	v
 QUESTION_TYPE_NUMBERS	preprocessor.py	/^QUESTION_TYPE_NUMBERS = {name: num for num, name in QUESTION_TYPES.items()}$/;"	v
 Q_TYPE_ALL	preprocessor.py	/^Q_TYPE_ALL = 'ALL'$/;"	v
 Q_TYPE_MULTICHOICE	preprocessor.py	/^Q_TYPE_MULTICHOICE = 'MULTICHOICE'$/;"	v
+Q_TYPE_MULTIRESPONSE	preprocessor.py	/^Q_TYPE_MULTIRESPONSE = 'MULTIRESPONSE'$/;"	v
 Q_TYPE_SHORTANSWER	preprocessor.py	/^Q_TYPE_SHORTANSWER = 'SHORTANSWER'$/;"	v
 Q_TYPE_TRUEFALSE	preprocessor.py	/^Q_TYPE_TRUEFALSE = 'TRUEFALSE'$/;"	v
 TEMP	image_processor.py	/^TEMP = None$/;"	v
@@ -28,6 +29,8 @@ add_tf_question_feedback_elts	preprocessor.py	/^def add_tf_question_feedback_elt
 add_tf_question_letter_elt	preprocessor.py	/^def add_tf_question_letter_elt(question_answer_elt, pp_answer):$/;"	f
 add_tf_question_text_elt	preprocessor.py	/^def add_tf_question_text_elt(pp_answer):$/;"	f
 add_tf_question_value_elt	preprocessor.py	/^def add_tf_question_value_elt(question_answer_elt, pp_answer):$/;"	f
+add_tf_response_number	preprocessor.py	/^def add_tf_response_number(question_answer, pp_answer):$/;"	f
+add_tf_response_text	preprocessor.py	/^def add_tf_response_text(question_answer, pp_answer):$/;"	f
 add_tf_response_type	preprocessor.py	/^def add_tf_response_type(pp_answer):$/;"	f
 add_tf_text_letter_value_and_feedback	preprocessor.py	/^def add_tf_text_letter_value_and_feedback(question, pp_answer):$/;"	f
 archive_contains_image_file	image_processor.py	/^def archive_contains_image_file(archive_path, image_file_name):$/;"	f
@@ -84,10 +87,11 @@ process	preprocessor.py	/^def process(infile_path, base_url, outdir, question_ty
 process_images	image_processor.py	/^def process_images(question, base_url, outdir):$/;"	f
 process_mc_answer	preprocessor.py	/^def process_mc_answer(question, question_choice):$/;"	f
 process_mc_question	preprocessor.py	/^def process_mc_question(question):$/;"	f
+process_mr_question	preprocessor.py	/^def process_mr_question(question):$/;"	f
 process_questions	preprocessor.py	/^def process_questions(intree, base_url, outdir):$/;"	f
 process_sa_answer	preprocessor.py	/^def process_sa_answer(question_answer):$/;"	f
 process_sa_question	preprocessor.py	/^def process_sa_question(question):$/;"	f
-process_tf_answer	preprocessor.py	/^def process_tf_answer(question, question_choice):$/;"	f
+process_tf_answer	preprocessor.py	/^def process_tf_answer(question, question_answer):$/;"	f
 process_tf_question	preprocessor.py	/^def process_tf_question(question):$/;"	f
 question_type_not_found	input_management.py	/^def question_type_not_found(question_type):$/;"	f
 re	image_processor.py	/^import sys, re, os, os.path, shutil, zipfile$/;"	i

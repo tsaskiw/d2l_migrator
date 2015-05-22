@@ -63,5 +63,5 @@ def dir_doesnt_exist(dir_path):
     return not (os.path.exists(dir_path) and not os.path.isfile(dir_path))
 
 def question_type_not_found(question_type):
-    valid_question_types = ('all', 'mc', 'sa', 'tf')
+    valid_question_types = ('all', 'mc', 'mr', 'sa', 'tf')
     return question_type not in valid_question_types

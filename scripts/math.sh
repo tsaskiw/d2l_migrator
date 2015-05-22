@@ -3,7 +3,7 @@ INFILE='/Users/todds/Otira/Projects/SAIT Test Bank Migration/TLM/tlm_exports/mat
 STYLESHEET='/Users/todds/Otira/Projects/SAIT Test Bank Migration/d2l_migrator/stylesheets/assessments.xsl'
 OUTDIR='/Users/todds/Otira/Projects/SAIT Test Bank Migration/output/math'
 BASEURL='/Users/todds/Otira/Projects/SAIT Test Bank Migration/TLM/tlm_exports/math'
-QUESTIONTYPE='sa'
+QUESTIONTYPE='all'
 
 /Users/todds/Otira/Projects/SAIT\ Test\ Bank\ Migration/d2l_migrator/d2l_migrator/d2l_migrator.py -i "$INFILE" -s "$STYLESHEET" -o "$OUTDIR" -b "$BASEURL" -q "$QUESTIONTYPE"
 
