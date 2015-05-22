@@ -12,36 +12,27 @@ QUESTION_TYPE_NUMBERS = {name: num for num, name in QUESTION_TYPES.items()}
 
 def process(infile_path, base_url, outdir, question_type):
     ques_type = get_question_type(question_type)
-
     parser = etree.XMLParser(remove_blank_text=True)
     source_etree = etree.parse(infile_path, parser)
-
     course_code = source_etree.findtext('ECourse/Code')
     logging.info('\nProcessing ' + course_code)
-
     remove_assessments_without_question_type(ques_type, source_etree)
     remove_questions_other_than(ques_type, source_etree)
-
     assessment_count = int(source_etree.xpath('count(/TLMPackage/Assessment)'))
     logging.info('assessments: ' + str(assessment_count))
-
     result_etree = process_questions(source_etree, base_url, outdir)
-
     return result_etree
 
 def get_question_type(question_type):
     ques_types = {'all': Q_TYPE_ALL, 'mc': Q_TYPE_MULTICHOICE, 'mr': Q_TYPE_MULTIRESPONSE, 'sa': Q_TYPE_SHORTANSWER, 'tf': Q_TYPE_TRUEFALSE}
-
     return ques_types[question_type]
 
 def remove_assessments_without_question_type(question_type, source_etree):
     if question_type != Q_TYPE_ALL:
         assessments = source_etree.findall('//Assessment')
         question_type_number = QUESTION_TYPE_NUMBERS[question_type]
-
         for assessment in assessments:
             questions = assessment.xpath('descendant::Question[Type=' + question_type_number + ']')
-
             if not questions:
                 assessment.getparent().remove(assessment)
             else:
@@ -61,7 +52,6 @@ def process_questions(intree, base_url, outdir):
     mr_question_count = 0
     tf_question_count = 0
     sa_question_count = 0
-
     questions = intree.xpath('//Question[ancestor::Assessment and (Type=1 or Type=2 or Type=3 or Type=4)]')
     for question in questions:
         question_type = QUESTION_TYPES[question.findtext('Type')]
@@ -78,7 +68,6 @@ def process_questions(intree, base_url, outdir):
             process_tf_question(question)
             tf_question_count += 1
         image_processor.process_images(question, base_url, outdir)
-
     logging.info('mc = ' + str(mc_question_count) + ' mr = ' + str(mr_question_count) + ' tf = ' + str(tf_question_count) + ' sa = ' + str(sa_question_count) + ' tot = ' + str((mc_question_count + tf_question_count + sa_question_count)))
     return intree
 
@@ -117,23 +106,19 @@ def process_tf_answer(question, question_answer):
     pp_answer = add_answer_elt(question_answer, pp_answer, 'Feedback', 'feedback')
     pp_answer = add_tf_response_text(question_answer, pp_answer)
     pp_answer = add_tf_response_type(pp_answer)
-#    pp_answer = add_tf_text_letter_value_and_feedback(question, pp_answer)
     return pp_answer
 
 def process_sa_question(question):
     pp_ignore_case = etree.Element('pp_ignore_case')
     pp_ignore_case.text = get_ignore_case(question)
-
     pp_answers = etree.Element('pp_answers')
     pp_feedback = init_sa_feedback()
-
     for question_answer in question.xpath('Parts/QuestionPart/Answers/QuestionAnswer'):
         if is_sa_answer(question_answer):
             answer = process_sa_answer(question_answer)
             pp_answers.append(answer)
         elif is_sa_feedback(question_answer):
             update_sa_feedback(question_answer, pp_feedback)
-
     question.insert(0, pp_ignore_case)
     question.insert(1, pp_answers)
     question.insert(2, pp_feedback)
@@ -211,16 +196,6 @@ def add_sa_text_value_and_feedback(question, pp_answer):
     use_custom_fb_elt = etree.Element('usecustomfeedback')
     use_custom_fb_elt.text = use_custom_fb
     pp_answer.append(use_custom_fb_elt)
-    return pp_answer
-
-def add_tf_text_letter_value_and_feedback(question, pp_answer):
-    question_answer_elt = question.xpath('Parts/QuestionPart/Answers/QuestionAnswer[position() = ' + pp_answer.findtext('number') + ']')
-    if question_answer_elt:
-        question_answer_elt = question_answer_elt[0]
-        pp_answer = add_tf_question_letter_elt(question_answer_elt, pp_answer)
-        pp_answer = add_tf_question_text_elt(pp_answer)
-        pp_answer = add_tf_question_value_elt(question_answer_elt, pp_answer)
-        pp_answer = add_tf_question_feedback_elts(question_answer_elt, pp_answer)
     return pp_answer
 
 def add_tf_question_letter_elt(question_answer_elt, pp_answer):

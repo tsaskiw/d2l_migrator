@@ -8,9 +8,9 @@ def main(argv):
     infile_path, stylesheet_path, outdir_path, base_url, question_type = get_input(argv)
     logging.basicConfig(filename=os.path.join(outdir_path, 'migrator.log'), level=logging.INFO)
     preprocessed_dom = preprocessor.process(infile_path, base_url, outdir_path, question_type)
-    write_outfile(preprocessed_dom, 'pp_source.xml')
+#    write_outfile(preprocessed_dom, 'pp_source.xml')
     transformed_etree = transformer.transform_data(preprocessed_dom, stylesheet_path)
-    write_outfile(transformed_etree, os.path.join(outdir_path, 'out.xml'))
+#    write_outfile(transformed_etree, os.path.join(outdir_path, 'out.xml'))
     packager.package_assessments(transformed_etree, outdir_path)
 
 def get_input(argv):
@@ -26,7 +26,7 @@ def write_outfile(dom, outfile_path):
 
 def print_usage(msg='Usage:'):
     print(msg)
-    print('d2l_migrator.py -i <inputfile> -s <stylesheet> -o <outputdir> -b <baseurl> -q <questiontype>=all [mc, sa, tf]')
+    print('d2l_migrator.py -i <inputfile> -s <stylesheet> -o <outputdir> -b <baseurl> -q <questiontype>=all [mc, mr, sa, tf]')
 
 if __name__ == "__main__":
     main(sys.argv[1:])
