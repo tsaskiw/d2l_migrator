@@ -2,13 +2,19 @@ import sys, logging
 from lxml import etree
 import image_processor
 
+
 Q_TYPE_ALL = 'ALL'
 Q_TYPE_MULTICHOICE = 'MULTICHOICE'
-Q_TYPE_MULTIRESPONSE = 'MULTIRESPONSE'
+Q_TYPE_MULTISHORTANSWER = 'MULTISHORTANSWER'
 Q_TYPE_TRUEFALSE = 'TRUEFALSE'
 Q_TYPE_SHORTANSWER = 'SHORTANSWER'
-QUESTION_TYPES = {'1': Q_TYPE_MULTICHOICE, '2': Q_TYPE_MULTIRESPONSE, '3': Q_TYPE_SHORTANSWER, '4': Q_TYPE_TRUEFALSE}
+
+QUESTION_TYPES = {'1': Q_TYPE_MULTICHOICE, '3': Q_TYPE_SHORTANSWER, '4': Q_TYPE_TRUEFALSE, '6': Q_TYPE_MULTISHORTANSWER}
 QUESTION_TYPE_NUMBERS = {name: num for num, name in QUESTION_TYPES.items()}
+
+LC_TRUE_VALUES = ['t', 'true', 'y']
+LC_FALSE_VALUES = ['f', 'false', 'n']
+
 
 def process(infile_path, base_url, outdir, question_type):
     ques_type = get_question_type(question_type)
@@ -23,9 +29,11 @@ def process(infile_path, base_url, outdir, question_type):
     result_etree = process_questions(source_etree, base_url, outdir)
     return result_etree
 
+
 def get_question_type(question_type):
-    ques_types = {'all': Q_TYPE_ALL, 'mc': Q_TYPE_MULTICHOICE, 'mr': Q_TYPE_MULTIRESPONSE, 'sa': Q_TYPE_SHORTANSWER, 'tf': Q_TYPE_TRUEFALSE}
+    ques_types = {'all': Q_TYPE_ALL, 'mc': Q_TYPE_MULTICHOICE, 'msa': Q_TYPE_MULTISHORTANSWER, 'sa': Q_TYPE_SHORTANSWER, 'tf': Q_TYPE_TRUEFALSE}
     return ques_types[question_type]
+
 
 def remove_assessments_without_question_type(question_type, source_etree):
     if question_type != Q_TYPE_ALL:
@@ -38,6 +46,7 @@ def remove_assessments_without_question_type(question_type, source_etree):
             else:
                 logging.info(''.join([assessment.findtext('Title'), ' : ', str(len(questions))]))
 
+
 def remove_questions_other_than(question_type, source_etree):
     if question_type != Q_TYPE_ALL:
         question_type_number = QUESTION_TYPE_NUMBERS[question_type]
@@ -47,29 +56,31 @@ def remove_questions_other_than(question_type, source_etree):
             for question in questions:
                 question.getparent().remove(question)
 
+
 def process_questions(intree, base_url, outdir):
     mc_question_count = 0
-    mr_question_count = 0
+    msa_question_count = 0
     tf_question_count = 0
     sa_question_count = 0
-    questions = intree.xpath('//Question[ancestor::Assessment and (Type=1 or Type=2 or Type=3 or Type=4)]')
+    questions = intree.xpath('//Question[ancestor::Assessment and (Type=1 or Type=2 or Type=4 or Type=6)]')
     for question in questions:
         question_type = QUESTION_TYPES[question.findtext('Type')]
         if question_type == Q_TYPE_MULTICHOICE:
             process_mc_question(question)
             mc_question_count += 1
-        if question_type == Q_TYPE_MULTIRESPONSE:
-            process_mr_question(question)
-            mr_question_count += 1
         elif question_type == Q_TYPE_SHORTANSWER:
             process_sa_question(question)
             sa_question_count += 1
         elif question_type == Q_TYPE_TRUEFALSE:
             process_tf_question(question)
             tf_question_count += 1
+        elif question_type == Q_TYPE_MULTISHORTANSWER:
+            process_msa_question(question)
+            msa_question_count += 1
         image_processor.process_images(question, base_url, outdir)
-    logging.info('mc = ' + str(mc_question_count) + ' mr = ' + str(mr_question_count) + ' tf = ' + str(tf_question_count) + ' sa = ' + str(sa_question_count) + ' tot = ' + str((mc_question_count + tf_question_count + sa_question_count)))
+    logging.info('mc = ' + str(mc_question_count) + ' msa = ' + str(msa_question_count) + ' tf = ' + str(tf_question_count) + ' sa = ' + str(sa_question_count) + ' tot = ' + str((mc_question_count + tf_question_count + sa_question_count + msa_question_count)))
     return intree
+
 
 def process_mc_question(question):
     pp_answers = etree.Element('pp_answers')
@@ -77,6 +88,7 @@ def process_mc_question(question):
         pp_answer = process_mc_answer(question, question_choice)
         pp_answers.append(pp_answer)
     question.insert(0, pp_answers)
+
 
 def process_mc_answer(question, question_choice):
     pp_answer = etree.Element('pp_answer')
@@ -88,15 +100,87 @@ def process_mc_answer(question, question_choice):
     pp_answer = add_mc_value_and_feedback(question, pp_answer, pp_answer.findtext('letter'))
     return pp_answer
 
-def process_mr_question(question):
-    process_mc_question(question)
+
+def process_msa_question(question):
+# use D2L fill in the blanks type
+# main portion, then text-blank pairs, text contains empty p = new line
+
+    add_msa_question_parts(question)
+#    pp_ignore_case = etree.Element('pp_ignore_case')
+#    pp_ignore_case.text = get_ignore_case(question)
+#    pp_answers = etree.Element('pp_answers')
+#    pp_feedback = init_sa_feedback()
+#    for question_answer in question.xpath('Parts/QuestionPart/Answers/QuestionAnswer'):
+#        if is_sa_answer(question_answer):
+#            answer = process_sa_answer(question_answer)
+#            pp_answers.append(answer)
+#        elif is_sa_feedback(question_answer):
+#            update_sa_feedback(question_answer, pp_feedback)
+#    question.insert(0, pp_ignore_case)
+#    question.insert(1, pp_answers)
+#    question.insert(2, pp_feedback)
+
+
+def add_msa_question_parts(question):
+    pp_parts = etree.Element('pp_parts')
+    for question_part in question.xpath('Parts/QuestionPart'):
+        add_msa_question_part(pp_parts, question_part)
+    question.insert(0, pp_parts)
+
+
+def add_msa_question_part(pp_parts_elt, question_part):
+    pp_question_part = etree.Element('pp_question_part')
+    add_msa_question_part_id(pp_question_part, question_part)
+    add_msa_question_part_text(pp_question_part, question_part)
+    add_msa_question_part_ignore_case(pp_question_part, question_part)
+    add_msa_question_part_answer(pp_question_part, question_part)
+    pp_parts_elt.append(pp_question_part)
+
+
+def add_msa_question_part_id(pp_question_part, question_part):
+    pp_id = etree.Element('pp_id')
+    pp_id.text = question_part.findtext('ID')
+    pp_question_part.append(pp_id)
+
+
+def add_msa_question_part_text(pp_question_part, question_part):
+    pp_text = etree.Element('pp_text')
+    pp_text.text = question_part.findtext('Text')
+    pp_question_part.append(pp_text)
+
+
+def add_msa_question_part_ignore_case(pp_question_part, question_part):
+    pp_ignore_case = etree.Element('pp_ignore_case')
+    pp_ignore_case.text = question_part.findtext('ShortAnsIgnoreCase')
+    pp_question_part.append(pp_ignore_case)
+
+
+def add_msa_question_part_answer(pp_question_part, question_part):
+    pp_answer = etree.Element('pp_answer')
+    question_answer_text = []
+    feedback_text = []
+    for question_answer in question_part.xpath('Answers/QuestionAnswer'):
+        qtext = question_answer.findtext('Text')
+        ftext = question_answer.findtext('Feedback')
+        if qtext:
+            question_answer_text.append(qtext)
+        elif ftext:
+            feedback_text.append(ftext)
+    pp_answer.text = "|".join(question_answer_text)
+    pp_question_part.append(pp_answer)
+#add pp_is_regex
+    if len(question_answer_text) > 1:
+#don't forget about feedback
+
 
 def process_tf_question(question):
     pp_answers = etree.Element('pp_answers')
     for question_answer in question.xpath('Parts/QuestionPart/Answers/QuestionAnswer'):
         pp_answer = process_tf_answer(question, question_answer)
         pp_answers.append(pp_answer)
+    pp_answers = check_tf_answer_order(pp_answers)
     question.insert(0, pp_answers)
+
 
 def process_tf_answer(question, question_answer):
     pp_answer = etree.Element('pp_answer')
@@ -107,6 +191,14 @@ def process_tf_answer(question, question_answer):
     pp_answer = add_tf_response_text(question_answer, pp_answer)
     pp_answer = add_tf_response_type(pp_answer)
     return pp_answer
+
+
+def check_tf_answer_order(pp_answers):
+    first_answer = pp_answers.find('pp_answer')
+    if first_answer.findtext('text').lower() in LC_FALSE_VALUES:
+        pp_answers.append(first_answer)
+    return pp_answers
+
 
 def process_sa_question(question):
     pp_ignore_case = etree.Element('pp_ignore_case')
@@ -123,15 +215,19 @@ def process_sa_question(question):
     question.insert(1, pp_answers)
     question.insert(2, pp_feedback)
 
+
 def is_sa_answer(question_answer):
     return is_sa_element(question_answer, 'Text')
+
 
 def is_sa_feedback(question_answer):
     return is_sa_element(question_answer, 'Feedback')
 
+
 def is_sa_element(question_answer, element_name):
     is_sa_element = len(question_answer.findtext(element_name)) > 0
     return is_sa_element
+
 
 def process_sa_answer(question_answer):
     pp_answer = etree.Element('pp_answer')
@@ -139,13 +235,16 @@ def process_sa_answer(question_answer):
     add_sa_answer_value(question_answer, pp_answer)
     return pp_answer
 
+
 def add_sa_answer_text(question_answer, pp_answer):
     add_sa_text(question_answer, pp_answer, 'Text')
+
 
 def add_sa_answer_value(question_answer, pp_answer):
     pp_value = etree.Element('value')
     pp_value.text = question_answer.findtext('Value')
     pp_answer.append(pp_value)
+
 
 def init_sa_feedback():
     pp_feedback = etree.Element('pp_feedback')
@@ -154,6 +253,7 @@ def init_sa_feedback():
     pp_feedback.append(pp_text)
     return pp_feedback
 
+
 def update_sa_feedback(question_answer, pp_feedback):
     feedback = question_answer.findtext('Feedback')
     if feedback:
@@ -161,19 +261,23 @@ def update_sa_feedback(question_answer, pp_feedback):
         if text_elt is not None:
             text_elt.text = feedback
 
+
 def add_sa_feedback_text(question_answer, pp_answer):
     add_sa_text(question_answer, pp_answer, 'Feedback')
+
 
 def add_sa_text(question_answer, pp_answer, text_elt_name):
     pp_text = etree.Element('text')
     pp_text.text = question_answer.findtext(text_elt_name)
     pp_answer.append(pp_text)
 
+
 def get_ignore_case(question):
     ignore_case = question.findtext('Parts/QuestionPart/ShortAnsIgnoreCase')
     if not ignore_case:
         ignore_case = 'False'
     return ignore_case
+
 
 def add_sa_text_value_and_feedback(question, pp_answer):
     matching_question_answer_elt = find_question_answer_elt_by_text_value(question, choice_letter)
@@ -198,6 +302,7 @@ def add_sa_text_value_and_feedback(question, pp_answer):
     pp_answer.append(use_custom_fb_elt)
     return pp_answer
 
+
 def add_tf_question_letter_elt(question_answer_elt, pp_answer):
     question_letter_elt = etree.Element('letter')
     question_letter_elt.text = ''
@@ -208,6 +313,7 @@ def add_tf_question_letter_elt(question_answer_elt, pp_answer):
         question_letter_elt.text = 'F'
     pp_answer.append(question_letter_elt)
     return pp_answer
+
 
 def add_tf_question_text_elt(pp_answer):
     question_text_elt = etree.Element('text')
@@ -220,11 +326,14 @@ def add_tf_question_text_elt(pp_answer):
     pp_answer.append(question_text_elt)
     return pp_answer
 
+
 def add_tf_question_value_elt(question_answer_elt, pp_answer):
     question_value_elt = etree.Element('value')
     question_value_elt.text = question_answer_elt.findtext('Value')
     pp_answer.append(question_value_elt)
     return pp_answer
+
+
 
 def add_tf_question_feedback_elts(question_answer_elt, pp_answer):
     question_fb_elt = etree.Element('feedback')
@@ -235,11 +344,13 @@ def add_tf_question_feedback_elts(question_answer_elt, pp_answer):
     pp_answer.append(question_use_custom_fb_elt)
     return pp_answer
 
+
 def add_mc_response_type(pp_answer):
     response_type_elt = etree.Element('responsetype')
     response_type_elt.text = 'text/html'
     pp_answer.append(response_type_elt)
     return pp_answer
+
 
 def add_tf_response_number(question_answer, pp_answer):
     response_number_elt = etree.Element('number')
@@ -247,28 +358,52 @@ def add_tf_response_number(question_answer, pp_answer):
     pp_answer.append(response_number_elt)
     return pp_answer
 
+
 def add_tf_response_type(pp_answer):
     response_type_elt = etree.Element('responsetype')
     response_type_elt.text = 'text/plain'
     pp_answer.append(response_type_elt)
     return pp_answer
 
+
 def add_tf_response_text(question_answer, pp_answer):
     resp_text = question_answer.findtext('Text')
-    if resp_text.lower() == 't':
+    if resp_text.lower() in LC_TRUE_VALUES:
         resp_text = 'True'
-    elif resp_text.lower() == 'f':
+    elif resp_text.lower() in LC_FALSE_VALUES:
         resp_text = 'False'
+    elif resp_text == '':
+        resp_text = get_tf_text_for_blank_value(question_answer)
     resp_text_elt = etree.Element('text')
     resp_text_elt.text = resp_text
     pp_answer.append(resp_text_elt)
     return pp_answer
+
+
+def get_tf_text_for_blank_value(question_answer):
+    answer_text = ''
+    if question_answer.getprevious() is not None:
+        answer_text = get_tf_text_inverse_of(question_answer.getprevious().findtext('Text'))
+    elif question_answer.getnext() is not None:
+        answer_text = get_tf_text_inverse_of(question_answer.getnext().findtext('Text'))
+    return answer_text
+
+
+def get_tf_text_inverse_of(tf_answer_text):
+    answer_text = 'Undetermined'
+    if tf_answer_text.lower() in LC_TRUE_VALUES:
+        answer_text = 'False'
+    elif tf_answer_text.lower() in LC_FALSE_VALUES:
+        answer_text = 'True'
+    return answer_text
+
 
 def add_answer_elt(question_choice, pp_answer, src_elt_name, dest_elt_name):
     dest_elt = etree.Element(dest_elt_name)
     dest_elt.text = question_choice.findtext(src_elt_name)
     pp_answer.append(dest_elt)
     return pp_answer
+
 
 def add_mc_answer_letter(question_choice, pp_answer):
     letters = ('', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z')
@@ -278,6 +413,7 @@ def add_mc_answer_letter(question_choice, pp_answer):
     letter_elt.text = letters[letter_index]
     pp_answer.append(letter_elt)
     return pp_answer
+
 
 def add_mc_value_and_feedback(question, pp_answer, choice_letter):
     matching_question_answer_elt = find_question_answer_elt_by_text_value(question, choice_letter)
@@ -302,6 +438,7 @@ def add_mc_value_and_feedback(question, pp_answer, choice_letter):
     pp_answer.append(use_custom_fb_elt)
     return pp_answer
 
+
 def find_default_feedback(question):
     default_feedback = ''
     default_question_answer_elt = find_question_answer_elt_by_text_value(question, '')
@@ -312,6 +449,7 @@ def find_default_feedback(question):
     if default_question_answer_elt is not None:
         default_feedback = default_question_answer_elt.findtext('Feedback')
     return default_feedback
+
 
 def find_question_answer_elt_by_text_value(question, text_val):
     xpath_expr = ''.join(['Parts/QuestionPart/Answers/QuestionAnswer[Text = "', text_val, '"]'])

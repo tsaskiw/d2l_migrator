@@ -1,19 +1,21 @@
 import sys, getopt, os.path
 import d2l_migrator
 
+
+VALID_QUESTION_TYPES = ('all', 'mc', 'msa', 'sa', 'tf')
+
+
 def collect_input(argv):
     infile = ''
     stylesheet = ''
     outdir = ''
     base_url = ''
     question_type = 'all'
-
     try:
         opts, args = getopt.getopt(argv,"hi:s:o:b:q:",["ifile=","sfile=","odir=","base_url=", "question_type="])
     except getopt.GetoptError:
         d2l_migrator.print_usage()
         sys.exit(2)
-
     if len(opts) < 4:
         d2l_migrator.print_usage('Parameter(s) missing. Usage:')
         sys.exit()
@@ -31,8 +33,8 @@ def collect_input(argv):
             base_url = arg
         elif opt in ("-q", "--question_type"):
             question_type = arg
-
     return (infile, stylesheet, outdir, base_url, question_type)
+
 
 def validate_input(infile, stylesheet, outdir, base_url, question_type):
     input_is_valid = True
@@ -48,7 +50,7 @@ def validate_input(infile, stylesheet, outdir, base_url, question_type):
             invalid_params.append(outdir)
     if dir_doesnt_exist(base_url):
         invalid_params.append(base_url)
-    if question_type_not_found(question_type):
+    if question_type not in VALID_QUESTION_TYPES:
         invalid_params.append(question_type)
     if len(invalid_params) > 0:
         input_is_valid = False
@@ -56,12 +58,10 @@ def validate_input(infile, stylesheet, outdir, base_url, question_type):
             print('\n' + param + ' is not valid.')
     return input_is_valid
 
+
 def file_doesnt_exist(file_path):
     return not (os.path.exists(file_path) and os.path.isfile(file_path))
 
+
 def dir_doesnt_exist(dir_path):
     return not (os.path.exists(dir_path) and not os.path.isfile(dir_path))
-
-def question_type_not_found(question_type):
-    valid_question_types = ('all', 'mc', 'mr', 'sa', 'tf')
-    return question_type not in valid_question_types
