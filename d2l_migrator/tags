@@ -27,6 +27,7 @@ add_msa_question_part	preprocessor.py	/^def add_msa_question_part(pp_parts_elt, 
 add_msa_question_part_answer	preprocessor.py	/^def add_msa_question_part_answer(pp_question_part, question_part):$/;"	f
 add_msa_question_part_id	preprocessor.py	/^def add_msa_question_part_id(pp_question_part, question_part):$/;"	f
 add_msa_question_part_ignore_case	preprocessor.py	/^def add_msa_question_part_ignore_case(pp_question_part, question_part):$/;"	f
+add_msa_question_part_is_regex	preprocessor.py	/^def add_msa_question_part_is_regex(question_answer_text, pp_question_part):$/;"	f
 add_msa_question_part_text	preprocessor.py	/^def add_msa_question_part_text(pp_question_part, question_part):$/;"	f
 add_msa_question_parts	preprocessor.py	/^def add_msa_question_parts(question):$/;"	f
 add_sa_answer_text	preprocessor.py	/^def add_sa_answer_text(question_answer, pp_answer):$/;"	f

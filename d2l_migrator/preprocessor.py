@@ -168,9 +168,17 @@ def add_msa_question_part_answer(pp_question_part, question_part):
             feedback_text.append(ftext)
     pp_answer.text = "|".join(question_answer_text)
     pp_question_part.append(pp_answer)
-#add pp_is_regex
-    if len(question_answer_text) > 1:
-#don't forget about feedback
+    add_msa_question_part_is_regex(question_answer_text, pp_question_part)
+# don't forget about feedback
+# !!!!! PROBLEM !!!!!
+# re: feedback
+# TLM has feedback per questionpart, D2L FIB type only allows feeb=dback for whole question.
+
+
+def add_msa_question_part_is_regex(question_answer_text, pp_question_part):
+    pp_is_regex = etree.Element('pp_is_regex')
+    pp_is_regex.text = str(len(question_answer_text) > 1)
+    pp_question_part.append(pp_is_regex)
 
 
 def process_tf_question(question):
