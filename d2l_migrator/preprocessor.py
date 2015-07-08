@@ -1,4 +1,4 @@
-import sys, logging
+import fnmatch, logging, os, sys
 from lxml import etree
 import image_processor
 
@@ -10,12 +10,14 @@ Q_TYPE_SHORTANSWER = 'SHORTANSWER'
 QUESTION_TYPES = {'1': Q_TYPE_MULTICHOICE, '2': Q_TYPE_MULTIRESPONSE, '3': Q_TYPE_SHORTANSWER, '4': Q_TYPE_TRUEFALSE}
 QUESTION_TYPE_NUMBERS = {name: num for num, name in QUESTION_TYPES.items()}
 
-def process(infile_path, base_url, outdir, question_type):
-    ques_type = get_question_type(question_type)
+
+def process(infile_path, base_url, outdir, question_type, diffdir):
     parser = etree.XMLParser(remove_blank_text=True)
     source_etree = etree.parse(infile_path, parser)
     course_code = source_etree.findtext('ECourse/Code')
     logging.info('\nProcessing ' + course_code)
+    remove_duplicate_questions(source_etree, diffdir)
+    ques_type = get_question_type(question_type)
     remove_assessments_without_question_type(ques_type, source_etree)
     remove_questions_other_than(ques_type, source_etree)
     assessment_count = int(source_etree.xpath('count(/TLMPackage/Assessment)'))
@@ -23,9 +25,56 @@ def process(infile_path, base_url, outdir, question_type):
     result_etree = process_questions(source_etree, base_url, outdir)
     return result_etree
 
+
+def remove_duplicate_questions(source_etree, diffdir):
+    if diffdir:
+        existing_question_titles = find_existing_question_titles(diffdir)
+        remove_duplicate_questions_from_module(source_etree, existing_question_titles)
+        remove_empty_assessments_from_module(source_etree)
+
+
+def find_existing_question_titles(diffdir):
+    existing_question_titles = set()
+    existing_file_paths = get_existing_file_paths(diffdir)
+    for existing_file_path in existing_file_paths:
+        parser = etree.XMLParser(remove_blank_text=True)
+        source_etree = etree.parse(existing_file_path, parser)
+        existing_question_titles = existing_question_titles.union(set(source_etree.xpath('/*/assessment/section/item/@title')))
+    return existing_question_titles
+
+
+def get_existing_file_paths(diffdir):
+    existing_files = []
+    for filename in os.listdir(diffdir):
+        if fnmatch.fnmatch(filename, 'quiz_d2l_*.xml'):
+            filepath = os.path.join(diffdir, filename)
+            if os.path.isfile(filepath):
+                existing_files.append(filepath)
+    return existing_files
+
+
+def remove_duplicate_questions_from_module(module_etree, existing_question_titles):
+    print(len(module_etree.findall('.//Question')))
+    for question in module_etree.iter('Question'):
+        if question.findtext('Title') in existing_question_titles:
+            parent = question.getparent()
+            parent.remove(question)
+    print(len(module_etree.findall('.//Question')))
+
+
+def remove_empty_assessments_from_module(module_etree):
+    print(len(module_etree.findall('.//Assessment')))
+    for assessment in module_etree.iter('Assessment'):
+        if assessment.find('.//Question') is None:
+            parent = assessment.getparent()
+            parent.remove(assessment)
+    print(len(module_etree.findall('.//Assessment')))
+
+
 def get_question_type(question_type):
     ques_types = {'all': Q_TYPE_ALL, 'mc': Q_TYPE_MULTICHOICE, 'mr': Q_TYPE_MULTIRESPONSE, 'sa': Q_TYPE_SHORTANSWER, 'tf': Q_TYPE_TRUEFALSE}
     return ques_types[question_type]
+
 
 def remove_assessments_without_question_type(question_type, source_etree):
     if question_type != Q_TYPE_ALL:
