@@ -1,23 +1,23 @@
 import fnmatch, logging, os, sys
 from lxml import etree
 import image_processor
+import p2_unicode_utils
 
 Q_TYPE_ALL = 'ALL'
+Q_TYPE_CUSTOM = 'CUSTOM'
 Q_TYPE_MULTICHOICE = 'MULTICHOICE'
 Q_TYPE_MULTIRESPONSE = 'MULTIRESPONSE'
 Q_TYPE_TRUEFALSE = 'TRUEFALSE'
 Q_TYPE_SHORTANSWER = 'SHORTANSWER'
-QUESTION_TYPES = {'1': Q_TYPE_MULTICHOICE, '2': Q_TYPE_MULTIRESPONSE, '3': Q_TYPE_SHORTANSWER, '4': Q_TYPE_TRUEFALSE}
+QUESTION_TYPES = {'1': Q_TYPE_MULTICHOICE, '2': Q_TYPE_MULTIRESPONSE, '3': Q_TYPE_SHORTANSWER, '4': Q_TYPE_TRUEFALSE, '6': Q_TYPE_CUSTOM}
 QUESTION_TYPE_NUMBERS = {name: num for num, name in QUESTION_TYPES.items()}
 
 
 def process(infile_path, base_url, outdir, question_type, diffdir):
-    parser = etree.XMLParser(remove_blank_text=True)
-    source_etree = etree.parse(infile_path, parser)
-    course_code = source_etree.findtext('ECourse/Code')
-    logging.info('\nProcessing ' + course_code)
-    remove_duplicate_questions(source_etree, diffdir)
-    ques_type = get_question_type(question_type)
+    source_etree = parse_question_source_file(infile_path)
+    set_up_logging(source_etree)
+    remove_duplicate_questions_from_source(source_etree, diffdir)
+    ques_type = get_question_type_symbol(question_type)
     remove_assessments_without_question_type(ques_type, source_etree)
     remove_questions_other_than(ques_type, source_etree)
     assessment_count = int(source_etree.xpath('count(/TLMPackage/Assessment)'))
@@ -26,11 +26,22 @@ def process(infile_path, base_url, outdir, question_type, diffdir):
     return result_etree
 
 
-def remove_duplicate_questions(source_etree, diffdir):
+def parse_question_source_file(infile_path):
+    parser = etree.XMLParser(remove_blank_text=True)
+    source_etree = etree.parse(infile_path, parser)
+    return source_etree
+
+
+def set_up_logging(source_etree):
+    course_code = source_etree.findtext('ECourse/Code')
+    logging.info('\nProcessing ' + course_code)
+
+
+def remove_duplicate_questions_from_source(source_etree, diffdir):
     if diffdir:
         existing_question_titles = find_existing_question_titles(diffdir)
         remove_duplicate_questions_from_module(source_etree, existing_question_titles)
-        remove_empty_assessments_from_module(source_etree)
+        remove_empty_assessments_from_modules(source_etree)
 
 
 def find_existing_question_titles(diffdir):
@@ -54,26 +65,26 @@ def get_existing_file_paths(diffdir):
 
 
 def remove_duplicate_questions_from_module(module_etree, existing_question_titles):
-    print(len(module_etree.findall('.//Question')))
     for question in module_etree.iter('Question'):
         if question.findtext('Title') in existing_question_titles:
             parent = question.getparent()
             parent.remove(question)
-    print(len(module_etree.findall('.//Question')))
 
 
-def remove_empty_assessments_from_module(module_etree):
-    print(len(module_etree.findall('.//Assessment')))
-    for assessment in module_etree.iter('Assessment'):
+def remove_empty_assessments_from_modules(source_etree):
+    for assessment in source_etree.iter('Assessment'):
         if assessment.find('.//Question') is None:
             parent = assessment.getparent()
             parent.remove(assessment)
-    print(len(module_etree.findall('.//Assessment')))
 
 
-def get_question_type(question_type):
-    ques_types = {'all': Q_TYPE_ALL, 'mc': Q_TYPE_MULTICHOICE, 'mr': Q_TYPE_MULTIRESPONSE, 'sa': Q_TYPE_SHORTANSWER, 'tf': Q_TYPE_TRUEFALSE}
-    return ques_types[question_type]
+def get_question_type_symbol(question_type):
+    ques_types = {'all': Q_TYPE_ALL, 'cs': Q_TYPE_CUSTOM, 'mc': Q_TYPE_MULTICHOICE, 'mr': Q_TYPE_MULTIRESPONSE, 'sa': Q_TYPE_SHORTANSWER, 'tf': Q_TYPE_TRUEFALSE}
+    if question_type in ques_types:
+        ques_type = ques_types[question_type]
+    else:
+        ques_type = ques_types['all']
+    return ques_type
 
 
 def remove_assessments_without_question_type(question_type, source_etree):
@@ -87,6 +98,7 @@ def remove_assessments_without_question_type(question_type, source_etree):
             else:
                 logging.info(''.join([assessment.findtext('Title'), ' : ', str(len(questions))]))
 
+
 def remove_questions_other_than(question_type, source_etree):
     if question_type != Q_TYPE_ALL:
         question_type_number = QUESTION_TYPE_NUMBERS[question_type]
@@ -96,14 +108,19 @@ def remove_questions_other_than(question_type, source_etree):
             for question in questions:
                 question.getparent().remove(question)
 
+
 def process_questions(intree, base_url, outdir):
+    cs_question_count = 0
     mc_question_count = 0
     mr_question_count = 0
     tf_question_count = 0
     sa_question_count = 0
-    questions = intree.xpath('//Question[ancestor::Assessment and (Type=1 or Type=2 or Type=3 or Type=4)]')
+    questions = intree.xpath('//Question[ancestor::Assessment and (Type=1 or Type=2 or Type=3 or Type=4 or Type=6)]')
     for question in questions:
         question_type = QUESTION_TYPES[question.findtext('Type')]
+        if question_type == Q_TYPE_CUSTOM:
+            process_cs_question(question)
+            cs_question_count += 1
         if question_type == Q_TYPE_MULTICHOICE:
             process_mc_question(question)
             mc_question_count += 1
@@ -117,8 +134,34 @@ def process_questions(intree, base_url, outdir):
             process_tf_question(question)
             tf_question_count += 1
         image_processor.process_images(question, base_url, outdir)
-    logging.info('mc = ' + str(mc_question_count) + ' mr = ' + str(mr_question_count) + ' tf = ' + str(tf_question_count) + ' sa = ' + str(sa_question_count) + ' tot = ' + str((mc_question_count + tf_question_count + sa_question_count)))
+    logging.info('cs = ' + str(cs_question_count) + 'mc = ' + str(mc_question_count) + ' mr = ' + str(mr_question_count) + ' tf = ' + str(tf_question_count) + ' sa = ' + str(sa_question_count) + ' tot = ' + str((cs_question_count + mc_question_count + tf_question_count + sa_question_count + mr_question_count)))
+    with open('custom questions.txt', 'w') as f:
+        f.truncate()
+        for line in __custom_question_titles:
+            f.write(line)
+            f.write("\n")
+            for title in __custom_question_titles[line]:
+                f.write("\t")
+                f.write(title)
+                f.write("\n")
+            f.write("\n")
     return intree
+
+
+def process_cs_question(question):
+    module_title = p2_unicode_utils.to_str(question.xpath('ancestor::Assessment/Title/text()')[0])
+    question_title = p2_unicode_utils.to_str(question.findtext('Title'))
+    add_custom_question_title(question_title, module_title)
+
+
+__custom_question_titles = {}
+
+
+def add_custom_question_title(question_title, module_title):
+    if module_title not in __custom_question_titles:
+        __custom_question_titles[module_title] = []
+    __custom_question_titles[module_title].append(question_title)
+
 
 def process_mc_question(question):
     pp_answers = etree.Element('pp_answers')
@@ -126,6 +169,7 @@ def process_mc_question(question):
         pp_answer = process_mc_answer(question, question_choice)
         pp_answers.append(pp_answer)
     question.insert(0, pp_answers)
+
 
 def process_mc_answer(question, question_choice):
     pp_answer = etree.Element('pp_answer')
@@ -137,8 +181,10 @@ def process_mc_answer(question, question_choice):
     pp_answer = add_mc_value_and_feedback(question, pp_answer, pp_answer.findtext('letter'))
     return pp_answer
 
+
 def process_mr_question(question):
     process_mc_question(question)
+
 
 def process_tf_question(question):
     pp_answers = etree.Element('pp_answers')
@@ -146,6 +192,7 @@ def process_tf_question(question):
         pp_answer = process_tf_answer(question, question_answer)
         pp_answers.append(pp_answer)
     question.insert(0, pp_answers)
+
 
 def process_tf_answer(question, question_answer):
     pp_answer = etree.Element('pp_answer')
@@ -156,6 +203,7 @@ def process_tf_answer(question, question_answer):
     pp_answer = add_tf_response_text(question_answer, pp_answer)
     pp_answer = add_tf_response_type(pp_answer)
     return pp_answer
+
 
 def process_sa_question(question):
     pp_ignore_case = etree.Element('pp_ignore_case')
@@ -171,6 +219,7 @@ def process_sa_question(question):
     question.insert(0, pp_ignore_case)
     question.insert(1, pp_answers)
     question.insert(2, pp_feedback)
+
 
 def is_sa_answer(question_answer):
     return is_sa_element(question_answer, 'Text')

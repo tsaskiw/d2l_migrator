@@ -1,6 +1,8 @@
 import sys, getopt, os.path
 import d2l_migrator
 
+VALID_QUESTION_TYPES = ('all', 'cs', 'mc', 'mr', 'sa', 'tf')
+
 def collect_input(argv):
     infile = ''
     stylesheet = ''
@@ -65,5 +67,4 @@ def dir_doesnt_exist(dir_path):
     return not (os.path.exists(dir_path) and not os.path.isfile(dir_path))
 
 def question_type_not_found(question_type):
-    valid_question_types = ('all', 'mc', 'mr', 'sa', 'tf')
-    return question_type not in valid_question_types
+    return question_type not in VALID_QUESTION_TYPES

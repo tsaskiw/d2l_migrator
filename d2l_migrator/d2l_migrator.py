@@ -30,7 +30,7 @@ def write_outfile(dom, outfile_path):
 
 def print_usage(msg='Usage:'):
     print(msg)
-    print('d2l_migrator.py -i <inputfile> -s <stylesheet> -o <outputdir> -b <baseurl> -q <questiontype>=all [mc, mr, sa, tf], <diffdir>=""')
+    print('d2l_migrator.py -i <inputfile> -s <stylesheet> -o <outputdir> -b <baseurl> -q <questiontype>=all [cs, mc, mr, sa, tf], <diffdir>=""')
 
 if __name__ == "__main__":
     main(sys.argv[1:])
