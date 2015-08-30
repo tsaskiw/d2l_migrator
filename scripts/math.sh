@@ -3,6 +3,7 @@ INFILE='/Users/todds/Otira/Projects/SAIT Test Bank Migration/TLM/tlm_exports/mat
 STYLESHEET='/Users/todds/Otira/Projects/SAIT Test Bank Migration/d2l_migrator/stylesheets/assessments.xsl'
 OUTDIR='/Users/todds/Otira/Projects/SAIT Test Bank Migration/output/math'
 BASEURL='/Users/todds/Otira/Projects/SAIT Test Bank Migration/TLM/tlm_exports/math'
+# acceptible types include: all, tf, mc, mr sa, msa
 QUESTIONTYPE='all'
 DIFFDIR=''
 
