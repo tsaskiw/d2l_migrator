@@ -4,12 +4,8 @@ INFILE='/Users/todds/Otira/Projects/SAIT Test Bank Migration/TLM/tlm_exports/cod
 STYLESHEET='/Users/todds/Otira/Projects/SAIT Test Bank Migration/d2l_migrator/stylesheets/assessments.xsl'
 OUTDIR='/Users/todds/Otira/Projects/SAIT Test Bank Migration/output/code'
 BASEURL='/Users/todds/Otira/Projects/SAIT Test Bank Migration/TLM/tlm_exports/code'
-<<<<<<< HEAD
-QUESTIONTYPE='msa'
-=======
-QUESTIONTYPE='cs'
-DIFFDIR='/Users/todds/Otira/Projects/SAIT Test Bank Migration/d2l/d2l_exports/code/diff'
->>>>>>> develop
+QUESTIONTYPE='all'
+DIFFDIR=''
 
 /Users/todds/Otira/Projects/SAIT\ Test\ Bank\ Migration/d2l_migrator/d2l_migrator/d2l_migrator.py -i "$INFILE" -s "$STYLESHEET" -o "$OUTDIR" -b "$BASEURL" -q "$QUESTIONTYPE" -d "$DIFFDIR"
 
