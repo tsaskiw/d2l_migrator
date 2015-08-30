@@ -1,7 +1,9 @@
 import sys, getopt, os.path
 import d2l_migrator
 
-VALID_QUESTION_TYPES = ('all', 'cs', 'mc', 'mr', 'sa', 'tf')
+
+VALID_QUESTION_TYPES = ('all', 'mc', 'mr', 'msa', 'sa', 'tf')
+
 
 def collect_input(argv):
     infile = ''
@@ -50,7 +52,7 @@ def validate_input(infile, stylesheet, outdir, base_url, question_type, diffdir)
             invalid_params.append(outdir)
     if dir_doesnt_exist(base_url):
         invalid_params.append(base_url)
-    if question_type_not_found(question_type):
+    if question_type not in VALID_QUESTION_TYPES:
         invalid_params.append(question_type)
     if (diffdir and dir_doesnt_exist(diffdir)):
         invalid_params.append(diffdir)
@@ -60,11 +62,14 @@ def validate_input(infile, stylesheet, outdir, base_url, question_type, diffdir)
             print('\n' + param + ' is not valid.')
     return input_is_valid
 
+
 def file_doesnt_exist(file_path):
     return not (os.path.exists(file_path) and os.path.isfile(file_path))
 
+
 def dir_doesnt_exist(dir_path):
     return not (os.path.exists(dir_path) and not os.path.isfile(dir_path))
+
 
 def question_type_not_found(question_type):
     return question_type not in VALID_QUESTION_TYPES

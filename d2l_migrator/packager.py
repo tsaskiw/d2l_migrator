@@ -3,12 +3,15 @@ import sys, os.path, zipfile, shutil, re
 from lxml import etree
 import transformer
 
+
 MANIFEST_STYLESHEET_PATH = '../stylesheets/imsmanifest.xsl'
+
 
 def package_assessments(etree, outdir_path):
     num_assessments = int(etree.xpath('count(//assessment)'))
     for index_of_assessment_to_package in range(1, num_assessments + 1):
         package_assessment(etree, index_of_assessment_to_package, outdir_path)
+
 
 def package_assessment(etree, index_of_assessment_to_package, outdir_path):
     assessment_etree = build_assessment_etree(etree, index_of_assessment_to_package)
@@ -24,6 +27,7 @@ def package_assessment(etree, index_of_assessment_to_package, outdir_path):
     else:
         print 'failed to archive assessment ' + assessment_ident + '. Please create manually'
 
+
 def build_assessment_etree(etree, index_of_assessment_to_package):
     assessment_etree = deepcopy(etree)
     assessments_to_delete = assessment_etree.xpath('//assessment[not(position()=' + str(index_of_assessment_to_package) + ')]')
@@ -34,6 +38,7 @@ def build_assessment_etree(etree, index_of_assessment_to_package):
                 root.remove(assessment_to_delete)
     return assessment_etree
 
+
 def write_assessment_xml_doc(assessment_etree, outdir_path):
     assessment_ident = assessment_etree.getroot().getchildren()[0].get('ident')
     outfile_path = os.path.join(outdir_path, assessment_ident + '.xml')
@@ -41,13 +46,16 @@ def write_assessment_xml_doc(assessment_etree, outdir_path):
         assessment_etree.write(outfile, pretty_print=True)
     return outfile_path
 
+
 def make_temp_dir(name, outdir_path):
     temp_dir_path = os.path.join(outdir_path, name)
     os.mkdir(temp_dir_path)
     return temp_dir_path
 
+
 def delete_temp_dir(temp_dir_path):
     shutil.rmtree(temp_dir_path)
+
 
 def write_manifest_file(assessment_ident, assessment_title, assessment_xml_doc_path, temp_dir_path):
     file_name = os.path.split(assessment_xml_doc_path)[1]
@@ -58,6 +66,7 @@ def write_manifest_file(assessment_ident, assessment_title, assessment_xml_doc_p
         result_etree.write(manifest_file, pretty_print=True)
     return manifest_file_path
 
+
 def build_manifest_etree(assessment_ident, assessment_title, file_name):
     root = etree.Element('root')
     assessment_id_elt = etree.SubElement(root, 'assessment_id')
@@ -67,6 +76,7 @@ def build_manifest_etree(assessment_ident, assessment_title, file_name):
     file_name_elt.text = file_name
     title_elt.text = assessment_title
     return root
+
 
 def write_archive(assessment_xml_doc_path, manifest_file_path, archive_path):
     assessment_file_name = os.path.split(assessment_xml_doc_path)[1]

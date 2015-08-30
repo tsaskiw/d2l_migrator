@@ -1,10 +1,12 @@
 #! /usr/bin/env python
 
-import sys, os.path, logging
+import logging, os.path, sys
 from lxml import etree
-import input_management, transformer, preprocessor, packager
+import input_management, packager, preprocessor, transformer
+
 
 WRITE_INTERMEDIATE_FILES = True
+
 
 def main(argv):
     infile_path, stylesheet_path, outdir_path, base_url, question_type, diffdir = get_input(argv)
@@ -17,6 +19,7 @@ def main(argv):
         write_outfile(transformed_etree, os.path.join(outdir_path, 'out.xml'))
     packager.package_assessments(transformed_etree, outdir_path)
 
+
 def get_input(argv):
     infile_path, stylesheet_path, outdir_path, base_url, question_type, diffdir = input_management.collect_input(argv)
     input_is_valid = input_management.validate_input(infile_path, stylesheet_path, outdir_path, base_url, question_type, diffdir)
@@ -24,13 +27,16 @@ def get_input(argv):
         sys.exit()
     return (infile_path, stylesheet_path, outdir_path, base_url, question_type, diffdir)
 
+
 def write_outfile(dom, outfile_path):
     with open(outfile_path, 'w') as outfile:
         dom.write(outfile, pretty_print=True)
 
+
 def print_usage(msg='Usage:'):
     print(msg)
-    print('d2l_migrator.py -i <inputfile> -s <stylesheet> -o <outputdir> -b <baseurl> -q <questiontype>=all [cs, mc, mr, sa, tf], <diffdir>=""')
+    print('d2l_migrator.py -i <inputfile> -s <stylesheet> -o <outputdir> -b <baseurl> -q <questiontype>=all [mc, mr, msa, sa, tf], <diffdir>=""')
+
 
 if __name__ == "__main__":
     main(sys.argv[1:])

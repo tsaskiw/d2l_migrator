@@ -1,5 +1,6 @@
 from lxml import etree
 
+
 def transform_data(source_etree, stylesheet):
     xslt = etree.parse(stylesheet)
     transform = etree.XSLT(xslt)
