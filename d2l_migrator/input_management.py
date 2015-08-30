@@ -1,9 +1,13 @@
 import sys, getopt, os.path
 import d2l_migrator
 
+<<<<<<< HEAD
 
 VALID_QUESTION_TYPES = ('all', 'mc', 'msa', 'sa', 'tf')
 
+=======
+VALID_QUESTION_TYPES = ('all', 'cs', 'mc', 'mr', 'sa', 'tf')
+>>>>>>> develop
 
 def collect_input(argv):
     infile = ''
@@ -11,12 +15,20 @@ def collect_input(argv):
     outdir = ''
     base_url = ''
     question_type = 'all'
+<<<<<<< HEAD
+=======
+    diffdir = ''
+>>>>>>> develop
     try:
-        opts, args = getopt.getopt(argv,"hi:s:o:b:q:",["ifile=","sfile=","odir=","base_url=", "question_type="])
+        opts, args = getopt.getopt(argv,"hi:s:o:b:q:d:",["ifile=","sfile=","odir=","base_url=", "question_type=", "diffdir="])
     except getopt.GetoptError:
         d2l_migrator.print_usage()
         sys.exit(2)
+<<<<<<< HEAD
     if len(opts) < 4:
+=======
+    if len(opts) < 6:
+>>>>>>> develop
         d2l_migrator.print_usage('Parameter(s) missing. Usage:')
         sys.exit()
     for opt, arg in opts:
@@ -33,10 +45,18 @@ def collect_input(argv):
             base_url = arg
         elif opt in ("-q", "--question_type"):
             question_type = arg
+<<<<<<< HEAD
     return (infile, stylesheet, outdir, base_url, question_type)
 
 
 def validate_input(infile, stylesheet, outdir, base_url, question_type):
+=======
+        elif opt in ("-d", "--diffdir"):
+            diffdir = arg
+    return (infile, stylesheet, outdir, base_url, question_type, diffdir)
+
+def validate_input(infile, stylesheet, outdir, base_url, question_type, diffdir):
+>>>>>>> develop
     input_is_valid = True
     invalid_params = []
     if file_doesnt_exist(infile):
@@ -52,6 +72,8 @@ def validate_input(infile, stylesheet, outdir, base_url, question_type):
         invalid_params.append(base_url)
     if question_type not in VALID_QUESTION_TYPES:
         invalid_params.append(question_type)
+    if (diffdir and dir_doesnt_exist(diffdir)):
+        invalid_params.append(diffdir)
     if len(invalid_params) > 0:
         input_is_valid = False
         for param in invalid_params:
@@ -65,3 +87,9 @@ def file_doesnt_exist(file_path):
 
 def dir_doesnt_exist(dir_path):
     return not (os.path.exists(dir_path) and not os.path.isfile(dir_path))
+<<<<<<< HEAD
+=======
+
+def question_type_not_found(question_type):
+    return question_type not in VALID_QUESTION_TYPES
+>>>>>>> develop
