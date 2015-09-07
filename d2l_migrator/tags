@@ -6,32 +6,27 @@
 !_TAG_PROGRAM_VERSION	5.8	//
 BASE_URL	image_processor.py	/^BASE_URL = None$/;"	v
 IMAGE_OUTDIR_PATH	image_processor.py	/^IMAGE_OUTDIR_PATH = None$/;"	v
+LC_FALSE_VALUES	preprocessor.py	/^LC_FALSE_VALUES = ['f', 'false', 'n']$/;"	v
+LC_TRUE_VALUES	preprocessor.py	/^LC_TRUE_VALUES = ['t', 'true', 'y']$/;"	v
 MANIFEST_STYLESHEET_PATH	packager.py	/^MANIFEST_STYLESHEET_PATH = '..\/stylesheets\/imsmanifest.xsl'$/;"	v
+MSA_TARGET	preprocessor.py	/^MSA_TARGET = 1$/;"	v
 QUESTION	image_processor.py	/^QUESTION = None$/;"	v
 QUESTION_TYPES	preprocessor.py	/^QUESTION_TYPES = {'1': Q_TYPE_MULTICHOICE, '2': Q_TYPE_MULTIRESPONSE, '3': Q_TYPE_SHORTANSWER, '4': Q_TYPE_TRUEFALSE, '6': Q_TYPE_CUSTOM}$/;"	v
 QUESTION_TYPE_NUMBERS	preprocessor.py	/^QUESTION_TYPE_NUMBERS = {name: num for num, name in QUESTION_TYPES.items()}$/;"	v
 Q_TYPE_ALL	preprocessor.py	/^Q_TYPE_ALL = 'ALL'$/;"	v
 Q_TYPE_CUSTOM	preprocessor.py	/^Q_TYPE_CUSTOM = 'CUSTOM'$/;"	v
 Q_TYPE_MULTICHOICE	preprocessor.py	/^Q_TYPE_MULTICHOICE = 'MULTICHOICE'$/;"	v
-Q_TYPE_MULTISHORTANSWER	preprocessor.py	/^Q_TYPE_MULTISHORTANSWER = 'MULTISHORTANSWER'$/;"	v
+Q_TYPE_MULTIRESPONSE	preprocessor.py	/^Q_TYPE_MULTIRESPONSE = 'MULTIRESPONSE'$/;"	v
 Q_TYPE_SHORTANSWER	preprocessor.py	/^Q_TYPE_SHORTANSWER = 'SHORTANSWER'$/;"	v
 Q_TYPE_TRUEFALSE	preprocessor.py	/^Q_TYPE_TRUEFALSE = 'TRUEFALSE'$/;"	v
 TEMP	image_processor.py	/^TEMP = None$/;"	v
 VALID_QUESTION_TYPES	input_management.py	/^VALID_QUESTION_TYPES = ('all', 'mc', 'mr', 'msa', 'sa', 'tf')$/;"	v
 WRITE_INTERMEDIATE_FILES	d2l_migrator.py	/^WRITE_INTERMEDIATE_FILES = True$/;"	v
-__custom_question_titles	preprocessor.py	/^__custom_question_titles = {}$/;"	v
+__msa_question_titles	preprocessor.py	/^__msa_question_titles = {}$/;"	v
 add_answer_elt	preprocessor.py	/^def add_answer_elt(question_choice, pp_answer, src_elt_name, dest_elt_name):$/;"	f
-add_custom_question_title	preprocessor.py	/^def add_custom_question_title(question_title, module_title):$/;"	f
 add_mc_answer_letter	preprocessor.py	/^def add_mc_answer_letter(question_choice, pp_answer):$/;"	f
 add_mc_response_type	preprocessor.py	/^def add_mc_response_type(pp_answer):$/;"	f
 add_mc_value_and_feedback	preprocessor.py	/^def add_mc_value_and_feedback(question, pp_answer, choice_letter):$/;"	f
-add_msa_question_part	preprocessor.py	/^def add_msa_question_part(pp_parts_elt, question_part):$/;"	f
-add_msa_question_part_answer	preprocessor.py	/^def add_msa_question_part_answer(pp_question_part, question_part):$/;"	f
-add_msa_question_part_id	preprocessor.py	/^def add_msa_question_part_id(pp_question_part, question_part):$/;"	f
-add_msa_question_part_ignore_case	preprocessor.py	/^def add_msa_question_part_ignore_case(pp_question_part, question_part):$/;"	f
-add_msa_question_part_is_regex	preprocessor.py	/^def add_msa_question_part_is_regex(question_answer_text, pp_question_part):$/;"	f
-add_msa_question_part_text	preprocessor.py	/^def add_msa_question_part_text(pp_question_part, question_part):$/;"	f
-add_msa_question_parts	preprocessor.py	/^def add_msa_question_parts(question):$/;"	f
 add_sa_answer_text	preprocessor.py	/^def add_sa_answer_text(question_answer, pp_answer):$/;"	f
 add_sa_answer_value	preprocessor.py	/^def add_sa_answer_value(question_answer, pp_answer):$/;"	f
 add_sa_feedback_text	preprocessor.py	/^def add_sa_feedback_text(question_answer, pp_answer):$/;"	f
@@ -79,6 +74,7 @@ getopt	input_management.py	/^import sys, getopt, os.path$/;"	i
 image_processor	preprocessor.py	/^import image_processor$/;"	i
 init_sa_feedback	preprocessor.py	/^def init_sa_feedback():$/;"	f
 input_management	d2l_migrator.py	/^import input_management, packager, preprocessor, transformer$/;"	i
+is_msa_question	preprocessor.py	/^def is_msa_question(question):$/;"	f
 is_sa_answer	preprocessor.py	/^def is_sa_answer(question_answer):$/;"	f
 is_sa_element	preprocessor.py	/^def is_sa_element(question_answer, element_name):$/;"	f
 is_sa_feedback	preprocessor.py	/^def is_sa_feedback(question_answer):$/;"	f
@@ -87,6 +83,7 @@ logging	preprocessor.py	/^import fnmatch, logging, os, sys$/;"	i
 main	d2l_migrator.py	/^def main(argv):$/;"	f
 make_image_outdir	image_processor.py	/^def make_image_outdir(outdir):$/;"	f
 make_temp_dir	packager.py	/^def make_temp_dir(name, outdir_path):$/;"	f
+msa_count	preprocessor.py	/^msa_count = 0$/;"	v
 os	d2l_migrator.py	/^import logging, os.path, sys$/;"	i
 os	image_processor.py	/^import sys, re, os, os.path, shutil, zipfile$/;"	i
 os	input_management.py	/^import sys, getopt, os.path$/;"	i
@@ -118,15 +115,18 @@ process_tf_question	preprocessor.py	/^def process_tf_question(question):$/;"	f
 question_type_not_found	input_management.py	/^def question_type_not_found(question_type):$/;"	f
 re	image_processor.py	/^import sys, re, os, os.path, shutil, zipfile$/;"	i
 re	packager.py	/^import sys, os.path, zipfile, shutil, re$/;"	i
+record_it	preprocessor.py	/^def record_it(question):$/;"	f
 remove_assessments_without_question_type	preprocessor.py	/^def remove_assessments_without_question_type(question_type, source_etree):$/;"	f
 remove_duplicate_questions_from_module	preprocessor.py	/^def remove_duplicate_questions_from_module(module_etree, existing_question_titles):$/;"	f
 remove_duplicate_questions_from_source	preprocessor.py	/^def remove_duplicate_questions_from_source(source_etree, diffdir):$/;"	f
 remove_empty_assessments_from_modules	preprocessor.py	/^def remove_empty_assessments_from_modules(source_etree):$/;"	f
 remove_questions_other_than	preprocessor.py	/^def remove_questions_other_than(question_type, source_etree):$/;"	f
 rename_image_file	image_processor.py	/^def rename_image_file(image_file_path, image_id):$/;"	f
+set_question_subtype	preprocessor.py	/^def set_question_subtype(question, subtype):$/;"	f
 set_up_logging	preprocessor.py	/^def set_up_logging(source_etree):$/;"	f
 shutil	image_processor.py	/^import sys, re, os, os.path, shutil, zipfile$/;"	i
 shutil	packager.py	/^import sys, os.path, zipfile, shutil, re$/;"	i
+skip_question	preprocessor.py	/^def skip_question():$/;"	f
 sys	d2l_migrator.py	/^import logging, os.path, sys$/;"	i
 sys	image_processor.py	/^import sys, re, os, os.path, shutil, zipfile$/;"	i
 sys	input_management.py	/^import sys, getopt, os.path$/;"	i
@@ -141,6 +141,7 @@ update_sa_feedback	preprocessor.py	/^def update_sa_feedback(question_answer, pp_
 validate_input	input_management.py	/^def validate_input(infile, stylesheet, outdir, base_url, question_type, diffdir):$/;"	f
 write_archive	packager.py	/^def write_archive(assessment_xml_doc_path, manifest_file_path, archive_path):$/;"	f
 write_assessment_xml_doc	packager.py	/^def write_assessment_xml_doc(assessment_etree, outdir_path):$/;"	f
+write_it	preprocessor.py	/^def write_it():$/;"	f
 write_manifest_file	packager.py	/^def write_manifest_file(assessment_ident, assessment_title, assessment_xml_doc_path, temp_dir_path):$/;"	f
 write_outfile	d2l_migrator.py	/^def write_outfile(dom, outfile_path):$/;"	f
 zipfile	image_processor.py	/^import sys, re, os, os.path, shutil, zipfile$/;"	i

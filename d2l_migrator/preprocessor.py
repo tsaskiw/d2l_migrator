@@ -140,31 +140,31 @@ def process_questions(intree, base_url, outdir):
         image_processor.process_images(question, base_url, outdir)
 
     logging.info('cs = ' + str(cs_question_count) + 'mc = ' + str(mc_question_count) + ' mr = ' + str(mr_question_count) + ' tf = ' + str(tf_question_count) + ' sa = ' + str(sa_question_count) + ' tot = ' + str((cs_question_count + mc_question_count + tf_question_count + sa_question_count + mr_question_count)))
-
-#    with open('custom questions.txt', 'w') as f:
-#        f.truncate()
-#        for line in __custom_question_titles:
-#            f.write(line)
-#            f.write("\n")
-#            for title in __custom_question_titles[line]:
-#                f.write("\t")
-#                f.write(title)
-#                f.write("\n")
-#            f.write("\n")
+    write_it()
     return intree
 
 
+def write_it():
+    with open('msa questions.txt', 'w') as f:
+        f.truncate()
+        for line in __msa_question_titles:
+            f.write(line)
+            f.write("\n")
+            for title in __msa_question_titles[line]:
+                f.write("\t")
+                f.write(title)
+                f.write("\n")
+            f.write("\n")
+
+
 def process_cs_question(question):
-    module_title = p2_unicode_utils.to_str(question.xpath('ancestor::Assessment/Title/text()')[0])
-    question_title = p2_unicode_utils.to_str(question.findtext('Title'))
-#    add_custom_question_title(question_title, module_title)
+    # identify subtype
+    if is_msa_question(question):
+        process_msa_question(question)
 
 
-#__custom_question_titles = {}
-#def add_custom_question_title(question_title, module_title):
-#    if module_title not in __custom_question_titles:
-#        __custom_question_titles[module_title] = []
-#    __custom_question_titles[module_title].append(question_title)
+def is_msa_question(question):
+    return not question.findtext('ParserExpression')
 
 
 def process_mc_question(question):
@@ -186,10 +186,67 @@ def process_mc_answer(question, question_choice):
     return pp_answer
 
 
-#def process_msa_question(question):
-## use D2L fill in the blanks type
-## main portion, then text-blank pairs, text contains empty p = new line
-#
+def process_msa_question(question):
+# use D2L fill in the blanks type
+# main portion, then text-blank pairs, text contains empty p = new line
+    if skip_question():
+        return
+    record_it(question)
+    subtype = '1'
+    set_question_subtype(question, subtype)
+
+    question_parts = question.xpath('Parts/QuestionPart')
+    feedback = []
+    for question_part in question_parts:
+        answers = []
+        question_part_number = question_part.findtext('Number')
+        for question_answer in question_part.xpath('Answers/QuestionAnswer'):
+            if is_sa_answer(question_answer):
+                answers.append(question_answer.findtext('Text'))
+            elif is_sa_feedback(question_answer):
+                fb = '<p>'
+                fb += question_part_number
+                fb += ': '
+                fb += question_answer.findtext('Feedback')
+                fb += '</p>'
+                feedback.append(fb)
+        pp_answers = etree.Element('pp_answers')
+        pp_answers.text = '|'.join(answers)
+        question_part.insert(0, pp_answers)
+        pp_value = etree.Element('pp_value')
+        value = 100.0 / len(question_parts)
+        pp_value.text = str(round(value, 9))
+        question_part.insert(1, pp_value)
+# + CHECK QUESTION GRADING SETUP SO EACH ANSWER GET A MARK
+    pp_feedback = etree.Element('pp_feedback')
+    pp_feedback.text = ''.join(feedback)
+    question.insert(0, pp_feedback)
+
+
+def set_question_subtype(question, subtype):
+    question_type = question.find('Type')
+    question_type.text += '.'
+    question_type.text += subtype
+
+
+msa_count = 0
+MSA_TARGET = 1
+def skip_question():
+    global msa_count
+    global MSA_TARGET
+    msa_count += 1
+    return msa_count > MSA_TARGET
+
+
+__msa_question_titles = {}
+def record_it(question):
+    module_title = p2_unicode_utils.to_str(question.xpath('ancestor::Assessment/Title/text()')[0])
+    question_title = p2_unicode_utils.to_str(question.findtext('Title'))
+    if module_title not in __msa_question_titles:
+        __msa_question_titles[module_title] = []
+    __msa_question_titles[module_title].append(question_title)
+
+
 #    add_msa_question_parts(question)
 ##    pp_ignore_case = etree.Element('pp_ignore_case')
 ##    pp_ignore_case.text = get_ignore_case(question)
