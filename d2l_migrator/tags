@@ -5,24 +5,28 @@
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.8	//
 BASE_URL	image_processor.py	/^BASE_URL = None$/;"	v
+CUSTOM_TARGET	preprocessor.py	/^CUSTOM_TARGET = 1$/;"	v
 IMAGE_OUTDIR_PATH	image_processor.py	/^IMAGE_OUTDIR_PATH = None$/;"	v
 LC_FALSE_VALUES	preprocessor.py	/^LC_FALSE_VALUES = ['f', 'false', 'n']$/;"	v
 LC_TRUE_VALUES	preprocessor.py	/^LC_TRUE_VALUES = ['t', 'true', 'y']$/;"	v
 MANIFEST_STYLESHEET_PATH	packager.py	/^MANIFEST_STYLESHEET_PATH = '..\/stylesheets\/imsmanifest.xsl'$/;"	v
-MSA_TARGET	preprocessor.py	/^MSA_TARGET = 1$/;"	v
 QUESTION	image_processor.py	/^QUESTION = None$/;"	v
-QUESTION_TYPES	preprocessor.py	/^QUESTION_TYPES = {'1': Q_TYPE_MULTICHOICE, '2': Q_TYPE_MULTIRESPONSE, '3': Q_TYPE_SHORTANSWER, '4': Q_TYPE_TRUEFALSE, '6': Q_TYPE_CUSTOM}$/;"	v
-QUESTION_TYPE_NUMBERS	preprocessor.py	/^QUESTION_TYPE_NUMBERS = {name: num for num, name in QUESTION_TYPES.items()}$/;"	v
+Q_TYPES	preprocessor.py	/^Q_TYPES = {$/;"	v
 Q_TYPE_ALL	preprocessor.py	/^Q_TYPE_ALL = 'ALL'$/;"	v
+Q_TYPE_COMPOUND	preprocessor.py	/^Q_TYPE_COMPOUND = 'COMPOUND'$/;"	v
 Q_TYPE_CUSTOM	preprocessor.py	/^Q_TYPE_CUSTOM = 'CUSTOM'$/;"	v
 Q_TYPE_MULTICHOICE	preprocessor.py	/^Q_TYPE_MULTICHOICE = 'MULTICHOICE'$/;"	v
 Q_TYPE_MULTIRESPONSE	preprocessor.py	/^Q_TYPE_MULTIRESPONSE = 'MULTIRESPONSE'$/;"	v
+Q_TYPE_MULTISHORTANSWER	preprocessor.py	/^Q_TYPE_MULTISHORTANSWER = 'MULTISHORTANSWER'$/;"	v
+Q_TYPE_NUMBER	preprocessor.py	/^Q_TYPE_NUMBER = 'q_type_number'$/;"	v
+Q_TYPE_PARSEREXPRESSION	preprocessor.py	/^Q_TYPE_PARSEREXPRESSION = 'PARSEREXPRESSION'$/;"	v
 Q_TYPE_SHORTANSWER	preprocessor.py	/^Q_TYPE_SHORTANSWER = 'SHORTANSWER'$/;"	v
+Q_TYPE_SYMBOL	preprocessor.py	/^Q_TYPE_SYMBOL = 'q_type_symbol'$/;"	v
 Q_TYPE_TRUEFALSE	preprocessor.py	/^Q_TYPE_TRUEFALSE = 'TRUEFALSE'$/;"	v
 TEMP	image_processor.py	/^TEMP = None$/;"	v
-VALID_QUESTION_TYPES	input_management.py	/^VALID_QUESTION_TYPES = ('all', 'mc', 'mr', 'msa', 'sa', 'tf')$/;"	v
+VALID_QUESTION_TYPES	input_management.py	/^VALID_QUESTION_TYPES = ('all', 'cpd', 'mc', 'mr', 'msa', 'sa', 'tf')$/;"	v
 WRITE_INTERMEDIATE_FILES	d2l_migrator.py	/^WRITE_INTERMEDIATE_FILES = True$/;"	v
-__msa_question_titles	preprocessor.py	/^__msa_question_titles = {}$/;"	v
+__custom_question_titles	preprocessor.py	/^__custom_question_titles = {}$/;"	v
 add_answer_elt	preprocessor.py	/^def add_answer_elt(question_choice, pp_answer, src_elt_name, dest_elt_name):$/;"	f
 add_mc_answer_letter	preprocessor.py	/^def add_mc_answer_letter(question_choice, pp_answer):$/;"	f
 add_mc_response_type	preprocessor.py	/^def add_mc_response_type(pp_answer):$/;"	f
@@ -45,13 +49,21 @@ build_assessment_etree	packager.py	/^def build_assessment_etree(etree, index_of_
 build_manifest_etree	packager.py	/^def build_manifest_etree(assessment_ident, assessment_title, file_name):$/;"	f
 check_tf_answer_order	preprocessor.py	/^def check_tf_answer_order(pp_answers):$/;"	f
 collect_input	input_management.py	/^def collect_input(argv):$/;"	f
+contains_multiple_part_types	preprocessor.py	/^def contains_multiple_part_types(question):$/;"	f
+contains_multiple_short_answer_parts	preprocessor.py	/^def contains_multiple_short_answer_parts(question):$/;"	f
+contains_parser_expression	preprocessor.py	/^def contains_parser_expression(question):$/;"	f
+contains_single_part_type	preprocessor.py	/^def contains_single_part_type(question):$/;"	f
+convert_all_question_parts_to_sa	preprocessor.py	/^def convert_all_question_parts_to_sa(question):$/;"	f
+convert_cpd_question_to_msa	preprocessor.py	/^def convert_cpd_question_to_msa(question):$/;"	f
 copy_image_file	image_processor.py	/^def copy_image_file(image_id):$/;"	f
 copy_image_file_and_replace_img_src	image_processor.py	/^def copy_image_file_and_replace_img_src(image_text_match):$/;"	f
 copy_image_files_and_replace_img_srcs	image_processor.py	/^def copy_image_files_and_replace_img_srcs(question_text_elt):$/;"	f
+custom_count	preprocessor.py	/^custom_count = 0$/;"	v
 d2l_migrator	input_management.py	/^import d2l_migrator$/;"	i
 deepcopy	packager.py	/^from copy import deepcopy$/;"	i
 delete_temp_dir	packager.py	/^def delete_temp_dir(temp_dir_path):$/;"	f
 dir_doesnt_exist	input_management.py	/^def dir_doesnt_exist(dir_path):$/;"	f
+doesnt_contain_parser_expression	preprocessor.py	/^def doesnt_contain_parser_expression(question):$/;"	f
 etree	d2l_migrator.py	/^from lxml import etree$/;"	i
 etree	image_processor.py	/^from lxml import etree$/;"	i
 etree	packager.py	/^from lxml import etree$/;"	i
@@ -61,20 +73,28 @@ file_doesnt_exist	input_management.py	/^def file_doesnt_exist(file_path):$/;"	f
 find_default_feedback	preprocessor.py	/^def find_default_feedback(question):$/;"	f
 find_existing_question_titles	preprocessor.py	/^def find_existing_question_titles(diffdir):$/;"	f
 find_question_answer_elt_by_text_value	preprocessor.py	/^def find_question_answer_elt_by_text_value(question, text_val):$/;"	f
+find_subtype_number_for_question	preprocessor.py	/^def find_subtype_number_for_question(custom_question):$/;"	f
 fnmatch	preprocessor.py	/^import fnmatch, logging, os, sys$/;"	i
 get_existing_file_paths	preprocessor.py	/^def get_existing_file_paths(diffdir):$/;"	f
 get_ignore_case	preprocessor.py	/^def get_ignore_case(question):$/;"	f
 get_image_file_name_by_asset_id	image_processor.py	/^def get_image_file_name_by_asset_id(asset_id):$/;"	f
 get_input	d2l_migrator.py	/^def get_input(argv):$/;"	f
 get_question_text_elt	image_processor.py	/^def get_question_text_elt(question):$/;"	f
-get_question_type_symbol	preprocessor.py	/^def get_question_type_symbol(question_type):$/;"	f
+get_question_type_name_for_number	preprocessor.py	/^def get_question_type_name_for_number(question_type_number_as_string):$/;"	f
+get_question_type_name_for_property	preprocessor.py	/^def get_question_type_name_for_property(property_type, property_value):$/;"	f
+get_question_type_name_for_symbol	preprocessor.py	/^def get_question_type_name_for_symbol(question_type_symbol):$/;"	f
+get_question_type_number_as_string_for_name	preprocessor.py	/^def get_question_type_number_as_string_for_name(question_type_name):$/;"	f
+get_question_types_or_string	preprocessor.py	/^def get_question_types_or_string():$/;"	f
 get_tf_text_for_blank_value	preprocessor.py	/^def get_tf_text_for_blank_value(question_answer):$/;"	f
 get_tf_text_inverse_of	preprocessor.py	/^def get_tf_text_inverse_of(tf_answer_text):$/;"	f
 getopt	input_management.py	/^import sys, getopt, os.path$/;"	i
 image_processor	preprocessor.py	/^import image_processor$/;"	i
 init_sa_feedback	preprocessor.py	/^def init_sa_feedback():$/;"	f
 input_management	d2l_migrator.py	/^import input_management, packager, preprocessor, transformer$/;"	i
-is_msa_question	preprocessor.py	/^def is_msa_question(question):$/;"	f
+is_compound_question	preprocessor.py	/^def is_compound_question(question):$/;"	f
+is_float	preprocessor.py	/^def is_float(val):$/;"	f
+is_multiple_short_answer_question	preprocessor.py	/^def is_multiple_short_answer_question(question):$/;"	f
+is_parser_expression_question	preprocessor.py	/^def is_parser_expression_question(question):$/;"	f
 is_sa_answer	preprocessor.py	/^def is_sa_answer(question_answer):$/;"	f
 is_sa_element	preprocessor.py	/^def is_sa_element(question_answer, element_name):$/;"	f
 is_sa_feedback	preprocessor.py	/^def is_sa_feedback(question_answer):$/;"	f
@@ -83,7 +103,6 @@ logging	preprocessor.py	/^import fnmatch, logging, os, sys$/;"	i
 main	d2l_migrator.py	/^def main(argv):$/;"	f
 make_image_outdir	image_processor.py	/^def make_image_outdir(outdir):$/;"	f
 make_temp_dir	packager.py	/^def make_temp_dir(name, outdir_path):$/;"	f
-msa_count	preprocessor.py	/^msa_count = 0$/;"	v
 os	d2l_migrator.py	/^import logging, os.path, sys$/;"	i
 os	image_processor.py	/^import sys, re, os, os.path, shutil, zipfile$/;"	i
 os	input_management.py	/^import sys, getopt, os.path$/;"	i
@@ -100,13 +119,14 @@ path	input_management.py	/^import sys, getopt, os.path$/;"	i
 path	packager.py	/^import sys, os.path, zipfile, shutil, re$/;"	i
 preprocessor	d2l_migrator.py	/^import input_management, packager, preprocessor, transformer$/;"	i
 print_usage	d2l_migrator.py	/^def print_usage(msg='Usage:'):$/;"	f
-process	preprocessor.py	/^def process(infile_path, base_url, outdir, question_type, diffdir):$/;"	f
-process_cs_question	preprocessor.py	/^def process_cs_question(question):$/;"	f
+process	preprocessor.py	/^def process(infile_path, base_url, outdir, question_type_symbol, diffdir):$/;"	f
+process_cpd_question	preprocessor.py	/^def process_cpd_question(question):$/;"	f
 process_images	image_processor.py	/^def process_images(question, base_url, outdir):$/;"	f
 process_mc_answer	preprocessor.py	/^def process_mc_answer(question, question_choice):$/;"	f
 process_mc_question	preprocessor.py	/^def process_mc_question(question):$/;"	f
 process_mr_question	preprocessor.py	/^def process_mr_question(question):$/;"	f
 process_msa_question	preprocessor.py	/^def process_msa_question(question):$/;"	f
+process_pe_question	preprocessor.py	/^def process_pe_question(question):$/;"	f
 process_questions	preprocessor.py	/^def process_questions(intree, base_url, outdir):$/;"	f
 process_sa_answer	preprocessor.py	/^def process_sa_answer(question_answer):$/;"	f
 process_sa_question	preprocessor.py	/^def process_sa_question(question):$/;"	f
@@ -119,10 +139,14 @@ record_it	preprocessor.py	/^def record_it(question):$/;"	f
 remove_assessments_without_question_type	preprocessor.py	/^def remove_assessments_without_question_type(question_type, source_etree):$/;"	f
 remove_duplicate_questions_from_module	preprocessor.py	/^def remove_duplicate_questions_from_module(module_etree, existing_question_titles):$/;"	f
 remove_duplicate_questions_from_source	preprocessor.py	/^def remove_duplicate_questions_from_source(source_etree, diffdir):$/;"	f
+remove_empty_assessments	d2l_migrator.py	/^def remove_empty_assessments(transformed_etree):$/;"	f
 remove_empty_assessments_from_modules	preprocessor.py	/^def remove_empty_assessments_from_modules(source_etree):$/;"	f
 remove_questions_other_than	preprocessor.py	/^def remove_questions_other_than(question_type, source_etree):$/;"	f
 rename_image_file	image_processor.py	/^def rename_image_file(image_file_path, image_id):$/;"	f
-set_question_subtype	preprocessor.py	/^def set_question_subtype(question, subtype):$/;"	f
+replace_tf_question_part_with_sa	preprocessor.py	/^def replace_tf_question_part_with_sa(question_part):$/;"	f
+set_child_element_text	preprocessor.py	/^def set_child_element_text(parent_elt, child_elt_name, text_value):$/;"	f
+set_question_subtypes	preprocessor.py	/^def set_question_subtypes(source_etree):$/;"	f
+set_question_type	preprocessor.py	/^def set_question_type(custom_question, subtype_number):$/;"	f
 set_up_logging	preprocessor.py	/^def set_up_logging(source_etree):$/;"	f
 shutil	image_processor.py	/^import sys, re, os, os.path, shutil, zipfile$/;"	i
 shutil	packager.py	/^import sys, os.path, zipfile, shutil, re$/;"	i
