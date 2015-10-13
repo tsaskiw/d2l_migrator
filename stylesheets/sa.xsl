@@ -25,45 +25,48 @@
             </qti_metadatafield>
           </qtimetadata>
         </itemmetadata>
-        <presentation>
-            <flow>
-                <material>
-                    <mattext texttype="text/html">&lt;p&gt;<xsl:value-of select="Parts/QuestionPart/Text" />&lt;/p&gt;</mattext>
-                </material>
-                <response_str ident="TLM_QUES_{ID}_STR" rcardinality="Single">
-                    <render_fib rows="1" columns="40" prompt="Box" fibtype="String">
-                        <response_label ident="TLM_QUES_{ID}_ANS" />
-                    </render_fib>
-                </response_str>
-            </flow>
-        </presentation>
-        <resprocessing>
-            <xsl:for-each select="pp_answers/pp_answer">
-                <xsl:variable name="resp_ident" select="concat('TLM_QUES_', ancestor::Question/child::ID, '_ANS')" />
+        <xsl:for-each select="Parts/QuestionPart">
+            <presentation>
+                <flow>
+                    <material>
+                        <mattext texttype="text/html">&lt;p&gt;<xsl:value-of select="Text" />&lt;/p&gt;</mattext>
+                        <response_str ident="TLM_QUES_{ID}_STR" rcardinality="Single">
+                            <render_fib rows="1" columns="40" prompt="Box" fibtype="String">
+                                <response_label ident="TLM_QUES_{ID}_ANS" />
+                            </render_fib>
+                        </response_str>
+                    </material>
+                </flow>
+            </presentation>
+            <resprocessing>
+                <outcomes>
+                    <decvar type="Integer" minvalue="0" maxvalue="100" varname="Blank_1"/>
+                </outcomes>
+            <xsl:for-each select="Answers/QuestionAnswer[Value > 0]">
+                <xsl:variable name="resp_ident" select="ID" />
                 <respcondition>
                     <conditionvar>
-                        <xsl:variable name="ignore_case" select="ancestor::Question/child::pp_ignore_case" />
-                        <xsl:if test="$ignore_case='False'">
-                            <varequal respident="{$resp_ident}" case="yes">
-                                <xsl:value-of select="text" />
-                            </varequal>
-                        </xsl:if>
-                        <xsl:if test="$ignore_case='True'">
-                            <varequal respident="{$resp_ident}" case="no">
-                                <xsl:value-of select="text" />
-                            </varequal>
-                        </xsl:if>
+                        <xsl:variable name="ignore_case">
+                            <xsl:choose>
+                                <xsl:when test="ancestor::QuestionPart/ShortAnsIgnoreCase='True'">no</xsl:when>
+                                <xsl:otherwise>yes</xsl:otherwise>
+                            </xsl:choose>
+                        </xsl:variable>
+                        <varequal respident="{$resp_ident}" case="{$ignore_case}"><xsl:value-of select="Text" /></varequal>
                     </conditionvar>
-                    <setvar action="Set"><xsl:value-of select="value * 100"/>.000000000</setvar>
+                    <setvar action="Set"><xsl:value-of select="Value"/></setvar>
                 </respcondition>
             </xsl:for-each>
-        </resprocessing>
-        <xsl:for-each select="pp_feedback">
-            <itemfeedback ident="{$ques_label}">
-                <material>
-                    <mattext texttype="text/html">&lt;p&gt;<xsl:value-of select="text"/>&lt;/p&gt;</mattext>
-                </material>
-            </itemfeedback>
+                <itemfeedback ident="{$ques_label}_FB">
+                    <material>
+                        <mattext texttype="text/html">
+            <xsl:for-each select="Answers/QuestionAnswer[Value = 0]">
+                <xsl:if test="not(Feedback = '')">&lt;p&gt;<xsl:value-of select="Feedback"/>&lt;/p&gt;</xsl:if>
+            </xsl:for-each>
+                        </mattext>
+                    </material>
+                </itemfeedback>
+            </resprocessing>
         </xsl:for-each>
     </item>
 </xsl:template>

@@ -107,6 +107,7 @@ def contains_multiple_part_types(question):
     unique_question_part_types = list(set(question_part_types))
     return len(unique_question_part_types) > 1
 
+
 def contains_single_part_type(question):
     return not contains_multiple_part_types(question)
 
@@ -223,7 +224,12 @@ def process_questions(intree, base_url, outdir):
             logging.info(question.findtext('Title'))
             logging.info(question.findtext('Type'))
         image_processor.process_images(question, base_url, outdir)
+    log_converted_questions(cpd_question_count, mc_question_count, mr_question_count, msa_question_count, pe_question_count, sa_question_count, tf_question_count, udf_question_count)
+    write_it()
+    return intree
 
+
+def log_converted_questions(cpd_question_count, mc_question_count, mr_question_count, msa_question_count, pe_question_count, sa_question_count, tf_question_count, udf_question_count):
     logging.info("Converted:")
     logging.info('cpd = ' + str(cpd_question_count))
     logging.info('mc = ' + str(mc_question_count))
@@ -234,9 +240,7 @@ def process_questions(intree, base_url, outdir):
     logging.info('sa = ' + str(tf_question_count))
     total_question_count = cpd_question_count + mc_question_count + mr_question_count + msa_question_count + pe_question_count + sa_question_count + tf_question_count
     logging.info('total = ' + str(total_question_count))
-    write_it()
     logging.info("udf: " + str(udf_question_count))
-    return intree
 
 
 def get_question_type_name_for_number(question_type_number_as_string):
@@ -275,19 +279,6 @@ def get_question_types_or_string():
             q_types_or_string += 'Type='
             q_types_or_string += q_type_number_as_string
     return q_types_or_string
-
-
-def write_it():
-    with open('custom questions.txt', 'w') as f:
-        f.truncate()
-        for line in __custom_question_titles:
-            f.write(line)
-            f.write("\n")
-            for title in __custom_question_titles[line]:
-                f.write("\t")
-                f.write(title)
-                f.write("\n")
-            f.write("\n")
 
 
 def process_mc_question(question):
@@ -330,80 +321,93 @@ def process_msa_question(question):
         question_part.insert(0, pp_answers)
         pp_value = etree.Element('pp_value')
         value = 100.0 / len(question_parts)
-        pp_value.text = str(round(value, 9))
+        pp_value.text = "{:13.10f}".format(value)
         question_part.insert(1, pp_value)
-# + CHECK QUESTION GRADING SETUP SO EACH ANSWER GET A MARK
     pp_feedback = etree.Element('pp_feedback')
     pp_feedback.text = ''.join(feedback)
     question.insert(0, pp_feedback)
 
 
 def process_cpd_question(question):
-    if skip_question():
+    if skip_question(500):
         return
-    record_it(question)
+    else:
+        record_question(question)
     convert_cpd_question_to_msa(question)
 
 
 def convert_cpd_question_to_msa(question):
-    question.find('Type').text = Q_TYPES[Q_TYPE_MULTISHORTANSWER][Q_TYPE_NUMBER]
+    set_question_type_to_msa(question)
     convert_all_question_parts_to_sa(question)
     process_msa_question(question)
+
+
+def set_question_type_to_msa(question):
+    question.find('Type').text = Q_TYPES[Q_TYPE_MULTISHORTANSWER][Q_TYPE_NUMBER]
 
 
 def convert_all_question_parts_to_sa(question):
     question_parts = question.xpath('Parts/QuestionPart')
     for question_part in question_parts:
-        q_part_type = question_part.findtext('Type')
-        if q_part_type == Q_TYPES[Q_TYPE_SHORTANSWER][Q_TYPE_NUMBER]:
+        if is_sa_question_part(question_part):
             pass
-        elif q_part_type == Q_TYPES[Q_TYPE_TRUEFALSE][Q_TYPE_NUMBER]:
+        elif is_tf_question_part(question_part):
             replace_tf_question_part_with_sa(question_part)
         else:
-            print('q part type not found')
+            print('q part type not found', question.findtext('Title'))
 
-#    question_parts = question.xpath('Parts/QuestionPart')
-#    feedback = []
-#    for question_part in question_parts:
-#        answers = []
-#        question_part_number = question_part.findtext('Number')
-#        for question_answer in question_part.xpath('Answers/QuestionAnswer'):
-#            if is_sa_answer(question_answer):
-#                answers.append(question_answer.findtext('Text'))
-#            elif is_sa_feedback(question_answer):
-#                fb = '<p>'
-#                fb += question_part_number
-#                fb += ': '
-#                fb += question_answer.findtext('Feedback')
-#                fb += '</p>'
-#                feedback.append(fb)
-#        pp_answers = etree.Element('pp_answers')
-#        pp_answers.text = '|'.join(answers)
-#        question_part.insert(0, pp_answers)
-#        pp_value = etree.Element('pp_value')
-#        value = 100.0 / len(question_parts)
-#        pp_value.text = str(round(value, 9))
-#        question_part.insert(1, pp_value)
-## + CHECK QUESTION GRADING SETUP SO EACH ANSWER GET A MARK
-#    pp_feedback = etree.Element('pp_feedback')
-#    pp_feedback.text = ''.join(feedback)
-#    question.insert(0, pp_feedback)
+
+def is_sa_question_part(question_part):
+    return is_question_part_type(question_part, Q_TYPE_SHORTANSWER)
+
+
+def is_tf_question_part(question_part):
+    return is_question_part_type(question_part, Q_TYPE_TRUEFALSE)
+
+
+def is_question_part_type(question_part, question_part_type):
+    q_part_type = question_part.findtext('Type')
+    return q_part_type == Q_TYPES[question_part_type][Q_TYPE_NUMBER]
 
 
 def replace_tf_question_part_with_sa(question_part):
-    set_child_element_text(question_part, 'ShortAnsIgnoreCase', 'False')
+    replace_tf_properties_with_sa(question_part)
+    insert_instruction(question_part)
+    replace_tf_answer_elts_with_sa(question_part)
+    remove_choices(question_part)
+
+
+def replace_tf_properties_with_sa(question_part):
+    set_child_element_text(question_part, 'ShortAnsIgnoreCase', 'True')
     set_child_element_text(question_part, 'ChoicesType', '0')
     set_child_element_text(question_part, 'Type', '3')
-    question_answer_elt_1 = question_part.xpath('Answers/QuestionAnswer[Value=1]')[0]
-    answer_text = question_answer_elt_1.findtext('Text')
-    question_answer_elt_2 = question_part.xpath('Answers/QuestionAnswer[Value=0]')[0]
-    fb_text = question_answer_elt_2.findtext('Feedback')
-    set_child_element_text(question_answer_elt_1, 'Value', '1')
-    set_child_element_text(question_answer_elt_1, 'Text', answer_text)
-    set_child_element_text(question_answer_elt_1, 'Feedback', '')
-    set_child_element_text(question_answer_elt_2, 'Value', '0')
-    set_child_element_text(question_answer_elt_2, 'Text', '')
-    set_child_element_text(question_answer_elt_2, 'Feedback', fb_text)
+    pp_tf_flag_elt = etree.Element('pp_is_tf')
+    pp_tf_flag_elt.text = 'True'
+    question_part.insert(0, pp_tf_flag_elt)
+
+
+def replace_tf_answer_elts_with_sa(question_part):
+    replace_correct_tf_answer_elts_with_sa(question_part)
+    replace_incorrect_tf_answer_elts_with_sa(question_part)
+
+
+def replace_correct_tf_answer_elts_with_sa(question_part):
+    correct_answer_elt = question_part.xpath('Answers/QuestionAnswer[Value=1]')[0]
+    answer_text = correct_answer_elt.findtext('Text')
+    set_child_element_text(correct_answer_elt, 'Value', '1')
+    set_child_element_text(correct_answer_elt, 'Text', answer_text)
+    set_child_element_text(correct_answer_elt, 'Feedback', '')
+
+
+def replace_incorrect_tf_answer_elts_with_sa(question_part):
+    incorrect_answer_elt = question_part.xpath('Answers/QuestionAnswer[Value=0]')[0]
+    fb_text = incorrect_answer_elt.findtext('Feedback')
+    set_child_element_text(incorrect_answer_elt, 'Value', '0')
+    set_child_element_text(incorrect_answer_elt, 'Text', '')
+    set_child_element_text(incorrect_answer_elt, 'Feedback', fb_text)
+
+
+def remove_choices(question_part):
     for sub in question_part.iterchildren('Choices'):
         question_part.remove(sub)
 
@@ -412,25 +416,37 @@ def set_child_element_text(parent_elt, child_elt_name, text_value):
     parent_elt.find(child_elt_name).text = text_value
 
 
+def insert_instruction(question_part):
+    text_elt = question_part.find('Text')
+    instruction = "['t'=True 'f'=False]"
+    if text_elt is not None:
+        text_elt.text += instruction
+
+
 def process_pe_question(question):
     pass
 
 
+#insert block below in function
+#    if skip_question(num):
+#        return
+#    else:
+#        record_question(question)
 custom_count = 0
-CUSTOM_TARGET = 1
-def skip_question():
+def skip_question(num_questions):
     global custom_count
-    global CUSTOM_TARGET
     custom_count += 1
-    return custom_count > CUSTOM_TARGET
+    return custom_count > num_questions
 
 
 __custom_question_titles = {}
-def record_it(question):
+def record_question(question):
     count = 0
     for titles in __custom_question_titles:
         count += len(__custom_question_titles[titles])
     module_title = p2_unicode_utils.to_str(question.xpath('ancestor::Assessment/Title/text()')[0])
+    module_title += '-'
+    module_title += p2_unicode_utils.to_str(question.xpath('ancestor::Assessment/ID/text()')[0])
     question_title = p2_unicode_utils.to_str(question.findtext('Title'))
     question_title += ' : '
     question_title += str(count + 1)
@@ -440,80 +456,19 @@ def record_it(question):
     __custom_question_titles[module_title].append(question_title)
 
 
-#    add_msa_question_parts(question)
-##    pp_ignore_case = etree.Element('pp_ignore_case')
-##    pp_ignore_case.text = get_ignore_case(question)
-##    pp_answers = etree.Element('pp_answers')
-##    pp_feedback = init_sa_feedback()
-##    for question_answer in question.xpath('Parts/QuestionPart/Answers/QuestionAnswer'):
-##        if is_sa_answer(question_answer):
-##            answer = process_sa_answer(question_answer)
-##            pp_answers.append(answer)
-##        elif is_sa_feedback(question_answer):
-##            update_sa_feedback(question_answer, pp_feedback)
-##    question.insert(0, pp_ignore_case)
-##    question.insert(1, pp_answers)
-##    question.insert(2, pp_feedback)
-#
-#
-#def add_msa_question_parts(question):
-#    pp_parts = etree.Element('pp_parts')
-#    for question_part in question.xpath('Parts/QuestionPart'):
-#        add_msa_question_part(pp_parts, question_part)
-#    question.insert(0, pp_parts)
-#
-#
-#def add_msa_question_part(pp_parts_elt, question_part):
-#    pp_question_part = etree.Element('pp_question_part')
-#    add_msa_question_part_id(pp_question_part, question_part)
-#    add_msa_question_part_text(pp_question_part, question_part)
-#    add_msa_question_part_ignore_case(pp_question_part, question_part)
-#    add_msa_question_part_answer(pp_question_part, question_part)
-#    pp_parts_elt.append(pp_question_part)
-#
-#
-#def add_msa_question_part_id(pp_question_part, question_part):
-#    pp_id = etree.Element('pp_id')
-#    pp_id.text = question_part.findtext('ID')
-#    pp_question_part.append(pp_id)
-#
-#
-#def add_msa_question_part_text(pp_question_part, question_part):
-#    pp_text = etree.Element('pp_text')
-#    pp_text.text = question_part.findtext('Text')
-#    pp_question_part.append(pp_text)
-#
-#
-#def add_msa_question_part_ignore_case(pp_question_part, question_part):
-#    pp_ignore_case = etree.Element('pp_ignore_case')
-#    pp_ignore_case.text = question_part.findtext('ShortAnsIgnoreCase')
-#    pp_question_part.append(pp_ignore_case)
-#
-#
-#def add_msa_question_part_answer(pp_question_part, question_part):
-#    pp_answer = etree.Element('pp_answer')
-#    question_answer_text = []
-#    feedback_text = []
-#    for question_answer in question_part.xpath('Answers/QuestionAnswer'):
-#        qtext = question_answer.findtext('Text')
-#        ftext = question_answer.findtext('Feedback')
-#        if qtext:
-#            question_answer_text.append(qtext)
-#        elif ftext:
-#            feedback_text.append(ftext)
-#    pp_answer.text = "|".join(question_answer_text)
-#    pp_question_part.append(pp_answer)
-#    add_msa_question_part_is_regex(question_answer_text, pp_question_part)
-## don't forget about feedback
-## !!!!! PROBLEM !!!!!
-## re: feedback
-## TLM has feedback per questionpart, D2L FIB type only allows feeb=dback for whole question.
-#
-#
-#def add_msa_question_part_is_regex(question_answer_text, pp_question_part):
-#    pp_is_regex = etree.Element('pp_is_regex')
-#    pp_is_regex.text = str(len(question_answer_text) > 1)
-#    pp_question_part.append(pp_is_regex)
+def write_it():
+    with open('custom questions.txt', 'w') as f:
+        f.truncate()
+        for line in __custom_question_titles:
+            f.write(line)
+            f.write("\n")
+            for title in __custom_question_titles[line]:
+                f.write("\t")
+                f.write(title)
+                f.write("\n")
+            f.write("\n")
+
+
 
 
 def process_mr_question(question):
@@ -549,23 +504,71 @@ def check_tf_answer_order(pp_answers):
 
 
 def process_sa_question(question):
-    pp_ignore_case = etree.Element('pp_ignore_case')
-    pp_ignore_case.text = get_ignore_case(question)
-    pp_answers = etree.Element('pp_answers')
-    pp_feedback = init_sa_feedback()
-    for question_answer in question.xpath('Parts/QuestionPart/Answers/QuestionAnswer'):
-        if is_sa_answer(question_answer):
-            answer = process_sa_answer(question_answer)
-            pp_answers.append(answer)
-        elif is_sa_feedback(question_answer):
-            update_sa_feedback(question_answer, pp_feedback)
-    question.insert(0, pp_ignore_case)
-    question.insert(1, pp_answers)
-    question.insert(2, pp_feedback)
+    question_parts = question.xpath('Parts/QuestionPart')
+    num_parts = len(question_parts)
+    if num_parts > 0:
+        process_sa_answers(question_parts[0])
+    if not num_parts == 1:
+        logging.error('SA question not = 1 [' + str(num_parts) + '] ' + question.findtext('Title'))
+
+
+def process_sa_answers(question_part):
+    is_msa = is_multiple_short_answer_question(question_part.xpath('ancestor::Question')[0])
+    question_answers = get_question_answers(question_part)
+    process_sa_answer_values(question_answers, is_msa)
+
+
+def process_sa_answer_values(question_answers, is_msa=False):
+    if is_msa:
+    # sum values
+        total = 0
+        for question_answer in question_answers:
+            total += int(question_answer.findtext('Value'))
+    # for each answer
+        # set value = value/total
+    else:
+        greatest_value = find_greatest_question_answer_value(question_answers)
+        for question_answer in question_answers:
+            value = float(question_answer.findtext('Value'))
+            new_value = 100.0
+            if value < greatest_value:
+                new_value = value/greatest_value
+            question_answer.find('Value').text = "{:13.10f}".format(new_value)
+
+
+def find_greatest_question_answer_value(question_answers):
+    greatest_value = 0
+    for question_answer in question_answers:
+        value = int(question_answer.findtext('Value'))
+        if value > greatest_value:
+            greatest_value = value
+    return greatest_value
+
+
+def get_question_answers(question_part):
+    return question_part.xpath('Answers/QuestionAnswer[Value > 0]')
+
+
+def is_sa_feedback(question_answer):
+    return is_sa_element(question_answer, 'Feedback')
+
+
+def is_sa_element(question_answer, element_name):
+    is_sa_element = len(question_answer.findtext(element_name)) > 0
+    return is_sa_element
 
 
 def is_sa_answer(question_answer):
     return is_sa_element(question_answer, 'Text')
+
+
+def is_sa_feedback(question_answer):
+    return is_sa_element(question_answer, 'Feedback')
+
+
+def is_sa_element(question_answer, element_name):
+    is_sa_element = len(question_answer.findtext(element_name)) > 0
+    return is_sa_element
 
 
 def is_sa_feedback(question_answer):

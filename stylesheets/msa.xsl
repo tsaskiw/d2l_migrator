@@ -33,7 +33,13 @@
                         <mattext texttype="text/html">&lt;p&gt;<xsl:value-of select="Text" />&lt;/p&gt;</mattext>
                     </material>
                     <response_str ident="{$ques_part_label}_STR" rcardinality="Single">
-                        <render_fib rows="1" columns="20" prompt="Box" fibtype="String">
+                        <xsl:variable name="cols">
+                            <xsl:choose>
+                                <xsl:when test="pp_is_tf='True'">1</xsl:when>
+                                <xsl:otherwise>20</xsl:otherwise>
+                            </xsl:choose>
+                        </xsl:variable> 
+                        <render_fib rows="1" columns="{$cols}" prompt="Box" fibtype="String">
                             <response_label ident="{$ques_part_label}_ANS" />
                         </render_fib>
                     </response_str>
