@@ -1,31 +1,47 @@
 import fnmatch, logging, os, sys
+from types import *
 from lxml import etree
 import image_processor
 import p2_unicode_utils
 
 Q_TYPE_ALL = 'ALL'
+Q_TYPE_COMPOUND = 'COMPOUND'
 Q_TYPE_CUSTOM = 'CUSTOM'
 Q_TYPE_MULTICHOICE = 'MULTICHOICE'
 Q_TYPE_MULTIRESPONSE = 'MULTIRESPONSE'
+Q_TYPE_MULTISHORTANSWER = 'MULTISHORTANSWER'
+Q_TYPE_PARSEREXPRESSION = 'PARSEREXPRESSION'
 Q_TYPE_TRUEFALSE = 'TRUEFALSE'
 Q_TYPE_SHORTANSWER = 'SHORTANSWER'
 
-QUESTION_TYPES = {'1': Q_TYPE_MULTICHOICE, '2': Q_TYPE_MULTIRESPONSE, '3': Q_TYPE_SHORTANSWER, '4': Q_TYPE_TRUEFALSE, '6': Q_TYPE_CUSTOM}
-QUESTION_TYPE_NUMBERS = {name: num for num, name in QUESTION_TYPES.items()}
+Q_TYPE_NUMBER = 'q_type_number'
+Q_TYPE_SYMBOL = 'q_type_symbol'
+
+Q_TYPES = {
+    Q_TYPE_ALL: {Q_TYPE_NUMBER: '', Q_TYPE_SYMBOL: 'all'},
+    Q_TYPE_COMPOUND: {Q_TYPE_NUMBER: '6.2', Q_TYPE_SYMBOL: 'cpd'},
+    Q_TYPE_CUSTOM: {Q_TYPE_NUMBER: '6', Q_TYPE_SYMBOL: 'cs'},
+    Q_TYPE_MULTICHOICE: {Q_TYPE_NUMBER: '1', Q_TYPE_SYMBOL: 'mc'},
+    Q_TYPE_MULTIRESPONSE: {Q_TYPE_NUMBER: '2', Q_TYPE_SYMBOL: 'mr'},
+    Q_TYPE_MULTISHORTANSWER: {Q_TYPE_NUMBER: '6.1', Q_TYPE_SYMBOL: 'msa'},
+    Q_TYPE_PARSEREXPRESSION: {Q_TYPE_NUMBER: '6.3', Q_TYPE_SYMBOL: 'pe'},
+    Q_TYPE_TRUEFALSE: {Q_TYPE_NUMBER: '4', Q_TYPE_SYMBOL: 'mc'},
+    Q_TYPE_SHORTANSWER: {Q_TYPE_NUMBER: '3', Q_TYPE_SYMBOL: 'sa'}}
 
 LC_TRUE_VALUES = ['t', 'true', 'y']
 LC_FALSE_VALUES = ['f', 'false', 'n']
 
 
-def process(infile_path, base_url, outdir, question_type, diffdir):
+def process(infile_path, base_url, outdir, question_type_symbol, diffdir):
     source_etree = parse_question_source_file(infile_path)
     set_up_logging(source_etree)
+    set_question_subtypes(source_etree)
     remove_duplicate_questions_from_source(source_etree, diffdir)
-    ques_type = get_question_type_symbol(question_type)
-    remove_assessments_without_question_type(ques_type, source_etree)
-    remove_questions_other_than(ques_type, source_etree)
+    question_type_name = get_question_type_name_for_symbol(question_type_symbol)
+    remove_assessments_without_question_type(question_type_name, source_etree)
+    remove_questions_other_than(question_type_name, source_etree)
     assessment_count = int(source_etree.xpath('count(/TLMPackage/Assessment)'))
-    logging.info('assessments: ' + str(assessment_count))
+    logging.info("\nassessments: " + str(assessment_count))
     result_etree = process_questions(source_etree, base_url, outdir)
     return result_etree
 
@@ -38,7 +54,70 @@ def parse_question_source_file(infile_path):
 
 def set_up_logging(source_etree):
     course_code = source_etree.findtext('ECourse/Code')
-    logging.info('\nProcessing ' + course_code)
+    logging.info("\nProcessing " + course_code)
+
+
+def set_question_subtypes(source_etree):
+    custom_type_number = get_question_type_number_as_string_for_name(Q_TYPE_CUSTOM)
+    custom_questions = source_etree.xpath('/TLMPackage/Assessment/Selections/AssessmentSelection/ContentSelectionSets/Question[Type=' + custom_type_number + ']')
+    for custom_question in custom_questions:
+        subtype_number = find_subtype_number_for_question(custom_question)
+        set_question_type(custom_question, subtype_number)
+
+
+def find_subtype_number_for_question(custom_question):
+    if is_multiple_short_answer_question(custom_question):
+        subtype_number = get_question_type_number_as_string_for_name(Q_TYPE_MULTISHORTANSWER)
+    elif is_compound_question(custom_question):
+        subtype_number = get_question_type_number_as_string_for_name(Q_TYPE_COMPOUND)
+    elif is_parser_expression_question(custom_question):
+        subtype_number = get_question_type_number_as_string_for_name(Q_TYPE_PARSEREXPRESSION)
+    else:
+        subtype_number = get_question_type_number_as_string_for_name(Q_TYPE_CUSTOM)
+    return subtype_number
+
+
+def set_question_type(custom_question, subtype_number):
+    question_type = custom_question.find('Type')
+    question_type.text = subtype_number
+
+
+def is_multiple_short_answer_question(question):
+    is_msa = doesnt_contain_parser_expression(question) and contains_multiple_short_answer_parts(question) and contains_single_part_type(question)
+    return is_msa
+
+
+def is_compound_question(question):
+    is_compound = doesnt_contain_parser_expression(question) and contains_multiple_part_types(question)
+    return is_compound
+
+
+def is_parser_expression_question(question):
+    return contains_parser_expression(question)
+
+
+def contains_multiple_short_answer_parts(question):
+    short_answer_type_number = get_question_type_number_as_string_for_name(Q_TYPE_SHORTANSWER)
+    short_answer_parts = question.xpath('Parts/QuestionPart[Type=' + short_answer_type_number + ']')
+    return len(short_answer_parts) > 1
+
+
+def contains_multiple_part_types(question):
+    question_part_types = question.xpath('Parts/QuestionPart/Type/text()')
+    unique_question_part_types = list(set(question_part_types))
+    return len(unique_question_part_types) > 1
+
+
+def contains_single_part_type(question):
+    return not contains_multiple_part_types(question)
+
+
+def contains_parser_expression(question):
+    return question.findtext('ParserExpression')
+
+
+def doesnt_contain_parser_expression(question):
+    return not contains_parser_expression(question)
 
 
 def remove_duplicate_questions_from_source(source_etree, diffdir):
@@ -82,19 +161,10 @@ def remove_empty_assessments_from_modules(source_etree):
             parent.remove(assessment)
 
 
-def get_question_type_symbol(question_type):
-    ques_types = {'all': Q_TYPE_ALL, 'cs': Q_TYPE_CUSTOM, 'mc': Q_TYPE_MULTICHOICE, 'mr': Q_TYPE_MULTIRESPONSE, 'sa': Q_TYPE_SHORTANSWER, 'tf': Q_TYPE_TRUEFALSE}
-    if question_type in ques_types:
-        ques_type = ques_types[question_type]
-    else:
-        ques_type = ques_types['all']
-    return ques_type
-
-
 def remove_assessments_without_question_type(question_type, source_etree):
     if question_type != Q_TYPE_ALL:
         assessments = source_etree.findall('//Assessment')
-        question_type_number = QUESTION_TYPE_NUMBERS[question_type]
+        question_type_number = get_question_type_number_as_string_for_name(question_type)
         for assessment in assessments:
             questions = assessment.xpath('descendant::Question[Type=' + question_type_number + ']')
             if not questions:
@@ -105,7 +175,7 @@ def remove_assessments_without_question_type(question_type, source_etree):
 
 def remove_questions_other_than(question_type, source_etree):
     if question_type != Q_TYPE_ALL:
-        question_type_number = QUESTION_TYPE_NUMBERS[question_type]
+        question_type_number = get_question_type_number_as_string_for_name(question_type)
         assessments = source_etree.findall('//Assessment')
         for assessment in assessments:
             questions = assessment.xpath('descendant::Question[Type!=' + question_type_number + ']')
@@ -114,17 +184,21 @@ def remove_questions_other_than(question_type, source_etree):
 
 
 def process_questions(intree, base_url, outdir):
-    cs_question_count = 0
+    cpd_question_count = 0
     mc_question_count = 0
     mr_question_count = 0
-    tf_question_count = 0
+    msa_question_count = 0
+    pe_question_count = 0
     sa_question_count = 0
-    questions = intree.xpath('//Question[ancestor::Assessment and (Type=1 or Type=2 or Type=3 or Type=4 or Type=6)]')
+    tf_question_count = 0
+    udf_question_count = 0
+    types_string = get_question_types_or_string()
+    questions = intree.xpath('//Question[ancestor::Assessment and (' + types_string + ')]')
     for question in questions:
-        question_type = QUESTION_TYPES[question.findtext('Type')]
-        if question_type == Q_TYPE_CUSTOM:
-            process_cs_question(question)
-            cs_question_count += 1
+        question_type = get_question_type_name_for_number(question.findtext('Type'))
+        if question_type == Q_TYPE_MULTISHORTANSWER:
+            process_msa_question(question)
+            msa_question_count += 1
         elif question_type == Q_TYPE_MULTICHOICE:
             process_mc_question(question)
             mc_question_count += 1
@@ -137,34 +211,74 @@ def process_questions(intree, base_url, outdir):
         elif question_type == Q_TYPE_TRUEFALSE:
             process_tf_question(question)
             tf_question_count += 1
+        elif question_type == Q_TYPE_COMPOUND:
+            process_cpd_question(question)
+            cpd_question_count += 1
+        elif question_type == Q_TYPE_PARSEREXPRESSION:
+            process_pe_question(question)
+            pe_question_count += 1
+        else:
+            udf_question_count += 1
+            logging.info("Failed to recognize custom question type:")
+            logging.info(question.xpath('ancestor::Assessment/Title/text()'))
+            logging.info(question.findtext('Title'))
+            logging.info(question.findtext('Type'))
         image_processor.process_images(question, base_url, outdir)
-
-    logging.info('cs = ' + str(cs_question_count) + 'mc = ' + str(mc_question_count) + ' mr = ' + str(mr_question_count) + ' tf = ' + str(tf_question_count) + ' sa = ' + str(sa_question_count) + ' tot = ' + str((cs_question_count + mc_question_count + tf_question_count + sa_question_count + mr_question_count)))
-
-#    with open('custom questions.txt', 'w') as f:
-#        f.truncate()
-#        for line in __custom_question_titles:
-#            f.write(line)
-#            f.write("\n")
-#            for title in __custom_question_titles[line]:
-#                f.write("\t")
-#                f.write(title)
-#                f.write("\n")
-#            f.write("\n")
+    log_converted_questions(cpd_question_count, mc_question_count, mr_question_count, msa_question_count, pe_question_count, sa_question_count, tf_question_count, udf_question_count)
+    write_it()
     return intree
 
 
-def process_cs_question(question):
-    module_title = p2_unicode_utils.to_str(question.xpath('ancestor::Assessment/Title/text()')[0])
-    question_title = p2_unicode_utils.to_str(question.findtext('Title'))
-#    add_custom_question_title(question_title, module_title)
+def log_converted_questions(cpd_question_count, mc_question_count, mr_question_count, msa_question_count, pe_question_count, sa_question_count, tf_question_count, udf_question_count):
+    logging.info("Converted:")
+    logging.info('cpd = ' + str(cpd_question_count))
+    logging.info('mc = ' + str(mc_question_count))
+    logging.info('mr = ' + str(mr_question_count))
+    logging.info('msa = ' + str(msa_question_count))
+    logging.info('pe = ' + str(pe_question_count))
+    logging.info('sa = ' + str(sa_question_count))
+    logging.info('sa = ' + str(tf_question_count))
+    total_question_count = cpd_question_count + mc_question_count + mr_question_count + msa_question_count + pe_question_count + sa_question_count + tf_question_count
+    logging.info('total = ' + str(total_question_count))
+    logging.info("udf: " + str(udf_question_count))
 
 
-#__custom_question_titles = {}
-#def add_custom_question_title(question_title, module_title):
-#    if module_title not in __custom_question_titles:
-#        __custom_question_titles[module_title] = []
-#    __custom_question_titles[module_title].append(question_title)
+def get_question_type_name_for_number(question_type_number_as_string):
+    return get_question_type_name_for_property(Q_TYPE_NUMBER, question_type_number_as_string)
+
+
+def get_question_type_name_for_symbol(question_type_symbol):
+    return get_question_type_name_for_property(Q_TYPE_SYMBOL, question_type_symbol)
+
+
+def get_question_type_name_for_property(property_type, property_value):
+    q_type_name = ''
+    for q_type in Q_TYPES.items():
+        if(q_type[1][property_type] == property_value):
+            q_type_name = q_type[0]
+    return q_type_name
+
+
+def get_question_type_number_as_string_for_name(question_type_name):
+    if question_type_name in Q_TYPES:
+        return Q_TYPES[question_type_name][Q_TYPE_NUMBER]
+    else:
+        logging.error('Question Type Number not found for name')
+        print('Question Type Number not found for name')
+        sys.exit()
+
+
+def get_question_types_or_string():
+    types_string = ' or '.join("Type={!s}".format(question_type[1][Q_TYPE_NUMBER]) for question_type in Q_TYPES.items())
+    q_types_or_string = ''
+    for question_type in Q_TYPES.items():
+        q_type_number_as_string = question_type[1][Q_TYPE_NUMBER]
+        if is_float(q_type_number_as_string):
+            if len(q_types_or_string) > 0:
+                q_types_or_string += ' or '
+            q_types_or_string += 'Type='
+            q_types_or_string += q_type_number_as_string
+    return q_types_or_string
 
 
 def process_mc_question(question):
@@ -186,84 +300,175 @@ def process_mc_answer(question, question_choice):
     return pp_answer
 
 
-#def process_msa_question(question):
-## use D2L fill in the blanks type
-## main portion, then text-blank pairs, text contains empty p = new line
-#
-#    add_msa_question_parts(question)
-##    pp_ignore_case = etree.Element('pp_ignore_case')
-##    pp_ignore_case.text = get_ignore_case(question)
-##    pp_answers = etree.Element('pp_answers')
-##    pp_feedback = init_sa_feedback()
-##    for question_answer in question.xpath('Parts/QuestionPart/Answers/QuestionAnswer'):
-##        if is_sa_answer(question_answer):
-##            answer = process_sa_answer(question_answer)
-##            pp_answers.append(answer)
-##        elif is_sa_feedback(question_answer):
-##            update_sa_feedback(question_answer, pp_feedback)
-##    question.insert(0, pp_ignore_case)
-##    question.insert(1, pp_answers)
-##    question.insert(2, pp_feedback)
-#
-#
-#def add_msa_question_parts(question):
-#    pp_parts = etree.Element('pp_parts')
-#    for question_part in question.xpath('Parts/QuestionPart'):
-#        add_msa_question_part(pp_parts, question_part)
-#    question.insert(0, pp_parts)
-#
-#
-#def add_msa_question_part(pp_parts_elt, question_part):
-#    pp_question_part = etree.Element('pp_question_part')
-#    add_msa_question_part_id(pp_question_part, question_part)
-#    add_msa_question_part_text(pp_question_part, question_part)
-#    add_msa_question_part_ignore_case(pp_question_part, question_part)
-#    add_msa_question_part_answer(pp_question_part, question_part)
-#    pp_parts_elt.append(pp_question_part)
-#
-#
-#def add_msa_question_part_id(pp_question_part, question_part):
-#    pp_id = etree.Element('pp_id')
-#    pp_id.text = question_part.findtext('ID')
-#    pp_question_part.append(pp_id)
-#
-#
-#def add_msa_question_part_text(pp_question_part, question_part):
-#    pp_text = etree.Element('pp_text')
-#    pp_text.text = question_part.findtext('Text')
-#    pp_question_part.append(pp_text)
-#
-#
-#def add_msa_question_part_ignore_case(pp_question_part, question_part):
-#    pp_ignore_case = etree.Element('pp_ignore_case')
-#    pp_ignore_case.text = question_part.findtext('ShortAnsIgnoreCase')
-#    pp_question_part.append(pp_ignore_case)
-#
-#
-#def add_msa_question_part_answer(pp_question_part, question_part):
-#    pp_answer = etree.Element('pp_answer')
-#    question_answer_text = []
-#    feedback_text = []
-#    for question_answer in question_part.xpath('Answers/QuestionAnswer'):
-#        qtext = question_answer.findtext('Text')
-#        ftext = question_answer.findtext('Feedback')
-#        if qtext:
-#            question_answer_text.append(qtext)
-#        elif ftext:
-#            feedback_text.append(ftext)
-#    pp_answer.text = "|".join(question_answer_text)
-#    pp_question_part.append(pp_answer)
-#    add_msa_question_part_is_regex(question_answer_text, pp_question_part)
-## don't forget about feedback
-## !!!!! PROBLEM !!!!!
-## re: feedback
-## TLM has feedback per questionpart, D2L FIB type only allows feeb=dback for whole question.
-#
-#
-#def add_msa_question_part_is_regex(question_answer_text, pp_question_part):
-#    pp_is_regex = etree.Element('pp_is_regex')
-#    pp_is_regex.text = str(len(question_answer_text) > 1)
-#    pp_question_part.append(pp_is_regex)
+def process_msa_question(question):
+    question_parts = question.xpath('Parts/QuestionPart')
+    feedback = []
+    for question_part in question_parts:
+        answers = []
+        question_part_number = question_part.findtext('Number')
+        for question_answer in question_part.xpath('Answers/QuestionAnswer'):
+            if is_sa_answer(question_answer):
+                answers.append(question_answer.findtext('Text'))
+            elif is_sa_feedback(question_answer):
+                fb = '<p>'
+                fb += question_part_number
+                fb += ': '
+                fb += question_answer.findtext('Feedback')
+                fb += '</p>'
+                feedback.append(fb)
+        pp_answers = etree.Element('pp_answers')
+        pp_answers.text = '|'.join(answers)
+        question_part.insert(0, pp_answers)
+        pp_value = etree.Element('pp_value')
+        value = 100.0 / len(question_parts)
+        pp_value.text = "{:13.10f}".format(value)
+        question_part.insert(1, pp_value)
+    pp_feedback = etree.Element('pp_feedback')
+    pp_feedback.text = ''.join(feedback)
+    question.insert(0, pp_feedback)
+
+
+def process_cpd_question(question):
+    if skip_question(500):
+        return
+    else:
+        record_question(question)
+    convert_cpd_question_to_msa(question)
+
+
+def convert_cpd_question_to_msa(question):
+    set_question_type_to_msa(question)
+    convert_all_question_parts_to_sa(question)
+    process_msa_question(question)
+
+
+def set_question_type_to_msa(question):
+    question.find('Type').text = Q_TYPES[Q_TYPE_MULTISHORTANSWER][Q_TYPE_NUMBER]
+
+
+def convert_all_question_parts_to_sa(question):
+    question_parts = question.xpath('Parts/QuestionPart')
+    for question_part in question_parts:
+        if is_sa_question_part(question_part):
+            pass
+        elif is_tf_question_part(question_part):
+            replace_tf_question_part_with_sa(question_part)
+        else:
+            print('q part type not found', question.findtext('Title'))
+
+
+def is_sa_question_part(question_part):
+    return is_question_part_type(question_part, Q_TYPE_SHORTANSWER)
+
+
+def is_tf_question_part(question_part):
+    return is_question_part_type(question_part, Q_TYPE_TRUEFALSE)
+
+
+def is_question_part_type(question_part, question_part_type):
+    q_part_type = question_part.findtext('Type')
+    return q_part_type == Q_TYPES[question_part_type][Q_TYPE_NUMBER]
+
+
+def replace_tf_question_part_with_sa(question_part):
+    replace_tf_properties_with_sa(question_part)
+    insert_instruction(question_part)
+    replace_tf_answer_elts_with_sa(question_part)
+    remove_choices(question_part)
+
+
+def replace_tf_properties_with_sa(question_part):
+    set_child_element_text(question_part, 'ShortAnsIgnoreCase', 'True')
+    set_child_element_text(question_part, 'ChoicesType', '0')
+    set_child_element_text(question_part, 'Type', '3')
+    pp_tf_flag_elt = etree.Element('pp_is_tf')
+    pp_tf_flag_elt.text = 'True'
+    question_part.insert(0, pp_tf_flag_elt)
+
+
+def replace_tf_answer_elts_with_sa(question_part):
+    replace_correct_tf_answer_elts_with_sa(question_part)
+    replace_incorrect_tf_answer_elts_with_sa(question_part)
+
+
+def replace_correct_tf_answer_elts_with_sa(question_part):
+    correct_answer_elt = question_part.xpath('Answers/QuestionAnswer[Value=1]')[0]
+    answer_text = correct_answer_elt.findtext('Text')
+    set_child_element_text(correct_answer_elt, 'Value', '1')
+    set_child_element_text(correct_answer_elt, 'Text', answer_text)
+    set_child_element_text(correct_answer_elt, 'Feedback', '')
+
+
+def replace_incorrect_tf_answer_elts_with_sa(question_part):
+    incorrect_answer_elt = question_part.xpath('Answers/QuestionAnswer[Value=0]')[0]
+    fb_text = incorrect_answer_elt.findtext('Feedback')
+    set_child_element_text(incorrect_answer_elt, 'Value', '0')
+    set_child_element_text(incorrect_answer_elt, 'Text', '')
+    set_child_element_text(incorrect_answer_elt, 'Feedback', fb_text)
+
+
+def remove_choices(question_part):
+    for sub in question_part.iterchildren('Choices'):
+        question_part.remove(sub)
+
+
+def set_child_element_text(parent_elt, child_elt_name, text_value):
+    parent_elt.find(child_elt_name).text = text_value
+
+
+def insert_instruction(question_part):
+    text_elt = question_part.find('Text')
+    instruction = "['t'=True 'f'=False]"
+    if text_elt is not None:
+        text_elt.text += instruction
+
+
+def process_pe_question(question):
+    pass
+
+
+#insert block below in function
+#    if skip_question(num):
+#        return
+#    else:
+#        record_question(question)
+custom_count = 0
+def skip_question(num_questions):
+    global custom_count
+    custom_count += 1
+    return custom_count > num_questions
+
+
+__custom_question_titles = {}
+def record_question(question):
+    count = 0
+    for titles in __custom_question_titles:
+        count += len(__custom_question_titles[titles])
+    module_title = p2_unicode_utils.to_str(question.xpath('ancestor::Assessment/Title/text()')[0])
+    module_title += '-'
+    module_title += p2_unicode_utils.to_str(question.xpath('ancestor::Assessment/ID/text()')[0])
+    question_title = p2_unicode_utils.to_str(question.findtext('Title'))
+    question_title += ' : '
+    question_title += str(count + 1)
+
+    if module_title not in __custom_question_titles:
+        __custom_question_titles[module_title] = []
+    __custom_question_titles[module_title].append(question_title)
+
+
+def write_it():
+    with open('custom questions.txt', 'w') as f:
+        f.truncate()
+        for line in __custom_question_titles:
+            f.write(line)
+            f.write("\n")
+            for title in __custom_question_titles[line]:
+                f.write("\t")
+                f.write(title)
+                f.write("\n")
+            f.write("\n")
+
+
 
 
 def process_mr_question(question):
@@ -299,23 +504,71 @@ def check_tf_answer_order(pp_answers):
 
 
 def process_sa_question(question):
-    pp_ignore_case = etree.Element('pp_ignore_case')
-    pp_ignore_case.text = get_ignore_case(question)
-    pp_answers = etree.Element('pp_answers')
-    pp_feedback = init_sa_feedback()
-    for question_answer in question.xpath('Parts/QuestionPart/Answers/QuestionAnswer'):
-        if is_sa_answer(question_answer):
-            answer = process_sa_answer(question_answer)
-            pp_answers.append(answer)
-        elif is_sa_feedback(question_answer):
-            update_sa_feedback(question_answer, pp_feedback)
-    question.insert(0, pp_ignore_case)
-    question.insert(1, pp_answers)
-    question.insert(2, pp_feedback)
+    question_parts = question.xpath('Parts/QuestionPart')
+    num_parts = len(question_parts)
+    if num_parts > 0:
+        process_sa_answers(question_parts[0])
+    if not num_parts == 1:
+        logging.error('SA question not = 1 [' + str(num_parts) + '] ' + question.findtext('Title'))
+
+
+def process_sa_answers(question_part):
+    is_msa = is_multiple_short_answer_question(question_part.xpath('ancestor::Question')[0])
+    question_answers = get_question_answers(question_part)
+    process_sa_answer_values(question_answers, is_msa)
+
+
+def process_sa_answer_values(question_answers, is_msa=False):
+    if is_msa:
+    # sum values
+        total = 0
+        for question_answer in question_answers:
+            total += int(question_answer.findtext('Value'))
+    # for each answer
+        # set value = value/total
+    else:
+        greatest_value = find_greatest_question_answer_value(question_answers)
+        for question_answer in question_answers:
+            value = float(question_answer.findtext('Value'))
+            new_value = 100.0
+            if value < greatest_value:
+                new_value = value/greatest_value
+            question_answer.find('Value').text = "{:13.10f}".format(new_value)
+
+
+def find_greatest_question_answer_value(question_answers):
+    greatest_value = 0
+    for question_answer in question_answers:
+        value = int(question_answer.findtext('Value'))
+        if value > greatest_value:
+            greatest_value = value
+    return greatest_value
+
+
+def get_question_answers(question_part):
+    return question_part.xpath('Answers/QuestionAnswer[Value > 0]')
+
+
+def is_sa_feedback(question_answer):
+    return is_sa_element(question_answer, 'Feedback')
+
+
+def is_sa_element(question_answer, element_name):
+    is_sa_element = len(question_answer.findtext(element_name)) > 0
+    return is_sa_element
 
 
 def is_sa_answer(question_answer):
     return is_sa_element(question_answer, 'Text')
+
+
+def is_sa_feedback(question_answer):
+    return is_sa_element(question_answer, 'Feedback')
+
+
+def is_sa_element(question_answer, element_name):
+    is_sa_element = len(question_answer.findtext(element_name)) > 0
+    return is_sa_element
 
 
 def is_sa_feedback(question_answer):
@@ -557,3 +810,13 @@ def find_question_answer_elt_by_text_value(question, text_val):
     else:
         question_answer_elt = None
     return question_answer_elt
+
+
+def is_float(val):
+    try:
+        float(val)
+        return True
+    except ValueError:
+        return False
+
+
