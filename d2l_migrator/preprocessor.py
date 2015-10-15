@@ -66,12 +66,15 @@ def set_question_subtypes(source_etree):
 
 
 def find_subtype_number_for_question(custom_question):
-    if is_multiple_short_answer_question(custom_question):
+    if is_parser_expression_question(custom_question):
+        subtype_number = get_question_type_number_as_string_for_name(Q_TYPE_PARSEREXPRESSION)
+    elif is_non_parser_expression_single_part_question(custom_question):
+        type_number = get_type_number_for_custom_single_part_question(custom_question)
+        subtype_number = type_number
+    elif is_multiple_short_answer_question(custom_question):
         subtype_number = get_question_type_number_as_string_for_name(Q_TYPE_MULTISHORTANSWER)
     elif is_compound_question(custom_question):
         subtype_number = get_question_type_number_as_string_for_name(Q_TYPE_COMPOUND)
-    elif is_parser_expression_question(custom_question):
-        subtype_number = get_question_type_number_as_string_for_name(Q_TYPE_PARSEREXPRESSION)
     else:
         subtype_number = get_question_type_number_as_string_for_name(Q_TYPE_CUSTOM)
     return subtype_number
@@ -85,6 +88,15 @@ def set_question_type(custom_question, subtype_number):
 def is_multiple_short_answer_question(question):
     is_msa = doesnt_contain_parser_expression(question) and contains_multiple_short_answer_parts(question) and contains_single_part_type(question)
     return is_msa
+
+
+def is_non_parser_expression_single_part_question(question):
+    return (not is_parser_expression_question(question)) and (question.xpath('count(Parts/QuestionPart)') == 1)
+
+
+def get_type_number_for_custom_single_part_question(question):
+    type_number = question.find('Parts').find('QuestionPart').findtext('Type')
+    return type_number
 
 
 def is_compound_question(question):
@@ -211,12 +223,12 @@ def process_questions(intree, base_url, outdir):
         elif question_type == Q_TYPE_TRUEFALSE:
             process_tf_question(question)
             tf_question_count += 1
-        elif question_type == Q_TYPE_COMPOUND:
-            process_cpd_question(question)
-            cpd_question_count += 1
-        elif question_type == Q_TYPE_PARSEREXPRESSION:
-            process_pe_question(question)
-            pe_question_count += 1
+#        elif question_type == Q_TYPE_COMPOUND:
+#            process_cpd_question(question)
+#            cpd_question_count += 1
+#        elif question_type == Q_TYPE_PARSEREXPRESSION:
+#            process_pe_question(question)
+#            pe_question_count += 1
         else:
             udf_question_count += 1
             logging.info("Failed to recognize custom question type:")
@@ -263,8 +275,9 @@ def get_question_type_number_as_string_for_name(question_type_name):
     if question_type_name in Q_TYPES:
         return Q_TYPES[question_type_name][Q_TYPE_NUMBER]
     else:
-        logging.error('Question Type Number not found for name')
-        print('Question Type Number not found for name')
+        msg = "Question Type Number not found for name '{0}'".format(question_type_name)
+        logging.error(msg)
+        print(msg)
         sys.exit()
 
 

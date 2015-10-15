@@ -11,7 +11,7 @@ USAGE_MESSAGE = 'd2l_migrator.py -i <inputfile> -s <stylesheet> -o <outputdir> -
 
 def main(argv):
     infile_path, stylesheet_path, outdir_path, base_url, question_type, diffdir = get_input(argv)
-    logging.basicConfig(filename=os.path.join(outdir_path, 'migrator.log'), level=logging.INFO)
+    logging.basicConfig(filename=os.path.join(outdir_path, 'migrator.log'), level=logging.INFO, filemode='w')
     preprocessed_dom = preprocessor.process(infile_path, base_url, outdir_path, question_type, diffdir)
     if (WRITE_INTERMEDIATE_FILES):
         write_outfile(preprocessed_dom, 'pp_source.xml')
