@@ -88,6 +88,7 @@ get_question_type_number_as_string_for_name	preprocessor.py	/^def get_question_t
 get_question_types_or_string	preprocessor.py	/^def get_question_types_or_string():$/;"	f
 get_tf_text_for_blank_value	preprocessor.py	/^def get_tf_text_for_blank_value(question_answer):$/;"	f
 get_tf_text_inverse_of	preprocessor.py	/^def get_tf_text_inverse_of(tf_answer_text):$/;"	f
+get_type_number_for_custom_single_part_question	preprocessor.py	/^def get_type_number_for_custom_single_part_question(question):$/;"	f
 getopt	input_management.py	/^import sys, getopt, os.path$/;"	i
 image_processor	preprocessor.py	/^import image_processor$/;"	i
 init_sa_feedback	preprocessor.py	/^def init_sa_feedback():$/;"	f
@@ -96,6 +97,7 @@ insert_instruction	preprocessor.py	/^def insert_instruction(question_part):$/;"	
 is_compound_question	preprocessor.py	/^def is_compound_question(question):$/;"	f
 is_float	preprocessor.py	/^def is_float(val):$/;"	f
 is_multiple_short_answer_question	preprocessor.py	/^def is_multiple_short_answer_question(question):$/;"	f
+is_non_parser_expression_single_part_question	preprocessor.py	/^def is_non_parser_expression_single_part_question(question):$/;"	f
 is_parser_expression_question	preprocessor.py	/^def is_parser_expression_question(question):$/;"	f
 is_question_part_type	preprocessor.py	/^def is_question_part_type(question_part, question_part_type):$/;"	f
 is_sa_answer	preprocessor.py	/^def is_sa_answer(question_answer):$/;"	f
