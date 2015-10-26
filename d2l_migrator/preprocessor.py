@@ -1,8 +1,12 @@
 import fnmatch, logging, os, sys
 from types import *
 from lxml import etree
+from html import HTML
 import image_processor
 import p2_unicode_utils
+
+
+COUNT_ONLY = False
 
 Q_TYPE_ALL = 'ALL'
 Q_TYPE_COMPOUND = 'COMPOUND'
@@ -11,8 +15,9 @@ Q_TYPE_MULTICHOICE = 'MULTICHOICE'
 Q_TYPE_MULTIRESPONSE = 'MULTIRESPONSE'
 Q_TYPE_MULTISHORTANSWER = 'MULTISHORTANSWER'
 Q_TYPE_PARSEREXPRESSION = 'PARSEREXPRESSION'
-Q_TYPE_TRUEFALSE = 'TRUEFALSE'
 Q_TYPE_SHORTANSWER = 'SHORTANSWER'
+Q_TYPE_TRUEFALSE = 'TRUEFALSE'
+Q_TYPE_UNKNOWN = 'UNKNOWN'
 
 Q_TYPE_NUMBER = 'q_type_number'
 Q_TYPE_SYMBOL = 'q_type_symbol'
@@ -25,8 +30,9 @@ Q_TYPES = {
     Q_TYPE_MULTIRESPONSE: {Q_TYPE_NUMBER: '2', Q_TYPE_SYMBOL: 'mr'},
     Q_TYPE_MULTISHORTANSWER: {Q_TYPE_NUMBER: '6.1', Q_TYPE_SYMBOL: 'msa'},
     Q_TYPE_PARSEREXPRESSION: {Q_TYPE_NUMBER: '6.3', Q_TYPE_SYMBOL: 'pe'},
+    Q_TYPE_SHORTANSWER: {Q_TYPE_NUMBER: '3', Q_TYPE_SYMBOL: 'sa'},
     Q_TYPE_TRUEFALSE: {Q_TYPE_NUMBER: '4', Q_TYPE_SYMBOL: 'mc'},
-    Q_TYPE_SHORTANSWER: {Q_TYPE_NUMBER: '3', Q_TYPE_SYMBOL: 'sa'}}
+    Q_TYPE_UNKNOWN: {Q_TYPE_NUMBER: '0', Q_TYPE_SYMBOL: 'unk'}}
 
 LC_TRUE_VALUES = ['t', 'true', 'y']
 LC_FALSE_VALUES = ['f', 'false', 'n']
@@ -35,13 +41,12 @@ LC_FALSE_VALUES = ['f', 'false', 'n']
 def process(infile_path, base_url, outdir, question_type_symbol, diffdir):
     source_etree = parse_question_source_file(infile_path)
     set_up_logging(source_etree)
-    set_question_subtypes(source_etree)
+    set_custom_question_subtypes(source_etree)
     remove_duplicate_questions_from_source(source_etree, diffdir)
-    question_type_name = get_question_type_name_for_symbol(question_type_symbol)
-    remove_assessments_without_question_type(question_type_name, source_etree)
-    remove_questions_other_than(question_type_name, source_etree)
-    assessment_count = int(source_etree.xpath('count(/TLMPackage/Assessment)'))
-    logging.info("\nassessments: " + str(assessment_count))
+    remove_assessments_without_question_type(question_type_symbol, source_etree)
+    remove_questions_other_than(question_type_symbol, source_etree)
+    assessment_count = source_etree.xpath('count(/TLMPackage/Assessment)')
+    logging.info("assessments: {0}".format(int(assessment_count)))
     result_etree = process_questions(source_etree, base_url, outdir)
     return result_etree
 
@@ -57,26 +62,30 @@ def set_up_logging(source_etree):
     logging.info("\nProcessing " + course_code)
 
 
-def set_question_subtypes(source_etree):
-    custom_type_number = get_question_type_number_as_string_for_name(Q_TYPE_CUSTOM)
-    custom_questions = source_etree.xpath('/TLMPackage/Assessment/Selections/AssessmentSelection/ContentSelectionSets/Question[Type=' + custom_type_number + ']')
+def set_custom_question_subtypes(source_etree):
+    custom_questions = get_custom_questions(source_etree)
     for custom_question in custom_questions:
-        subtype_number = find_subtype_number_for_question(custom_question)
+        subtype_number = find_subtype_number_for_custom_question(custom_question)
         set_question_type(custom_question, subtype_number)
 
 
-def find_subtype_number_for_question(custom_question):
+def get_custom_questions(source_etree):
+    custom_type_number = get_question_type_number_as_string_for_name(Q_TYPE_CUSTOM)
+    custom_questions = source_etree.xpath('/TLMPackage/Assessment/Selections/AssessmentSelection/ContentSelectionSets/Question[Type=' + custom_type_number + ']')
+    return custom_questions
+
+
+def find_subtype_number_for_custom_question(custom_question):
     if is_parser_expression_question(custom_question):
         subtype_number = get_question_type_number_as_string_for_name(Q_TYPE_PARSEREXPRESSION)
-    elif is_non_parser_expression_single_part_question(custom_question):
-        type_number = get_type_number_for_custom_single_part_question(custom_question)
-        subtype_number = type_number
+    elif is_single_part_question(custom_question):
+        subtype_number = get_type_number_for_custom_single_part_question(custom_question)
     elif is_multiple_short_answer_question(custom_question):
         subtype_number = get_question_type_number_as_string_for_name(Q_TYPE_MULTISHORTANSWER)
     elif is_compound_question(custom_question):
         subtype_number = get_question_type_number_as_string_for_name(Q_TYPE_COMPOUND)
     else:
-        subtype_number = get_question_type_number_as_string_for_name(Q_TYPE_CUSTOM)
+        subtype_number = get_question_type_number_as_string_for_name(Q_TYPE_UNKNOWN)
     return subtype_number
 
 
@@ -90,8 +99,8 @@ def is_multiple_short_answer_question(question):
     return is_msa
 
 
-def is_non_parser_expression_single_part_question(question):
-    return (not is_parser_expression_question(question)) and (question.xpath('count(Parts/QuestionPart)') == 1)
+def is_single_part_question(question):
+    return question.xpath('count(Parts/QuestionPart)') == 1
 
 
 def get_type_number_for_custom_single_part_question(question):
@@ -102,6 +111,20 @@ def get_type_number_for_custom_single_part_question(question):
 def is_compound_question(question):
     is_compound = doesnt_contain_parser_expression(question) and contains_multiple_part_types(question)
     return is_compound
+
+
+#def is_compound_tfsa_question(question):
+#    is_compound_tfsa_question = False
+#    num_tf_parts = count_tf_parts(question)
+#    if num_tf_parts >= 1:
+#        num_sa_parts = count_sa_parts(question)
+#    return is_compound_tfsa_question
+
+
+#def count_tf_parts(question):
+#    tf_type_number = get_question_type_number_as_string_for_name(Q_TYPE_TRUEFALSE)
+#    num_tf_parts = question.xpath("count(Parts/QuestionPart[Type={}])".format(tf_type_number))
+#    return num_tf_parts
 
 
 def is_parser_expression_question(question):
@@ -173,7 +196,8 @@ def remove_empty_assessments_from_modules(source_etree):
             parent.remove(assessment)
 
 
-def remove_assessments_without_question_type(question_type, source_etree):
+def remove_assessments_without_question_type(question_type_symbol, source_etree):
+    question_type = get_question_type_name_for_symbol(question_type_symbol)
     if question_type != Q_TYPE_ALL:
         assessments = source_etree.findall('//Assessment')
         question_type_number = get_question_type_number_as_string_for_name(question_type)
@@ -185,7 +209,8 @@ def remove_assessments_without_question_type(question_type, source_etree):
                 logging.info(''.join([assessment.findtext('Title'), ' : ', str(len(questions))]))
 
 
-def remove_questions_other_than(question_type, source_etree):
+def remove_questions_other_than(question_type_symbol, source_etree):
+    question_type = get_question_type_name_for_symbol(question_type_symbol)
     if question_type != Q_TYPE_ALL:
         question_type_number = get_question_type_number_as_string_for_name(question_type)
         assessments = source_etree.findall('//Assessment')
@@ -203,45 +228,59 @@ def process_questions(intree, base_url, outdir):
     pe_question_count = 0
     sa_question_count = 0
     tf_question_count = 0
-    udf_question_count = 0
-    types_string = get_question_types_or_string()
+    unc_question_count = 0
+    unk_question_count = 0
+    types_string = get_question_types_string()
     questions = intree.xpath('//Question[ancestor::Assessment and (' + types_string + ')]')
     for question in questions:
         question_type = get_question_type_name_for_number(question.findtext('Type'))
         if question_type == Q_TYPE_MULTISHORTANSWER:
-            process_msa_question(question)
+            if not COUNT_ONLY:
+                process_msa_question(question)
             msa_question_count += 1
         elif question_type == Q_TYPE_MULTICHOICE:
-            process_mc_question(question)
+            if not COUNT_ONLY:
+                process_mc_question(question)
             mc_question_count += 1
         elif question_type == Q_TYPE_MULTIRESPONSE:
-            process_mr_question(question)
+            if not COUNT_ONLY:
+                process_mr_question(question)
             mr_question_count += 1
         elif question_type == Q_TYPE_SHORTANSWER:
-            process_sa_question(question)
+            if not COUNT_ONLY:
+                process_sa_question(question)
             sa_question_count += 1
         elif question_type == Q_TYPE_TRUEFALSE:
-            process_tf_question(question)
+            if not COUNT_ONLY:
+                process_tf_question(question)
             tf_question_count += 1
-#        elif question_type == Q_TYPE_COMPOUND:
-#            process_cpd_question(question)
-#            cpd_question_count += 1
-#        elif question_type == Q_TYPE_PARSEREXPRESSION:
-#            process_pe_question(question)
-#            pe_question_count += 1
+        elif question_type == Q_TYPE_COMPOUND:
+            if not COUNT_ONLY:
+                if process_cpd_question(question):
+                    cpd_question_count += 1
+                else:
+                    unc_question_count += 1
+        elif question_type == Q_TYPE_PARSEREXPRESSION:
+            if not COUNT_ONLY:
+                process_pe_question(question)
+            pe_question_count += 1
         else:
-            udf_question_count += 1
-            logging.info("Failed to recognize custom question type:")
-            logging.info(question.xpath('ancestor::Assessment/Title/text()'))
-            logging.info(question.findtext('Title'))
-            logging.info(question.findtext('Type'))
+            unk_question_count += 1
+            log_unrecognized_question(question)
         image_processor.process_images(question, base_url, outdir)
-    log_converted_questions(cpd_question_count, mc_question_count, mr_question_count, msa_question_count, pe_question_count, sa_question_count, tf_question_count, udf_question_count)
+    log_converted_questions(cpd_question_count, mc_question_count, mr_question_count, msa_question_count, pe_question_count, sa_question_count, tf_question_count, unc_question_count, unk_question_count)
     write_it()
     return intree
 
 
-def log_converted_questions(cpd_question_count, mc_question_count, mr_question_count, msa_question_count, pe_question_count, sa_question_count, tf_question_count, udf_question_count):
+def log_unrecognized_question(question):
+    logging.info("Failed to recognize custom question type:")
+    logging.info(question.xpath('ancestor::Assessment/Title/text()'))
+    logging.info(question.findtext('Title'))
+    logging.info(question.findtext('Type'))
+
+
+def log_converted_questions(cpd_question_count, mc_question_count, mr_question_count, msa_question_count, pe_question_count, sa_question_count, tf_question_count, unc_question_count, unk_question_count):
     logging.info("Converted:")
     logging.info('cpd = ' + str(cpd_question_count))
     logging.info('mc = ' + str(mc_question_count))
@@ -249,10 +288,13 @@ def log_converted_questions(cpd_question_count, mc_question_count, mr_question_c
     logging.info('msa = ' + str(msa_question_count))
     logging.info('pe = ' + str(pe_question_count))
     logging.info('sa = ' + str(sa_question_count))
-    logging.info('sa = ' + str(tf_question_count))
+    logging.info('tf = ' + str(tf_question_count))
     total_question_count = cpd_question_count + mc_question_count + mr_question_count + msa_question_count + pe_question_count + sa_question_count + tf_question_count
     logging.info('total = ' + str(total_question_count))
-    logging.info("udf: " + str(udf_question_count))
+    logging.info("Not Converted:")
+    logging.info("pe: " + str(pe_question_count))
+    logging.info("unc: " + str(unc_question_count))
+    logging.info("unk: " + str(unk_question_count))
 
 
 def get_question_type_name_for_number(question_type_number_as_string):
@@ -281,7 +323,7 @@ def get_question_type_number_as_string_for_name(question_type_name):
         sys.exit()
 
 
-def get_question_types_or_string():
+def get_question_types_string():
     types_string = ' or '.join("Type={!s}".format(question_type[1][Q_TYPE_NUMBER]) for question_type in Q_TYPES.items())
     q_types_or_string = ''
     for question_type in Q_TYPES.items():
@@ -342,17 +384,15 @@ def process_msa_question(question):
 
 
 def process_cpd_question(question):
-    if skip_question(500):
-        return
-    else:
-        record_question(question)
-    convert_cpd_question_to_msa(question)
+    return convert_cpd_question_to_msa(question)
 
 
 def convert_cpd_question_to_msa(question):
     set_question_type_to_msa(question)
-    convert_all_question_parts_to_sa(question)
-    process_msa_question(question)
+    converted = convert_all_question_parts_to_sa(question)
+    if converted:
+        process_msa_question(question)
+    return converted
 
 
 def set_question_type_to_msa(question):
@@ -361,13 +401,19 @@ def set_question_type_to_msa(question):
 
 def convert_all_question_parts_to_sa(question):
     question_parts = question.xpath('Parts/QuestionPart')
+    converted = True
     for question_part in question_parts:
         if is_sa_question_part(question_part):
             pass
         elif is_tf_question_part(question_part):
             replace_tf_question_part_with_sa(question_part)
+        elif is_mc_question_part(question_part):
+            replace_mc_question_part_with_sa(question_part)
         else:
-            print('q part type not found', question.findtext('Title'))
+            converted = False
+            logging.error('q part type not found', question.findtext('Title'))
+            logging.error(question_part.findtext('Type'))
+    return converted
 
 
 def is_sa_question_part(question_part):
@@ -378,30 +424,45 @@ def is_tf_question_part(question_part):
     return is_question_part_type(question_part, Q_TYPE_TRUEFALSE)
 
 
+def is_mc_question_part(question_part):
+    return is_question_part_type(question_part, Q_TYPE_MULTICHOICE)
+
+
 def is_question_part_type(question_part, question_part_type):
     q_part_type = question_part.findtext('Type')
     return q_part_type == Q_TYPES[question_part_type][Q_TYPE_NUMBER]
 
 
 def replace_tf_question_part_with_sa(question_part):
-    replace_tf_properties_with_sa(question_part)
-    insert_instruction(question_part)
+    replace_question_part_properties_with_sa(question_part)
+    insert_tf_sa_instruction(question_part)
     replace_tf_answer_elts_with_sa(question_part)
     remove_choices(question_part)
 
 
-def replace_tf_properties_with_sa(question_part):
+def replace_mc_question_part_with_sa(question_part):
+    replace_question_part_properties_with_sa(question_part)
+    rewrite_mc_question_part_as_sa(question_part)
+    insert_mc_sa_instruction(question_part)
+#    replace_mc_answer_elts_with_sa(question_part)
+#    remove_choices(question_part)
+
+
+def replace_question_part_properties_with_sa(question_part):
     set_child_element_text(question_part, 'ShortAnsIgnoreCase', 'True')
     set_child_element_text(question_part, 'ChoicesType', '0')
     set_child_element_text(question_part, 'Type', '3')
-    pp_tf_flag_elt = etree.Element('pp_is_tf')
-    pp_tf_flag_elt.text = 'True'
-    question_part.insert(0, pp_tf_flag_elt)
 
 
 def replace_tf_answer_elts_with_sa(question_part):
     replace_correct_tf_answer_elts_with_sa(question_part)
     replace_incorrect_tf_answer_elts_with_sa(question_part)
+
+
+def replace_mc_answer_elts_with_sa(question_part):
+   pass
+#    replace_correct_mc_answer_elts_with_sa(question_part)
+#    replace_incorrect_tf_answer_elts_with_sa(question_part)
 
 
 def replace_correct_tf_answer_elts_with_sa(question_part):
@@ -410,6 +471,15 @@ def replace_correct_tf_answer_elts_with_sa(question_part):
     set_child_element_text(correct_answer_elt, 'Value', '1')
     set_child_element_text(correct_answer_elt, 'Text', answer_text)
     set_child_element_text(correct_answer_elt, 'Feedback', '')
+
+
+def replace_correct_mc_answer_elts_with_sa(question_part):
+    pass
+#    correct_answer_elt = question_part.xpath('Answers/QuestionAnswer[Value=1]')[0]
+#    answer_text = correct_answer_elt.findtext('Text')
+#    set_child_element_text(correct_answer_elt, 'Value', '1')
+#    set_child_element_text(correct_answer_elt, 'Text', answer_text)
+#    set_child_element_text(correct_answer_elt, 'Feedback', '')
 
 
 def replace_incorrect_tf_answer_elts_with_sa(question_part):
@@ -429,11 +499,40 @@ def set_child_element_text(parent_elt, child_elt_name, text_value):
     parent_elt.find(child_elt_name).text = text_value
 
 
-def insert_instruction(question_part):
-    text_elt = question_part.find('Text')
+def insert_tf_sa_instruction(question_part):
     instruction = "['t'=True 'f'=False]"
+    append_sa_question_text(question_part, instruction)
+
+
+def insert_mc_sa_instruction(question_part):
+    instruction = "[enter number of correct answer]"
+    append_sa_question_text(question_part, instruction)
+
+
+def append_sa_question_text(question_part, instruction):
+    text_elt = question_part.find('Text')
     if text_elt is not None:
         text_elt.text += instruction
+
+
+def rewrite_mc_question_part_as_sa(question_part):
+    ol = get_choices_as_ordered_list(question_part)
+    append_sa_question_text(ol)
+
+
+def get_choices_as_ordered_list(question_part):
+    ol = HTML('ol')
+    choices = get_choices(question_part)
+    for choice in choices:
+        li = ol.li
+        li.text(choice.findtext('Text'))
+    return unicode(ol)
+
+
+def get_choices(question_part):
+    choices = question_part.xpath('Choices/QuestionChoice')
+    choices.sort(key=lambda choice: choice.findtext('Number'))
+    return choices
 
 
 def process_pe_question(question):
