@@ -2,7 +2,7 @@ import sys, getopt, os.path
 import d2l_migrator
 
 
-VALID_QUESTION_TYPES = ('all', 'cpd', 'mc', 'mr', 'msa', 'sa', 'tf')
+VALID_QUESTION_TYPES = ('all', 'cpd', 'mc', 'mr', 'msa', 'pe', 'sa', 'tf')
 
 
 def collect_input(argv):

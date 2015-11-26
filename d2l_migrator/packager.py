@@ -20,7 +20,7 @@ def package_assessment(etree, index_of_assessment_to_package, outdir_path):
     temp_dir_path = make_temp_dir(assessment_ident, outdir_path)
     assessment_xml_doc_path = write_assessment_xml_doc(assessment_etree, temp_dir_path)
     manifest_file_path = write_manifest_file(assessment_ident, assessment_title, assessment_xml_doc_path, temp_dir_path)
-    archive_path = os.path.join(outdir_path, assessment_ident + '.zip')
+    archive_path = os.path.join(outdir_path, assessment_title + '.zip')
     write_archive(assessment_xml_doc_path, manifest_file_path, archive_path)
     if zipfile.is_zipfile(archive_path):
         delete_temp_dir(temp_dir_path)

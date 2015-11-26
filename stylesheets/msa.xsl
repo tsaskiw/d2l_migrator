@@ -59,10 +59,10 @@
                     <conditionvar>
                         <varequal respident="{$ques_part_label}_ANS" case="{$case}"><xsl:value-of select="pp_answers" /></varequal>
                         <var_extension>
-                            <d2l_2p0:answer_is_regexp>yes</d2l_2p0:answer_is_regexp>
+                            <d2l_2p0:answer_is_regexp><xsl:value-of select="pp_is_regex" /></d2l_2p0:answer_is_regexp>
                         </var_extension>
-                        <setvar action="Set"><xsl:value-of select="pp_value" /></setvar>
                     </conditionvar>
+                    <setvar action="Set"><xsl:value-of select="pp_value" /></setvar>
                 </respcondition>
             </xsl:for-each>
         </resprocessing>

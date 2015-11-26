@@ -6,7 +6,7 @@ import input_management, packager, preprocessor, transformer
 
 
 WRITE_INTERMEDIATE_FILES = True
-USAGE_MESSAGE = 'd2l_migrator.py -i <inputfile> -s <stylesheet> -o <outputdir> -b <baseurl> -q <questiontype>=all [cpd, mc, mr, msa, sa, tf], <diffdir>=""'
+USAGE_MESSAGE = 'd2l_migrator.py -i <inputfile> -s <stylesheet> -o <outputdir> -b <baseurl> -q <questiontype>=all [cpd, mc, mr, msa, pe, sa, tf], <diffdir>=""'
 
 
 def main(argv):

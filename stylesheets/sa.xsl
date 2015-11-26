@@ -26,16 +26,17 @@
           </qtimetadata>
         </itemmetadata>
         <xsl:for-each select="Parts/QuestionPart">
+            <xsl:variable name="resp_ident">TLM_QUES_<xsl:value-of select="ID"/>_ANS</xsl:variable>
             <presentation>
                 <flow>
                     <material>
                         <mattext texttype="text/html">&lt;p&gt;<xsl:value-of select="Text" />&lt;/p&gt;</mattext>
-                        <response_str ident="TLM_QUES_{ID}_STR" rcardinality="Single">
-                            <render_fib rows="1" columns="40" prompt="Box" fibtype="String">
-                                <response_label ident="TLM_QUES_{ID}_ANS" />
-                            </render_fib>
-                        </response_str>
                     </material>
+                    <response_str ident="TLM_QUES_{ID}_STR" rcardinality="Single">
+                        <render_fib rows="1" columns="40" prompt="Box" fibtype="String">
+                            <response_label ident="{$resp_ident}" />
+                        </render_fib>
+                    </response_str>
                 </flow>
             </presentation>
             <resprocessing>
@@ -43,7 +44,6 @@
                     <decvar type="Integer" minvalue="0" maxvalue="100" varname="Blank_1"/>
                 </outcomes>
             <xsl:for-each select="Answers/QuestionAnswer[Value > 0]">
-                <xsl:variable name="resp_ident" select="ID" />
                 <respcondition>
                     <conditionvar>
                         <xsl:variable name="ignore_case">
@@ -57,16 +57,16 @@
                     <setvar action="Set"><xsl:value-of select="Value"/></setvar>
                 </respcondition>
             </xsl:for-each>
-                <itemfeedback ident="{$ques_label}_FB">
-                    <material>
-                        <mattext texttype="text/html">
+            </resprocessing>
+            <itemfeedback ident="{$ques_label}_FB">
+                <material>
+                    <mattext texttype="text/html">
             <xsl:for-each select="Answers/QuestionAnswer[Value = 0]">
                 <xsl:if test="not(Feedback = '')">&lt;p&gt;<xsl:value-of select="Feedback"/>&lt;/p&gt;</xsl:if>
             </xsl:for-each>
-                        </mattext>
-                    </material>
-                </itemfeedback>
-            </resprocessing>
+                    </mattext>
+                </material>
+            </itemfeedback>
         </xsl:for-each>
     </item>
 </xsl:template>

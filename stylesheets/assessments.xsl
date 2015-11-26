@@ -6,6 +6,7 @@
 <xsl:include href="sa.xsl" />
 <xsl:include href="mc_mr_tf.xsl" />
 <xsl:include href="msa.xsl" />
+<xsl:include href="pe.xsl" />
 
 <xsl:template match="/">
 <questestinterop xmlns:d2l_2p0="http://desire2learn.com/xsd/d2lcp_v2p0">
