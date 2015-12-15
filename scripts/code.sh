@@ -5,9 +5,10 @@ STYLESHEET='/Users/todds/Otira/Projects/SAIT Test Bank Migration/d2l_migrator/st
 OUTDIR='/Users/todds/Otira/Projects/SAIT Test Bank Migration/output/code'
 BASEURL='/Users/todds/Otira/Projects/SAIT Test Bank Migration/TLM/tlm_exports/code'
 # acceptible types include: all, cpd, mc, mr, msa, pe, sa, tf
-QUESTIONTYPE='pe'
+QUESTIONTYPE='all'
 DIFFDIR=''
+QUESTION_LIST_FILE=''
 
-/Users/todds/Otira/Projects/SAIT\ Test\ Bank\ Migration/d2l_migrator/d2l_migrator/d2l_migrator.py -i "$INFILE" -s "$STYLESHEET" -o "$OUTDIR" -b "$BASEURL" -q "$QUESTIONTYPE" -d "$DIFFDIR"
+/Users/todds/Otira/Projects/SAIT\ Test\ Bank\ Migration/d2l_migrator/d2l_migrator/d2l_migrator.py -i "$INFILE" -s "$STYLESHEET" -o "$OUTDIR" -b "$BASEURL" -q "$QUESTIONTYPE" -d "$DIFFDIR" -l "$QUESTION_LIST_FILE"
 
 `ctags -R --languages=python --exclude=.git -f ../d2l_migrator/tags --tag-relative=yes ../d2l_migrator/*`

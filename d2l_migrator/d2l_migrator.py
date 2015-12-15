@@ -6,13 +6,13 @@ import input_management, packager, preprocessor, transformer
 
 
 WRITE_INTERMEDIATE_FILES = True
-USAGE_MESSAGE = 'd2l_migrator.py -i <inputfile> -s <stylesheet> -o <outputdir> -b <baseurl> -q <questiontype>=all [cpd, mc, mr, msa, pe, sa, tf], <diffdir>=""'
+USAGE_MESSAGE = 'd2l_migrator.py -i <inputfile> -s <stylesheet> -o <outputdir> -b <baseurl> -q <questiontype>=all [cpd, mc, mr, msa, pe, sa, tf], -d <diffdir> -l <questionlistfile>'
 
 
 def main(argv):
-    infile_path, stylesheet_path, outdir_path, base_url, question_type, diffdir = get_input(argv)
+    infile_path, stylesheet_path, outdir_path, base_url, question_type, diffdir,question_list_file = get_input(argv)
     logging.basicConfig(filename=os.path.join(outdir_path, 'migrator.log'), level=logging.INFO, filemode='w')
-    preprocessed_dom = preprocessor.process(infile_path, base_url, outdir_path, question_type, diffdir)
+    preprocessed_dom = preprocessor.process(infile_path, base_url, outdir_path, question_type, diffdir, question_list_file)
     if (WRITE_INTERMEDIATE_FILES):
         write_outfile(preprocessed_dom, 'pp_source.xml')
     transformed_etree = transformer.transform_data(preprocessed_dom, stylesheet_path)
@@ -32,11 +32,11 @@ def remove_empty_assessments(transformed_etree):
 
 
 def get_input(argv):
-    infile_path, stylesheet_path, outdir_path, base_url, question_type, diffdir = input_management.collect_input(argv)
-    input_is_valid = input_management.validate_input(infile_path, stylesheet_path, outdir_path, base_url, question_type, diffdir)
+    infile_path, stylesheet_path, outdir_path, base_url, question_type, diffdir,question_list_file = input_management.collect_input(argv)
+    input_is_valid = input_management.validate_input(infile_path, stylesheet_path, outdir_path, base_url, question_type, diffdir, question_list_file)
     if not input_is_valid:
         sys.exit()
-    return (infile_path, stylesheet_path, outdir_path, base_url, question_type, diffdir)
+    return (infile_path, stylesheet_path, outdir_path, base_url, question_type, diffdir, question_list_file)
 
 
 def write_outfile(dom, outfile_path):

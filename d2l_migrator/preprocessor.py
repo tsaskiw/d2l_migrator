@@ -1,4 +1,5 @@
 import fnmatch, logging, os, sys
+import csv
 import re
 from types import *
 from lxml import etree
@@ -38,17 +39,19 @@ Q_TYPES = {
 LC_TRUE_VALUES = ['t', 'true', 'y']
 LC_FALSE_VALUES = ['f', 'false', 'n']
 
+RE_PATTERN_VARIABLE = r'\b([a-zA-Z]+[\d_]*[\w\d]*)'
+VARIABLE_REPLACEMENT_E = 'e_e'
 
-def process(infile_path, base_url, outdir, question_type_symbol, diffdir):
+
+def process(infile_path, base_url, outdir, question_type_symbol, diffdir, question_list_file):
     source_etree = parse_question_source_file(infile_path)
-    set_up_logging(source_etree)
+    set_up_logging(source_etree, infile_path)
     set_custom_question_subtypes(source_etree)
     remove_duplicate_questions_from_source(source_etree, diffdir)
     remove_assessments_without_question_type(question_type_symbol, source_etree)
     remove_questions_other_than(question_type_symbol, source_etree)
     assessment_count = source_etree.xpath('count(/TLMPackage/Assessment)')
-    logging.info("assessments: {0}".format(int(assessment_count)))
-    result_etree = process_questions(source_etree, base_url, outdir)
+    result_etree = process_questions(source_etree, base_url, outdir, question_list_file)
     return result_etree
 
 
@@ -58,9 +61,8 @@ def parse_question_source_file(infile_path):
     return source_etree
 
 
-def set_up_logging(source_etree):
-    course_code = source_etree.findtext('ECourse/Code')
-    logging.info("\nProcessing " + course_code)
+def set_up_logging(source_etree, infile_path):
+    logging.info("Loading file '{}'".format(infile_path))
 
 
 def set_custom_question_subtypes(source_etree):
@@ -216,54 +218,104 @@ def remove_questions_other_than(question_type_symbol, source_etree):
                 question.getparent().remove(question)
 
 
-def process_questions(intree, base_url, outdir):
+def process_questions(intree, base_url, outdir, question_list_file):
     cpd_question_count = 0
     mc_question_count = 0
     mr_question_count = 0
     msa_question_count = 0
     pe_question_count = 0
+    pe_incompat_question_count = 0
     sa_question_count = 0
     tf_question_count = 0
     unk_question_count = 0
+    d2l_incompatible_questions = {}
+
+    question_list = build_question_list(question_list_file)
     types_string = get_question_types_string()
-    questions = intree.xpath('//Question[ancestor::Assessment and (' + types_string + ')]')
+    questions = intree.xpath("//Question[ancestor::Assessment and ({})]".format(types_string))
+    log_input_questions(intree, questions)
     for question in questions:
-        question_type = get_question_type_name_for_number(question.findtext('Type'))
-        if question_type == Q_TYPE_MULTISHORTANSWER:
-            if not COUNT_ONLY:
-                process_msa_question(question)
-            msa_question_count += 1
-        elif question_type == Q_TYPE_MULTICHOICE:
-            if not COUNT_ONLY:
-                process_mc_question(question)
-            mc_question_count += 1
-        elif question_type == Q_TYPE_MULTIRESPONSE:
-            if not COUNT_ONLY:
-                process_mr_question(question)
-            mr_question_count += 1
-        elif question_type == Q_TYPE_SHORTANSWER:
-            if not COUNT_ONLY:
-                process_sa_question(question)
-            sa_question_count += 1
-        elif question_type == Q_TYPE_TRUEFALSE:
-            if not COUNT_ONLY:
-                process_tf_question(question)
-            tf_question_count += 1
-        elif question_type == Q_TYPE_COMPOUND:
-            if not COUNT_ONLY:
-                process_cpd_question(question)
-            cpd_question_count += 1
-        elif question_type == Q_TYPE_PARSEREXPRESSION:
-            if not COUNT_ONLY:
-                process_pe_question(question)
-            pe_question_count += 1
+        if is_required_question(question, question_list):
+            question_type = get_question_type_name_for_number(question.findtext('Type'))
+            if question_type == Q_TYPE_MULTISHORTANSWER:
+                if not COUNT_ONLY:
+                    process_msa_question(question)
+                msa_question_count += 1
+            elif question_type == Q_TYPE_MULTICHOICE:
+                if not COUNT_ONLY:
+                    process_mc_question(question)
+                mc_question_count += 1
+            elif question_type == Q_TYPE_MULTIRESPONSE:
+                if not COUNT_ONLY:
+                    process_mr_question(question)
+                mr_question_count += 1
+            elif question_type == Q_TYPE_SHORTANSWER:
+                if not COUNT_ONLY:
+                    process_sa_question(question)
+                sa_question_count += 1
+            elif question_type == Q_TYPE_TRUEFALSE:
+                if not COUNT_ONLY:
+                    process_tf_question(question)
+                tf_question_count += 1
+            elif question_type == Q_TYPE_COMPOUND:
+                if not COUNT_ONLY:
+                    process_cpd_question(question)
+                cpd_question_count += 1
+            elif question_type == Q_TYPE_PARSEREXPRESSION:
+                if not COUNT_ONLY:
+                    if is_d2l_compatible_pe_question(question):
+                        process_pe_question(question)
+                        pe_question_count += 1
+                    else:
+                        add_incompatible_question(question, d2l_incompatible_questions)
+                        question.getparent().remove(question)
+                        pe_incompat_question_count += 1
+            else:
+                unk_question_count += 1
+                log_unrecognized_question(question)
+            image_processor.process_images(question, base_url, outdir)
         else:
-            unk_question_count += 1
-            log_unrecognized_question(question)
-        image_processor.process_images(question, base_url, outdir)
-    log_converted_questions(cpd_question_count, mc_question_count, mr_question_count, msa_question_count, pe_question_count, sa_question_count, tf_question_count, unk_question_count)
+            question.getparent().remove(question)
+    log_converted_questions(cpd_question_count, mc_question_count, mr_question_count, msa_question_count, pe_question_count, pe_incompat_question_count, sa_question_count, tf_question_count, unk_question_count)
+    log_incompatible_questions(d2l_incompatible_questions, outdir)
     write_it()
     return intree
+
+
+def build_question_list(question_list_file):
+    """ takes path to an excel csv file, single column of question titles, builds a list"""
+    question_list = []
+    if os.path.isfile(question_list_file):
+        with open(question_list_file, 'rbU') as ql_file:
+            reader = csv.reader(ql_file)
+            for row in reader:
+                if len(row) >= 1:
+                    question_list.append(row[0])
+    return question_list
+
+
+def is_required_question(question, question_list):
+    is_required = True
+    if len(question_list) > 0:
+        title = question.findtext('Title')
+        is_required = title in question_list
+    return is_required
+
+
+def log_input_questions(intree, questions):
+    logging.info('INPUT')
+    course_code = intree.findtext('ECourse/Code')
+    logging.info("Course code: {}".format(course_code))
+    logging.info("\tTotal questions input >>> {}".format(len(questions)))
+
+
+def add_incompatible_question(question, d2l_incompatible_questions):
+    assessment_name = question.xpath('ancestor::Assessment/Title/text()')[0]
+    question_name = question.findtext('Title')
+    if assessment_name in d2l_incompatible_questions:
+        d2l_incompatible_questions[assessment_name].append(question_name)
+    else:
+        d2l_incompatible_questions[assessment_name] = [question_name]
 
 
 def log_unrecognized_question(question):
@@ -273,7 +325,8 @@ def log_unrecognized_question(question):
     logging.info(question.findtext('Type'))
 
 
-def log_converted_questions(cpd_question_count, mc_question_count, mr_question_count, msa_question_count, pe_question_count, sa_question_count, tf_question_count, unk_question_count):
+def log_converted_questions(cpd_question_count, mc_question_count, mr_question_count, msa_question_count, pe_question_count, pe_incompat_question_count, sa_question_count, tf_question_count, unk_question_count):
+    logging.info('OUTPUT')
     logging.info("Converted:")
     logging.info('cpd = ' + str(cpd_question_count))
     logging.info('mc = ' + str(mc_question_count))
@@ -285,8 +338,18 @@ def log_converted_questions(cpd_question_count, mc_question_count, mr_question_c
     total_question_count = cpd_question_count + mc_question_count + mr_question_count + msa_question_count + pe_question_count + sa_question_count + tf_question_count
     logging.info('total = ' + str(total_question_count))
     logging.info("Not Converted:")
-    logging.info("pe: " + str(pe_question_count))
+    logging.info("pe: " + str(pe_incompat_question_count))
     logging.info("unk: " + str(unk_question_count))
+    logging.info("\tTotal questions processed >>> {}".format(total_question_count + pe_incompat_question_count + unk_question_count))
+
+
+def log_incompatible_questions(incompatible_questions, outdir):
+    file_path = os.path.join(outdir, 'd2l_incompatible_questions.txt')
+    with open(file_path, 'w+', ) as logfile:
+        for assessment in incompatible_questions:
+            logfile.write("{}\n".format(p2_unicode_utils.to_str(assessment)))
+            for question in incompatible_questions[assessment]:
+                logfile.write("\t{}\n".format(question))
 
 
 def get_question_type_name_for_number(question_type_number_as_string):
@@ -311,7 +374,6 @@ def get_question_type_number_as_string_for_name(question_type_name):
     else:
         msg = "Question Type Number not found for name '{0}'".format(question_type_name)
         logging.error(msg)
-        print(msg)
         sys.exit()
 
 
@@ -529,20 +591,76 @@ def get_choices(question_part):
 
 
 def process_pe_question(question):
-    if is_d2l_compatible_pe_question(question):
-        if skip_question(21):
-            question.getparent().remove(question)
-            return
-        elif question.find('Title').text == '1C12.08.5E2.LL2.15':
-            parser_expression = question.find('ParserExpression')
-            pe_variables = get_pe_variables(parser_expression)
-            formula = get_formula(question, pe_variables)
-            formula = linearize(formula, pe_variables)
-            add_formula(formula, parser_expression)
-            add_variables(parser_expression)
-            record_question(question)
+#    if question.find('Title').text == '1P.1I2.LL2.3':
+#    if skip_question(120):
+#        question.getparent().remove(question)
+#        return
+#    else:
+#        print(question.findtext('Title'))
+    parser_expression = question.find('ParserExpression')
+    replace_illegal_variable_names(question)
+    pe_variables = get_pe_variables(parser_expression)
+    formula = get_formula(question, pe_variables)
+#        print("in: {}".format(formula))
+    formula = linearize(formula, pe_variables)
+#        print("out: {}".format(formula))
+    add_formula(formula, parser_expression)
+    add_variables(parser_expression)
+    add_decimal_places(parser_expression)
+    add_feedback(question)
+    record_question(question)
+#    else:
+#        question.getparent().remove(question)
+
+
+def replace_illegal_variable_names(question):
+    replace_illegal_pe_variable_names(question)
+    replace_illegal_formula_variable_names(question)
+
+
+def replace_illegal_pe_variable_names(question):
+    parser_expression = question.find('ParserExpression')
+    pe_text = parser_expression.text
+    parser_expression.text = replace_illegal_variable_names_in_text(pe_text)
+
+
+def replace_illegal_formula_variable_names(question):
+    answer_text_elt = get_answer_text_node(question)
+    answer_text = answer_text_elt.text
+    answer_text_elt.text = replace_illegal_variable_names_in_text(answer_text)
+
+
+def replace_illegal_variable_names_in_text(text):
+    global VARIABLE_REPLACEMENT_E
+    pattern = r'\b[eE]\b'
+    reworked_text = re.sub(pattern, VARIABLE_REPLACEMENT_E, text)
+    return reworked_text
+
+
+def add_feedback(question):
+    feedback = etree.Element('pp_feedback')
+    feedback_elts = question.xpath('Parts/QuestionPart/Answers/QuestionAnswer/Feedback[text()!=""]')
+    if len(feedback_elts) > 0:
+        feedback_text = question.xpath('Parts/QuestionPart/Answers/QuestionAnswer/Feedback[text()!=""]')[0].text
     else:
-        question.getparent().remove(question)
+        feedback_text = ''
+    feedback.text = feedback_text
+    question.append(feedback)
+
+
+def add_decimal_places(parser_expression):
+    decimal_places = etree.Element('pp_decimal_places')
+    decimal_places.text = get_max_decimal_places(parser_expression)
+    parser_expression.append(decimal_places)
+
+
+def get_max_decimal_places(parser_expression):
+    decimal_places = parser_expression.xpath('pp_variables/pp_variable/pp_var_decimal_places/text()')
+    try:
+        max_decimal_places = max(decimal_places)
+    except ValueError:
+        max_decimal_places = '0'
+    return max_decimal_places
 
 
 def get_formula(question, pe_variables):
@@ -560,23 +678,116 @@ def add_formula(formula_text, parser_expression):
 
 def linearize(expression, pe_variables):
     linear_expression = expression
-    pattern = re.compile('(?<!\{)([a-zA-Z]+)(?!\})')
-    variable_name_match = pattern.search(expression)
-    if variable_name_match:
-        variable_name = variable_name_match.group()
-        variable_value = ''
-        if variable_name in pe_variables:
-            variable_value = pe_variables[variable_name]
-        span = variable_name_match.span()
-        beginning = expression[:span[0]]
-        end = expression[span[1]:]
-        if is_random_pe_variable(variable_value):
-            linear_expression = "{}{{{}}}{}".format(beginning, variable_name, end)
-        else:
-            linear_expression = "{}({}){}".format(beginning, variable_value, end)
-            del pe_variables[variable_name]
-        return linearize(linear_expression, pe_variables)
+    name_data = get_next_name(linear_expression)
+    if name_data:
+        name = name_data[0]
+        start_index = name_data[1]
+        end_index = name_data[2]
+        if name == 'int':
+            if is_int_function_call(linear_expression):
+                linear_expression = replace_int_function_call(linear_expression)
+                return linearize(linear_expression, pe_variables)
+        elif name == 'sqrt':
+            if is_sqrt_function_call(linear_expression):
+                linear_expression = replace_sqrt_function_call(linear_expression)
+                return linearize(linear_expression, pe_variables)
+        elif name == 'sqr':
+            start = expression[0:start_index]
+            remainder = expression[end_index:]
+            linear_expression = ''.join([start, name, linearize(remainder, pe_variables)])
+        elif name in pe_variables:
+            start = expression[0:start_index]
+            name = "{{{}}}".format(name)
+            remainder = expression[end_index:]
+            linear_expression = ''.join([start, name, linearize(remainder, pe_variables)])
     return linear_expression
+
+
+def get_next_name(expression):
+    next_name = None
+    pattern = get_re_pattern_variable()
+    match = re.search(pattern, expression)
+    if match:
+        next_name = [match.group(), match.start(), match.end()]
+    return next_name
+
+
+def is_sqrt_function_call(expression):
+    is_sqrt_call = is_function_call(expression, 'sqrt')
+    return is_sqrt_call
+
+
+def is_int_function_call(expression):
+    is_int_call = is_function_call(expression, 'int')
+    return is_int_call
+
+
+def is_function_call(expression, function_name):
+    pattern = r"^\W*\b{}\s*\(".format(function_name)
+    match = re.match(pattern,expression)
+    return match
+
+def is_round_function_call(expression):
+    pattern = re.compile('round(?=\()')
+    match = pattern.search(expression)
+    return match
+
+
+def replace_int_function_call(expression):
+    START = 0
+    ARGS = 2
+    END = 3
+    expression_parts = split_int_call(expression)
+    start = expression_parts[START]
+    end = expression_parts[END]
+    args_replacement = get_int_call_replacement(expression_parts[ARGS])
+    reworked_expression = "{}{}{}".format(start, args_replacement, end)
+    return reworked_expression
+
+
+def replace_sqrt_function_call(expression):
+    pattern = r'sqrt\('
+    reworked_expression = re.sub(pattern, 'sqr(', expression)
+    return reworked_expression
+
+
+def get_int_call_replacement(args_string):
+    replacement = "({} - ({} % 1.0))".format(args_string, args_string)
+    return replacement
+
+
+def split_int_call(expression):
+    pattern = re.compile('(.*)(int(?=\())(.*)')
+    match = pattern.search(expression)
+    expression_start = match.group(1)
+    expression_name = match.group(2)
+    expression_remainder = match.group(3)
+    arg_parts = balance_parens(expression_remainder)
+    expression_args = arg_parts[0]
+    expression_end = arg_parts[1]
+    int_call = [expression_start, expression_name, expression_args, expression_end]
+    return int_call
+
+
+def balance_parens(expression):
+    """Return string with balanced parentheses"""
+    last_paren_index = find_last_paren_index(expression)
+    parts = [expression[:last_paren_index + 1], expression[last_paren_index + 1:]]
+    return parts
+
+
+def find_last_paren_index(expression):
+    last_paren_index = -1
+    balance = 0
+    for index, character in enumerate(expression):
+        if character == '(':
+            balance += 1
+        elif character == ')':
+            balance -= 1
+            if balance == 0:
+                last_paren_index = index
+                break
+    return last_paren_index
 
 
 def is_random_pe_variable(value):
@@ -585,21 +796,28 @@ def is_random_pe_variable(value):
 
 
 def search_expression_for_variable_names(expression):
-    pattern = re.compile('[a-zA-Z]+')
+    pattern = get_re_pattern_variable()
     variable_name = pattern.search(expression).group()
     return variable_name
 
 
 def find_var_names(text):
-    pattern = re.compile('[a-zA-Z]+')
-    var_names = pattern.findall(text)
+    pattern = get_re_pattern_variable()
+    pattern = r'\b([a-zA-Z]+[\d_]*[\w\d]*)'
+    var_names = re.findall(pattern, text)
     return var_names
 
 
 def get_answer_text(question):
-    answer_text_nodes = question.xpath('Parts/QuestionPart/Answers/QuestionAnswer/Text[normalize-space(text()) != ""]')
-    answer_text = answer_text_nodes[0].text
+    answer_text_node = get_answer_text_node(question)
+    answer_text = answer_text_node.text
     return answer_text
+
+
+def get_answer_text_node(question):
+    answer_text_nodes = question.xpath('Parts/QuestionPart/Answers/QuestionAnswer/Text[normalize-space(text()) != ""]')
+    answer_text_node = answer_text_nodes[0]
+    return answer_text_node
 
 
 def find_pe_value_for_name(name, pe_variables):
@@ -625,7 +843,7 @@ def add_variables(parser_expression):
 
 
 def get_random_params(random_variable_value):
-    pattern = re.compile('\(\s*(\d*\.?\d+)\s*,?\s*(\d*\.?\d+)\s*,?\s*(\d*\.?\d+)\s*\)')
+    pattern = re.compile('\([+-]?\s*(\d*\.?\d+)\s*,?\s*([+-]?\d*\.?\d+)\s*,?\s*([+-]?\d*\.?\d+)\s*\)')
     match = pattern.search(random_variable_value)
     params = {'min': match.group(1), 'max': match.group(2), 'step': match.group(3)}
     return params
@@ -641,9 +859,40 @@ def get_pe_variables(parser_expression):
     variables = {}
     statements = get_pe_statements(parser_expression)
     for statement in statements:
-        parts = statement.split('=')
-        variables[parts[0].strip()] = parts[1].strip()
+        if is_valid_pe_variable_statement(statement):
+            parts = statement.split('=')
+            name = parts[0].strip().lower()
+            value = parts[1].strip().lower()
+            variables[name] = value
     return variables
+
+
+def is_valid_pe_variable_statement(statement):
+    is_valid_pe_variable_statement = True
+    if is_substitute_statement(statement) or is_format_statement(statement) or is_round_statement(statement):
+        is_valid_pe_variable_statement = False
+    return is_valid_pe_variable_statement
+
+
+def is_substitute_statement(statement):
+    is_substitute_statement = is_matching_statement(statement, 'substitute\s*\(')
+    return is_substitute_statement
+
+
+def is_format_statement(statement):
+    is_format_statement = is_matching_statement(statement, 'format\s*\(')
+    return is_format_statement
+
+
+def is_round_statement(statement):
+    is_round_statement = is_matching_statement(statement, 'round\s*\(')
+    return is_round_statement
+
+
+def is_matching_statement(statement, match_text):
+    pattern = re.compile(match_text)
+    is_matching_statement = pattern.search(statement)
+    return is_matching_statement
 
 
 def get_pe_statements(parser_expression):
@@ -659,214 +908,45 @@ def build_random_variable():
     variable_min = etree.Element('pp_var_min')
     variable_max = etree.Element('pp_var_max')
     variable_step = etree.Element('pp_var_step')
+    variable_decimal_places = etree.Element('pp_var_decimal_places')
     random_variable.append(variable_name)
     random_variable.append(variable_min)
     random_variable.append(variable_max)
     random_variable.append(variable_step)
+    random_variable.append(variable_decimal_places)
     return random_variable
 
 
 def set_variable_properties(variable, random_variable_name, random_params):
     variable.find('pp_var_name').text = random_variable_name
-    variable.find('pp_var_min').text = random_params['min']
-    variable.find('pp_var_max').text = random_params['max']
-    variable.find('pp_var_step').text = random_params['step']
+    random_min =  random_params['min']
+    random_max = random_params['max']
+    random_step = random_params['step']
+    variable.find('pp_var_min').text = random_min
+    variable.find('pp_var_max').text = random_max
+    variable.find('pp_var_step').text = random_step
+    variable.find('pp_var_decimal_places').text = get_random_variable_decimal_places(random_min, random_max, random_step)
 
 
-#def add_pe_variables(parser_expression):
-#def add_variables_and_function(parser_expression):
-#    variables = add_pe_variables(parser_expression)
-#    add_formula(parser_expression, variables)
-#
-    #pe_variables = parse_parser_expression(parser_expression)
-    #random_variables = build_random_variables(pe_variables)
-#    parser_expression.append(random_variables)
-#               find var names
-#                   recurse until no var names
-#           unwind recursion (replace name with value)
-#   find answer text
-#       find answer var name
-#   find dict answer value
-#   create function
-#   remove dict answer entry
-#   for each dict entry
-#       if random
-#           create variable
-#       else
-#           problem
+def get_random_variable_decimal_places(random_min, random_max, random_step):
+    num_decimal_places = 0
+    for number in [random_min, random_max, random_step]:
+        mantissa_length = get_mantissa_length(number)
+        if mantissa_length > num_decimal_places:
+            num_decimal_places = mantissa_length
+    num_decimal_places_as_string = str(num_decimal_places)
+    return num_decimal_places_as_string
 
 
-#def parse_parser_expression(parser_expression):
-#    variables = {}
-#    expressions = get_expressions(parser_expression)
-#    for expression in expressions:
-#        expression = expression.strip()
-#        if expression != '':
-#            parts = expression.split('=')
-#            variables[parts[0].strip()] = parts[1].strip()
-#    return variables
+def get_mantissa_length(number):
+    mantissa_length = 0
+    decimal = '.'
+    if decimal in number:
+        parts = number.split(decimal)
+        mantissa = parts[-1]
+        mantissa_length = len(mantissa)
+    return mantissa_length
 
-
-#def build_random_variables(pe_variables):
-#    random_variables = etree.Element('pp_random_variables')
-#    for name in pe_variables:
-#        if is_random_pe_variable(pe_variables[name]):
-#            add_random_variable(pe_variables[name])
-#
-#
-#def add_random_variable(pe_variable_value):
-#    random_variable = build_random_variable()
-#    values = get_random_var_values(pe_variable_value)
-#    #set_random_min(random_variable, pe_variable_value)
-#    print(values)
-#
-#
-#def get_random_var_values(pe_variable_value):
-#    pattern = re.compile('\d+')
-#    print(pe_variable_value)
-#    values = pattern.findall(pe_variable_value)
-#    return values
-
-
-#def process_pe_values(pe_variables):
-#    print('---')
-#    for pe_variable in pe_variables:
-#        pe_value = pe_variables[pe_variable]
-#        print(pe_value)
-#        process_pe_value(pe_value, pe_variables)
-#    #pe_variables[pe_variable] = linearize_value(pe_value, pe_variables)
-#
-#
-#def process_pe_value(value, pe_variables):
-#    random_variables = etree.Element('pp_random_variables')
-#    pattern = re.compile('[a-zA-Z]+')
-#    for match in pattern.findall(value):
-#        print(match)
-#        if match == 'rndnum':
-#            print('make variable')
-#            add_random_variable(random_variables, value)
-#            pass
-#        if match in pe_variables:
-#            print("[{}]".format(pe_variables[match]))
-#            pass
-#    return value
-#
-#
-#def add_random_variable(random_variables, value):
-#    random_variable = build_random_variable()
-#    print(value)
-#
-#
-#    variables = etree.Element('pp_variables')
-#    pattern = re.compile('[^;]+')
-#    for expression in pattern.findall(parser_expression.text):
-#        parts = expression.strip().split('=')
-#        if len(parts) == 2:
-#            name = parts[0].strip()
-#            value = parts[1].strip()
-#            add_pe_variable(parser_expression, name, value, variables)
-#        else:
-#            question_title = parser_expression.xpath('ancestor::Question/Title/text()')[0]
-#            logging.warning("Parser expression not digestable: {} question:{}".format(expression.strip(), question_title))
-#    parser_expression.append(variables)
-#    return variables
-#
-#
-#def add_pe_variable(parser_expression, name, value, variables):
-#    var_name = etree.Element('pp_var_name')
-#    var_name.text = name
-#    variable = etree.Element('pp_variable')
-#    variable.append(var_name)
-#    var_value = etree.Element('pp_var_value')
-#    var_value.text = value
-#    variable.append(var_value)
-#    variables.append(variable)
-#
-#
-#def get_formula_text(variables):
-#    answer_variable_name = get_answer_variable_name(variables)
-#    answer_variable_value = find_answer_variable_value(answer_variable_name, variables)
-#    formula_text = answer_variable_value
-#    for var_name in get_var_names(answer_variable_value):
-#        variable = find_answer_variable_by_name(var_name, variables)
-#        if is_random_variable(variable):
-#            add_random_variable(variable)
-#            formula_text = format_formula_text(answer_variable_value, var_name)
-#            variables.remove(variable)
-#        else:
-#            name = variable.find('pp_var_name').text
-#            warning = "Odd variable encountered in question {}: {} = {}"
-#            value = variable.find('pp_var_value').text
-#            question_title = variables.xpath('ancestor::Question/Title/text()')[0]
-#            logging.warning(warning.format(question_title, name, value))
-#    remove_variable_by_name(answer_variable_name, variables)
-#    return formula_text
-#
-#
-#def remove_variable_by_name(variable_name, variables):
-#    variable = find_answer_variable_by_name(variable_name, variables)
-#    variables.remove(variable)
-#
-#
-#def format_formula_text(answer_variable_value, var_name):
-#    parts = answer_variable_value.partition(var_name)
-#    formatted_formula = ''.join([parts[0], '{', parts[1], '}', parts[2]])
-#    return formatted_formula
-#
-#
-#def get_var_names(answer_variable_value):
-#    pattern = re.compile('[a-zA-Z]+')
-#    names = pattern.findall(answer_variable_value)
-#    return names
-
-
-#def add_random_variable(variable):
-#    random_variable = build_random_variable()
-#    add_random_variable_name(random_variable, variable)
-#    add_random_variable_values(random_variable, variable)
-#    variables = variable.getparent()
-#    variables.append(random_variable)
-#
-#
-#def add_random_variable_name(random_variable, variable):
-#    name = variable.find('pp_var_name').text
-#    random_variable.find('pp_random_name').text = name
-#
-#
-#def add_random_variable_values(random_variable, variable):
-#    random_values = get_random_var_values(variable)
-#    random_variable.find('pp_random_min').text = random_values[0]
-#    random_variable.find('pp_random_max').text = random_values[1]
-#    random_variable.find('pp_random_step').text = random_values[2]
-#
-#
-#def get_random_var_values(variable):
-#    value = variable.find('pp_var_value').text
-#    pattern = re.compile('\d+')
-#    values = pattern.findall(value)
-#    return values
-
-
-#def get_answer_variable_name(variables):
-#    answer_text = find_answer_text(variables)
-#    pattern = re.compile('(?<={)[^}]*?(?=})')
-#    match = pattern.search(answer_text).group()
-#    return match
-#
-#
-#def find_answer_variable_value(answer_variable_name, variables):
-#    answer_variable = find_answer_variable_by_name(answer_variable_name, variables)
-#    answer_variable_value = answer_variable.find('pp_var_value').text
-#    return answer_variable_value
-#
-#
-#def find_answer_variable_by_name(answer_variable_name, variables):
-#    uc_answer_variable_name = answer_variable_name.upper()
-#    lc_answer_variable_name = answer_variable_name.lower()
-#    query = "pp_variable[pp_var_name[text()='{}']]|pp_variable[pp_var_name[text()='{}']]".format(uc_answer_variable_name, lc_answer_variable_name)
-#    answer_variable = variables.xpath(query)[0]
-#    return answer_variable
-#
 
 def is_d2l_compatible_pe_question(question):
     is_compatible = False
@@ -878,7 +958,11 @@ def is_d2l_compatible_pe_question(question):
 
 
 def is_d2l_compatible_pe(parser_expression):
-    return '{' not in parser_expression
+    no_braces = '{' not in parser_expression
+    pattern = r'\bif\s*\('
+    match = re.search(pattern, parser_expression)
+    no_if = match is None
+    return no_braces and no_if
 
 
 #insert block below in function
@@ -1017,23 +1101,6 @@ def is_sa_answer(question_answer):
 
 def is_incorrect_answer(question_answer):
     return question_answer.findtext('Value') == '0'
-
-def is_sa_feedback(question_answer):
-    return is_sa_element(question_answer, 'Feedback')
-
-
-def is_sa_element(question_answer, element_name):
-    is_sa_element = len(question_answer.findtext(element_name)) > 0
-    return is_sa_element
-
-
-def is_sa_feedback(question_answer):
-    return is_sa_element(question_answer, 'Feedback')
-
-
-def is_sa_element(question_answer, element_name):
-    is_sa_element = len(question_answer.findtext(element_name)) > 0
-    return is_sa_element
 
 
 def process_sa_answer(question_answer):
@@ -1276,3 +1343,6 @@ def is_float(val):
         return False
 
 
+def get_re_pattern_variable():
+    global RE_PATTERN_VARIABLE
+    return RE_PATTERN_VARIABLE

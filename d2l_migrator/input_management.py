@@ -12,12 +12,13 @@ def collect_input(argv):
     base_url = ''
     question_type = 'all'
     diffdir = ''
+    question_list_file = ''
     try:
-        opts, args = getopt.getopt(argv,"hi:s:o:b:q:d:",["ifile=","sfile=","odir=","base_url=", "question_type=", "diffdir="])
+        opts, args = getopt.getopt(argv,"hi:s:o:b:q:d:l:",["ifile=","sfile=","odir=","base_url=", "question_type=", "diffdir=", "question_list_file="])
     except getopt.GetoptError:
         d2l_migrator.print_usage()
         sys.exit(2)
-    if len(opts) < 6:
+    if len(opts) < 5:
         d2l_migrator.print_usage('Parameter(s) missing. Usage:')
         sys.exit()
     for opt, arg in opts:
@@ -36,9 +37,11 @@ def collect_input(argv):
             question_type = arg
         elif opt in ("-d", "--diffdir"):
             diffdir = arg
-    return (infile, stylesheet, outdir, base_url, question_type, diffdir)
+        elif opt in ("-l", "--question_list"):
+            question_list_file = arg
+    return (infile, stylesheet, outdir, base_url, question_type, diffdir, question_list_file)
 
-def validate_input(infile, stylesheet, outdir, base_url, question_type, diffdir):
+def validate_input(infile, stylesheet, outdir, base_url, question_type, diffdir, question_list_file):
     input_is_valid = True
     invalid_params = []
     if file_doesnt_exist(infile):
@@ -56,6 +59,8 @@ def validate_input(infile, stylesheet, outdir, base_url, question_type, diffdir)
         invalid_params.append(question_type)
     if (diffdir and dir_doesnt_exist(diffdir)):
         invalid_params.append(diffdir)
+    if (question_list_file and file_doesnt_exist(question_list_file)):
+        invalid_params.append(question_list_file)
     if len(invalid_params) > 0:
         input_is_valid = False
         for param in invalid_params:
