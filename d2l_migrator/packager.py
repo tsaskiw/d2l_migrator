@@ -4,7 +4,7 @@ from lxml import etree
 import transformer
 
 
-MANIFEST_STYLESHEET_PATH = '../stylesheets/imsmanifest.xsl'
+MANIFEST_STYLESHEET_PATH = '../../stylesheets/imsmanifest.xsl'
 
 
 def package_assessments(etree, outdir_path):
@@ -20,12 +20,18 @@ def package_assessment(etree, index_of_assessment_to_package, outdir_path):
     temp_dir_path = make_temp_dir(assessment_ident, outdir_path)
     assessment_xml_doc_path = write_assessment_xml_doc(assessment_etree, temp_dir_path)
     manifest_file_path = write_manifest_file(assessment_ident, assessment_title, assessment_xml_doc_path, temp_dir_path)
-    archive_path = os.path.join(outdir_path, assessment_title + '.zip')
+    archive_path = os.path.join(outdir_path, clean_title(assessment_title) + '.zip')
     write_archive(assessment_xml_doc_path, manifest_file_path, archive_path)
     if zipfile.is_zipfile(archive_path):
         delete_temp_dir(temp_dir_path)
     else:
         print 'failed to archive assessment ' + assessment_ident + '. Please create manually'
+
+
+def clean_title(assessment_title):
+    clean_title = re.sub(r'/', '_', assessment_title)
+    clean_title = clean_title.strip()
+    return clean_title
 
 
 def build_assessment_etree(etree, index_of_assessment_to_package):
@@ -49,6 +55,8 @@ def write_assessment_xml_doc(assessment_etree, outdir_path):
 
 def make_temp_dir(name, outdir_path):
     temp_dir_path = os.path.join(outdir_path, name)
+    if os.path.exists(temp_dir_path):
+        shutil.rmtree(temp_dir_path)
     os.mkdir(temp_dir_path)
     return temp_dir_path
 

@@ -1,5 +1,6 @@
 import fnmatch, logging, os, sys
 import csv
+import random
 import re
 from types import *
 from lxml import etree
@@ -46,11 +47,11 @@ VARIABLE_REPLACEMENT_E = 'e_e'
 def process(infile_path, base_url, outdir, question_type_symbol, diffdir, question_list_file):
     source_etree = parse_question_source_file(infile_path)
     set_up_logging(source_etree, infile_path)
+    collect_unassigned_questions(source_etree)
     set_custom_question_subtypes(source_etree)
     remove_duplicate_questions_from_source(source_etree, diffdir)
     remove_assessments_without_question_type(question_type_symbol, source_etree)
     remove_questions_other_than(question_type_symbol, source_etree)
-    assessment_count = source_etree.xpath('count(/TLMPackage/Assessment)')
     result_etree = process_questions(source_etree, base_url, outdir, question_list_file)
     return result_etree
 
@@ -63,6 +64,114 @@ def parse_question_source_file(infile_path):
 
 def set_up_logging(source_etree, infile_path):
     logging.info("Loading file '{}'".format(infile_path))
+
+
+def collect_unassigned_questions(source_etree):
+    unassigned_questions = get_unassigned_questions(source_etree)
+    assessments = build_module_assessments(unassigned_questions)
+    add_module_assessments(assessments, source_etree)
+
+
+def get_unassigned_questions(source_etree):
+    questions = source_etree.xpath('//Question[not(ancestor::Assessment)]')
+    assessment_question_titles = source_etree.xpath('//Question[ancestor::Assessment]/Title/text()')
+    non_assessment_questions = [question for question in questions if question.findtext('Title') not in assessment_question_titles]
+    return non_assessment_questions
+
+
+def build_module_assessments(unassigned_questions):
+    assessments = {}
+    for question in unassigned_questions:
+        module_assessment = get_module_assessment(question, assessments)
+        add_question_to_module_assessment(question, module_assessment)
+    return assessments.values()
+
+
+def add_module_assessments(assessments, source_etree):
+    for assessment in assessments:
+        source_etree.getroot().append(assessment)
+
+
+def get_module_assessment(question, assessments):
+    assessment_title = get_module_assessment_title(question)
+    if assessment_title not in assessments:
+        assessments[assessment_title] = build_module_assessment(assessment_title)
+    return assessments[assessment_title]
+
+
+def get_module_assessment_title(question):
+    title = question.xpath('following-sibling::ContentModule/Title/text()')[0]
+    if not title.endswith('2015'):
+        title = ''.join([title, '-2015'])
+    title = re.sub(r'[/\\:]', r'-', title)
+    return title
+
+
+def build_module_assessment(assessment_title):
+    assessment_node = etree.Element('Assessment')
+    assessment_node.append(get_module_assessment_title_node(assessment_title))
+    assessment_node.append(get_id_node())
+    assessment_node.append(get_selections_node())
+    return assessment_node
+
+
+def get_module_assessment_title_node(assessment_title):
+    title_node = create_node('Title')
+    title_node.text = assessment_title
+    return title_node
+
+
+def get_id_node():
+    id_node = create_node('ID')
+    id_node.text = str(random.randint(1, 99999)).zfill(5)
+    return id_node
+
+
+def get_selections_node():
+    selections_node = create_node('Selections')
+    selections_node.append(get_assessment_selection_node())
+    return selections_node
+
+
+def get_assessment_selection_node():
+    assessment_selection_node = create_node('AssessmentSelection')
+    assessment_selection_node.append(get_content_selection_sets_node())
+    return assessment_selection_node
+
+
+def get_content_selection_sets_node():
+    return create_node('ContentSelectionSets')
+
+
+def create_node(title):
+    return etree.Element(title)
+
+
+def create_assessment(content_module_title):
+    title = etree.Element('Title')
+    title.text = content_module_title
+    identifier = etree.Element('ID')
+    identifier.text = str(random.randint(0,99999)).zfill(5)
+    assessment = etree.Element('Assessment')
+    assessment.append(title)
+    assessment.append(identifier)
+    return assessment
+
+def add_question_to_module_assessment(question, module_assessment):
+    content_selection_sets = module_assessment.xpath('Selections/AssessmentSelection/ContentSelectionSets')[0]
+    content_selection_sets.append(question)
+
+
+def add_question_to_assessment(na_question, assessment):
+    node_names = ['ContentSelectionSets', 'AssessmentSelection', 'Selections']
+    nodes = [etree.Element(name) for name in node_names]
+    nodes.append(na_question)
+    nodes.insert(0, assessment)
+    iterator = iter(nodes)
+    prev = iterator.next()
+    for node in iterator:
+        prev.append(node)
+        prev = node
 
 
 def set_custom_question_subtypes(source_etree):
@@ -153,7 +262,7 @@ def doesnt_contain_parser_expression(question):
     return not contains_parser_expression(question)
 
 
-def remove_duplicate_questions_from_source(source_etree, diffdir):
+def remove_duplicate_questions_from_source(source_etree, diffdir=''):
     if diffdir:
         existing_question_titles = find_existing_question_titles(diffdir)
         remove_duplicate_questions_from_module(source_etree, existing_question_titles)
@@ -232,7 +341,8 @@ def process_questions(intree, base_url, outdir, question_list_file):
 
     question_list = build_question_list(question_list_file)
     types_string = get_question_types_string()
-    questions = intree.xpath("//Question[ancestor::Assessment and ({})]".format(types_string))
+    query = "//Question[ancestor::Assessment and ({})]".format(types_string)
+    questions = intree.xpath(query)
     log_input_questions(intree, questions)
     for question in questions:
         if is_required_question(question, question_list):
@@ -320,9 +430,8 @@ def add_incompatible_question(question, d2l_incompatible_questions):
 
 def log_unrecognized_question(question):
     logging.info("Failed to recognize custom question type:")
-    logging.info(question.xpath('ancestor::Assessment/Title/text()'))
-    logging.info(question.findtext('Title'))
-    logging.info(question.findtext('Type'))
+    logging.info("Question: {}".format(question.findtext('Title')))
+    logging.info("Type: {}".format(question.findtext('Type')))
 
 
 def log_converted_questions(cpd_question_count, mc_question_count, mr_question_count, msa_question_count, pe_question_count, pe_incompat_question_count, sa_question_count, tf_question_count, unk_question_count):
@@ -591,26 +700,16 @@ def get_choices(question_part):
 
 
 def process_pe_question(question):
-#    if question.find('Title').text == '1P.1I2.LL2.3':
-#    if skip_question(120):
-#        question.getparent().remove(question)
-#        return
-#    else:
-#        print(question.findtext('Title'))
     parser_expression = question.find('ParserExpression')
     replace_illegal_variable_names(question)
     pe_variables = get_pe_variables(parser_expression)
     formula = get_formula(question, pe_variables)
-#        print("in: {}".format(formula))
     formula = linearize(formula, pe_variables)
-#        print("out: {}".format(formula))
     add_formula(formula, parser_expression)
     add_variables(parser_expression)
     add_decimal_places(parser_expression)
     add_feedback(question)
     record_question(question)
-#    else:
-#        question.getparent().remove(question)
 
 
 def replace_illegal_variable_names(question):
@@ -665,8 +764,11 @@ def get_max_decimal_places(parser_expression):
 
 def get_formula(question, pe_variables):
     answer_text = get_answer_text(question)
-    answer_var_name = find_var_names(answer_text)[0]
-    formula = find_pe_value_for_name(answer_var_name, pe_variables)
+    answer_var_names = find_var_names(answer_text)
+    if answer_var_names is not None and len(answer_var_names) > 0:
+        formula = find_pe_value_for_name(answer_var_names[0], pe_variables)
+    else:
+        formula = answer_text
     return formula
 
 
@@ -1091,7 +1193,10 @@ def is_sa_feedback(question_answer):
 
 
 def is_sa_element(question_answer, element_name):
-    is_sa_element = len(question_answer.findtext(element_name)) > 0
+    try:
+        is_sa_element = len(question_answer.findtext(element_name)) > 0
+    except:
+        is_sa_element = False
     return is_sa_element
 
 
