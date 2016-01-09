@@ -89,6 +89,7 @@ def build_module_assessments(unassigned_questions):
 
 def add_module_assessments(assessments, source_etree):
     for assessment in assessments:
+        print(assessment.findtext('Title'))
         source_etree.getroot().append(assessment)
 
 
@@ -637,8 +638,11 @@ def add_tf_flag(question_part):
 
 
 def replace_incorrect_tf_question_answer_text(question_part):
-    incorrect_answer = question_part.xpath('Answers/QuestionAnswer[Value=0]')[0]
-    incorrect_answer.find('Text').text = ''
+    try:
+        incorrect_answer = question_part.xpath('Answers/QuestionAnswer[Value=0]')[0]
+        incorrect_answer.find('Text').text = ''
+    except IndexError:
+        pass
 
 
 def replace_mc_answer_elts_with_sa(question_part):

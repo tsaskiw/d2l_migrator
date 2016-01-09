@@ -1,6 +1,6 @@
 import sys, re, os, os.path, shutil, zipfile
 from lxml import etree
-
+from migration_exceptions import BadQuestionError
 
 QUESTION = None
 BASE_URL = None
@@ -15,8 +15,11 @@ def process_images(question, base_url, outdir):
     BASE_URL = base_url
     global IMAGE_OUTDIR_PATH
     IMAGE_OUTDIR_PATH = make_image_outdir(outdir)
-    question_text_elt = get_question_text_elt(question)
-    copy_image_files_and_replace_img_srcs(question_text_elt)
+    try:
+        question_text_elt = get_question_text_elt(question)
+        copy_image_files_and_replace_img_srcs(question_text_elt)
+    except BadQuestionError:
+        pass
 
 
 def make_image_outdir(outdir):
@@ -32,6 +35,8 @@ def get_question_text_elt(question):
     question_text_elts = question.xpath('Parts/QuestionPart/Text')
     if question_text_elts:
         question_text_elt = question_text_elts[0]
+    else:
+        raise(BadQuestionError(question.findtext('Title')))
     return question_text_elt
 
 
