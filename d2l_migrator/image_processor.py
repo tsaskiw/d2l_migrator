@@ -42,7 +42,7 @@ def get_question_text_elt(question):
 
 def copy_image_files_and_replace_img_srcs(question_text_elt):
     question_text = question_text_elt.text
-    src_pattern = '([\"\'])(.*getassetfile\.aspx\?id\s*=\s*)(\d+)([\"\'])'
+    src_pattern = '(IMG\s.*src=[\"\'])(.*getassetfile\.aspx\?id\s*=\s*)(\d+)([\"\'])'
     if re.search(src_pattern, question_text, re.IGNORECASE):
         new_question_text = re.sub(src_pattern, copy_image_file_and_replace_img_src, question_text, flags=re.IGNORECASE)
         question_text_elt.text = new_question_text

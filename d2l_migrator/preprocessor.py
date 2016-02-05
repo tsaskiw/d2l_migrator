@@ -89,7 +89,6 @@ def build_module_assessments(unassigned_questions):
 
 def add_module_assessments(assessments, source_etree):
     for assessment in assessments:
-        print(assessment.findtext('Title'))
         source_etree.getroot().append(assessment)
 
 

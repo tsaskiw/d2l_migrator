@@ -1,0 +1,288 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+BASE_URL	d2l_migrator/image_processor.py	/^BASE_URL = None$/;"	v
+BadQuestionError	d2l_migrator/image_processor.py	/^from migration_exceptions import BadQuestionError$/;"	i
+BadQuestionError	d2l_migrator/migratios.pxceptions.py	/^class BadQuestionError(Exception):$/;"	c
+COUNT_ONLY	d2l_migrator/preprocessor.py	/^COUNT_ONLY = False$/;"	v
+HTML	d2l_migrator/preprocessor.py	/^from html import HTML$/;"	i
+IMAGE_OUTDIR_PATH	d2l_migrator/image_processor.py	/^IMAGE_OUTDIR_PATH = None$/;"	v
+LC_FALSE_VALUES	d2l_migrator/preprocessor.py	/^LC_FALSE_VALUES = ['f', 'false', 'n']$/;"	v
+LC_TRUE_VALUES	d2l_migrator/preprocessor.py	/^LC_TRUE_VALUES = ['t', 'true', 'y']$/;"	v
+MANIFEST_STYLESHEET_PATH	d2l_migrator/packager.py	/^MANIFEST_STYLESHEET_PATH = '..\/stylesheets\/imsmanifest.xsl'$/;"	v
+NAME	tests/r.l_migrator.py	/^import NAME$/;"	i
+QUESTION	d2l_migrator/image_processor.py	/^QUESTION = None$/;"	v
+Q_TYPES	d2l_migrator/preprocessor.py	/^Q_TYPES = {$/;"	v
+Q_TYPE_ALL	d2l_migrator/preprocessor.py	/^Q_TYPE_ALL = 'ALL'$/;"	v
+Q_TYPE_COMPOUND	d2l_migrator/preprocessor.py	/^Q_TYPE_COMPOUND = 'COMPOUND'$/;"	v
+Q_TYPE_CUSTOM	d2l_migrator/preprocessor.py	/^Q_TYPE_CUSTOM = 'CUSTOM'$/;"	v
+Q_TYPE_MULTICHOICE	d2l_migrator/preprocessor.py	/^Q_TYPE_MULTICHOICE = 'MULTICHOICE'$/;"	v
+Q_TYPE_MULTIRESPONSE	d2l_migrator/preprocessor.py	/^Q_TYPE_MULTIRESPONSE = 'MULTIRESPONSE'$/;"	v
+Q_TYPE_MULTISHORTANSWER	d2l_migrator/preprocessor.py	/^Q_TYPE_MULTISHORTANSWER = 'MULTISHORTANSWER'$/;"	v
+Q_TYPE_NUMBER	d2l_migrator/preprocessor.py	/^Q_TYPE_NUMBER = 'q_type_number'$/;"	v
+Q_TYPE_PARSEREXPRESSION	d2l_migrator/preprocessor.py	/^Q_TYPE_PARSEREXPRESSION = 'PARSEREXPRESSION'$/;"	v
+Q_TYPE_SHORTANSWER	d2l_migrator/preprocessor.py	/^Q_TYPE_SHORTANSWER = 'SHORTANSWER'$/;"	v
+Q_TYPE_SYMBOL	d2l_migrator/preprocessor.py	/^Q_TYPE_SYMBOL = 'q_type_symbol'$/;"	v
+Q_TYPE_TRUEFALSE	d2l_migrator/preprocessor.py	/^Q_TYPE_TRUEFALSE = 'TRUEFALSE'$/;"	v
+Q_TYPE_UNKNOWN	d2l_migrator/preprocessor.py	/^Q_TYPE_UNKNOWN = 'UNKNOWN'$/;"	v
+RE_PATTERN_VARIABLE	d2l_migrator/preprocessor.py	/^RE_PATTERN_VARIABLE = r'\\b([a-zA-Z]+[\\d_]*[\\w\\d]*)'$/;"	v
+TEMP	d2l_migrator/image_processor.py	/^TEMP = None$/;"	v
+VALID_QUESTION_TYPES	d2l_migrator/input_management.py	/^VALID_QUESTION_TYPES = ('all', 'cpd', 'mc', 'mr', 'msa', 'pe', 'sa', 'tf')$/;"	v
+VARIABLE_REPLACEMENT_E	d2l_migrator/preprocessor.py	/^VARIABLE_REPLACEMENT_E = 'e_e'$/;"	v
+WRITE_INTERMEDIATE_FILES	d2l_migrator/d2l_migrator.py	/^WRITE_INTERMEDIATE_FILES = True$/;"	v
+__custom_question_titles	d2l_migrator/preprocessor.py	/^__custom_question_titles = {}$/;"	v
+__init__	d2l_migrator/migratios.pxceptions.py	/^    def __init__(self, value):$/;"	m	class:BadQuestionError
+__str__	d2l_migrator/migratios.pxceptions.py	/^    def __str__(self):$/;"	m	class:BadQuestionError	file:
+add_answer_elt	d2l_migrator/preprocessor.py	/^def add_answer_elt(question_choice, pp_answer, src_elt_name, dest_elt_name):$/;"	f
+add_decimal_places	d2l_migrator/preprocessor.py	/^def add_decimal_places(parser_expression):$/;"	f
+add_feedback	d2l_migrator/preprocessor.py	/^def add_feedback(question):$/;"	f
+add_formula	d2l_migrator/preprocessor.py	/^def add_formula(formula_text, parser_expression):$/;"	f
+add_incompatible_question	d2l_migrator/preprocessor.py	/^def add_incompatible_question(question, d2l_incompatible_questions):$/;"	f
+add_initial_br_tag	d2l_migrator/preprocessor.py	/^def add_initial_br_tag(question_part):$/;"	f
+add_mc_answer_letter	d2l_migrator/preprocessor.py	/^def add_mc_answer_letter(question_choice, pp_answer):$/;"	f
+add_mc_response_type	d2l_migrator/preprocessor.py	/^def add_mc_response_type(pp_answer):$/;"	f
+add_mc_value_and_feedback	d2l_migrator/preprocessor.py	/^def add_mc_value_and_feedback(question, pp_answer, choice_letter):$/;"	f
+add_module_assessments	d2l_migrator/preprocessor.py	/^def add_module_assessments(assessments, source_etree):$/;"	f
+add_question_to_assessment	d2l_migrator/preprocessor.py	/^def add_question_to_assessment(na_question, assessment):$/;"	f
+add_question_to_module_assessment	d2l_migrator/preprocessor.py	/^def add_question_to_module_assessment(question, module_assessment):$/;"	f
+add_sa_answer_text	d2l_migrator/preprocessor.py	/^def add_sa_answer_text(question_answer, pp_answer):$/;"	f
+add_sa_answer_value	d2l_migrator/preprocessor.py	/^def add_sa_answer_value(question_answer, pp_answer):$/;"	f
+add_sa_feedback_text	d2l_migrator/preprocessor.py	/^def add_sa_feedback_text(question_answer, pp_answer):$/;"	f
+add_sa_text	d2l_migrator/preprocessor.py	/^def add_sa_text(question_answer, pp_answer, text_elt_name):$/;"	f
+add_sa_text_value_and_feedback	d2l_migrator/preprocessor.py	/^def add_sa_text_value_and_feedback(question, pp_answer):$/;"	f
+add_tf_flag	d2l_migrator/preprocessor.py	/^def add_tf_flag(question_part):$/;"	f
+add_tf_question_feedback_elts	d2l_migrator/preprocessor.py	/^def add_tf_question_feedback_elts(question_answer_elt, pp_answer):$/;"	f
+add_tf_question_letter_elt	d2l_migrator/preprocessor.py	/^def add_tf_question_letter_elt(question_answer_elt, pp_answer):$/;"	f
+add_tf_question_text_elt	d2l_migrator/preprocessor.py	/^def add_tf_question_text_elt(pp_answer):$/;"	f
+add_tf_question_value_elt	d2l_migrator/preprocessor.py	/^def add_tf_question_value_elt(question_answer_elt, pp_answer):$/;"	f
+add_tf_response_number	d2l_migrator/preprocessor.py	/^def add_tf_response_number(question_answer, pp_answer):$/;"	f
+add_tf_response_text	d2l_migrator/preprocessor.py	/^def add_tf_response_text(question_answer, pp_answer):$/;"	f
+add_tf_response_type	d2l_migrator/preprocessor.py	/^def add_tf_response_type(pp_answer):$/;"	f
+add_variables	d2l_migrator/preprocessor.py	/^def add_variables(parser_expression):$/;"	f
+append_to_question_text	d2l_migrator/preprocessor.py	/^def append_to_question_text(question_part, string_to_append):$/;"	f
+archive_contains_image_file	d2l_migrator/image_processor.py	/^def archive_contains_image_file(archive_path, image_file_name):$/;"	f
+balance_parens	d2l_migrator/preprocessor.py	/^def balance_parens(expression):$/;"	f
+build_archive_path	d2l_migrator/image_processor.py	/^def build_archive_path(image_id):$/;"	f
+build_assessment_etree	d2l_migrator/packager.py	/^def build_assessment_etree(etree, index_of_assessment_to_package):$/;"	f
+build_manifest_etree	d2l_migrator/packager.py	/^def build_manifest_etree(assessment_ident, assessment_title, file_name):$/;"	f
+build_module_assessment	d2l_migrator/preprocessor.py	/^def build_module_assessment(assessment_title):$/;"	f
+build_module_assessments	d2l_migrator/preprocessor.py	/^def build_module_assessments(unassigned_questions):$/;"	f
+build_question_list	d2l_migrator/preprocessor.py	/^def build_question_list(question_list_file):$/;"	f
+build_random_variable	d2l_migrator/preprocessor.py	/^def build_random_variable():$/;"	f
+check_tf_answer_order	d2l_migrator/preprocessor.py	/^def check_tf_answer_order(pp_answers):$/;"	f
+clean_title	d2l_migrator/packager.py	/^def clean_title(assessment_title):$/;"	f
+collect_input	d2l_migrator/input_management.py	/^def collect_input(argv):$/;"	f
+collect_unassigned_questions	d2l_migrator/preprocessor.py	/^def collect_unassigned_questions(source_etree):$/;"	f
+config	setup.py	/^config = {$/;"	v
+contains_multiple_part_types	d2l_migrator/preprocessor.py	/^def contains_multiple_part_types(question):$/;"	f
+contains_multiple_question_parts	d2l_migrator/preprocessor.py	/^def contains_multiple_question_parts(question):$/;"	f
+contains_multiple_short_answer_parts	d2l_migrator/preprocessor.py	/^def contains_multiple_short_answer_parts(question):$/;"	f
+contains_parser_expression	d2l_migrator/preprocessor.py	/^def contains_parser_expression(question):$/;"	f
+contains_single_part_type	d2l_migrator/preprocessor.py	/^def contains_single_part_type(question):$/;"	f
+convert_all_question_parts_to_sa	d2l_migrator/preprocessor.py	/^def convert_all_question_parts_to_sa(question):$/;"	f
+convert_cpd_question_to_msa	d2l_migrator/preprocessor.py	/^def convert_cpd_question_to_msa(question):$/;"	f
+convert_mc_question_part_to_sa	d2l_migrator/preprocessor.py	/^def convert_mc_question_part_to_sa(question_part):$/;"	f
+convert_tf_question_part_to_sa	d2l_migrator/preprocessor.py	/^def convert_tf_question_part_to_sa(question_part):$/;"	f
+copy_image_file	d2l_migrator/image_processor.py	/^def copy_image_file(image_id):$/;"	f
+copy_image_file_and_replace_img_src	d2l_migrator/image_processor.py	/^def copy_image_file_and_replace_img_src(image_text_match):$/;"	f
+copy_image_files_and_replace_img_srcs	d2l_migrator/image_processor.py	/^def copy_image_files_and_replace_img_srcs(question_text_elt):$/;"	f
+create_assessment	d2l_migrator/preprocessor.py	/^def create_assessment(content_module_title):$/;"	f
+create_node	d2l_migrator/preprocessor.py	/^def create_node(title):$/;"	f
+csv	d2l_migrator/preprocessor.py	/^import csv$/;"	i
+custom_count	d2l_migrator/preprocessor.py	/^custom_count = 0$/;"	v
+d2l_migrator	d2l_migrator/input_management.py	/^import d2l_migrator$/;"	i
+deepcopy	d2l_migrator/packager.py	/^from copy import deepcopy$/;"	i
+delete_temp_dir	d2l_migrator/packager.py	/^def delete_temp_dir(temp_dir_path):$/;"	f
+dir_doesnt_exist	d2l_migrator/input_management.py	/^def dir_doesnt_exist(dir_path):$/;"	f
+doesnt_contain_parser_expression	d2l_migrator/preprocessor.py	/^def doesnt_contain_parser_expression(question):$/;"	f
+etree	d2l_migrator/d2l_migrator.py	/^from lxml import etree$/;"	i
+etree	d2l_migrator/image_processor.py	/^from lxml import etree$/;"	i
+etree	d2l_migrator/packager.py	/^from lxml import etree$/;"	i
+etree	d2l_migrator/preprocessor.py	/^from lxml import etree$/;"	i
+etree	d2l_migrator/transformer.py	/^from lxml import etree$/;"	i
+file_doesnt_exist	d2l_migrator/input_management.py	/^def file_doesnt_exist(file_path):$/;"	f
+find_default_feedback	d2l_migrator/preprocessor.py	/^def find_default_feedback(question):$/;"	f
+find_existing_question_titles	d2l_migrator/preprocessor.py	/^def find_existing_question_titles(diffdir):$/;"	f
+find_greatest_question_answer_value	d2l_migrator/preprocessor.py	/^def find_greatest_question_answer_value(question_answers):$/;"	f
+find_last_paren_index	d2l_migrator/preprocessor.py	/^def find_last_paren_index(expression):$/;"	f
+find_pe_value_for_name	d2l_migrator/preprocessor.py	/^def find_pe_value_for_name(name, pe_variables):$/;"	f
+find_question_answer_elt_by_text_value	d2l_migrator/preprocessor.py	/^def find_question_answer_elt_by_text_value(question, text_val):$/;"	f
+find_subtype_number_for_custom_question	d2l_migrator/preprocessor.py	/^def find_subtype_number_for_custom_question(custom_question):$/;"	f
+find_var_names	d2l_migrator/preprocessor.py	/^def find_var_names(text):$/;"	f
+fnmatch	d2l_migrator/preprocessor.py	/^import fnmatch, logging, os, sys$/;"	i
+get_answer_text	d2l_migrator/preprocessor.py	/^def get_answer_text(question):$/;"	f
+get_answer_text_node	d2l_migrator/preprocessor.py	/^def get_answer_text_node(question):$/;"	f
+get_assessment_selection_node	d2l_migrator/preprocessor.py	/^def get_assessment_selection_node():$/;"	f
+get_choices	d2l_migrator/preprocessor.py	/^def get_choices(question_part):$/;"	f
+get_choices_as_ordered_list	d2l_migrator/preprocessor.py	/^def get_choices_as_ordered_list(question_part):$/;"	f
+get_content_selection_sets_node	d2l_migrator/preprocessor.py	/^def get_content_selection_sets_node():$/;"	f
+get_custom_questions	d2l_migrator/preprocessor.py	/^def get_custom_questions(source_etree):$/;"	f
+get_existing_file_paths	d2l_migrator/preprocessor.py	/^def get_existing_file_paths(diffdir):$/;"	f
+get_formula	d2l_migrator/preprocessor.py	/^def get_formula(question, pe_variables):$/;"	f
+get_id_node	d2l_migrator/preprocessor.py	/^def get_id_node():$/;"	f
+get_ignore_case	d2l_migrator/preprocessor.py	/^def get_ignore_case(question):$/;"	f
+get_image_file_name_by_asset_id	d2l_migrator/image_processor.py	/^def get_image_file_name_by_asset_id(asset_id):$/;"	f
+get_input	d2l_migrator/d2l_migrator.py	/^def get_input(argv):$/;"	f
+get_int_call_replacement	d2l_migrator/preprocessor.py	/^def get_int_call_replacement(args_string):$/;"	f
+get_mantissa_length	d2l_migrator/preprocessor.py	/^def get_mantissa_length(number):$/;"	f
+get_max_decimal_places	d2l_migrator/preprocessor.py	/^def get_max_decimal_places(parser_expression):$/;"	f
+get_module_assessment	d2l_migrator/preprocessor.py	/^def get_module_assessment(question, assessments):$/;"	f
+get_module_assessment_title	d2l_migrator/preprocessor.py	/^def get_module_assessment_title(question):$/;"	f
+get_module_assessment_title_node	d2l_migrator/preprocessor.py	/^def get_module_assessment_title_node(assessment_title):$/;"	f
+get_next_name	d2l_migrator/preprocessor.py	/^def get_next_name(expression):$/;"	f
+get_pe_statements	d2l_migrator/preprocessor.py	/^def get_pe_statements(parser_expression):$/;"	f
+get_pe_variables	d2l_migrator/preprocessor.py	/^def get_pe_variables(parser_expression):$/;"	f
+get_question_answers	d2l_migrator/preprocessor.py	/^def get_question_answers(question_part):$/;"	f
+get_question_text_elt	d2l_migrator/image_processor.py	/^def get_question_text_elt(question):$/;"	f
+get_question_type_name_for_number	d2l_migrator/preprocessor.py	/^def get_question_type_name_for_number(question_type_number_as_string):$/;"	f
+get_question_type_name_for_property	d2l_migrator/preprocessor.py	/^def get_question_type_name_for_property(property_type, property_value):$/;"	f
+get_question_type_name_for_symbol	d2l_migrator/preprocessor.py	/^def get_question_type_name_for_symbol(question_type_symbol):$/;"	f
+get_question_type_number_as_string_for_name	d2l_migrator/preprocessor.py	/^def get_question_type_number_as_string_for_name(question_type_name):$/;"	f
+get_question_types_string	d2l_migrator/preprocessor.py	/^def get_question_types_string():$/;"	f
+get_random_params	d2l_migrator/preprocessor.py	/^def get_random_params(random_variable_value):$/;"	f
+get_random_variable_decimal_places	d2l_migrator/preprocessor.py	/^def get_random_variable_decimal_places(random_min, random_max, random_step):$/;"	f
+get_random_variables	d2l_migrator/preprocessor.py	/^def get_random_variables(parser_expression):$/;"	f
+get_re_pattern_variable	d2l_migrator/preprocessor.py	/^def get_re_pattern_variable():$/;"	f
+get_selections_node	d2l_migrator/preprocessor.py	/^def get_selections_node():$/;"	f
+get_tf_text_for_blank_value	d2l_migrator/preprocessor.py	/^def get_tf_text_for_blank_value(question_answer):$/;"	f
+get_tf_text_inverse_of	d2l_migrator/preprocessor.py	/^def get_tf_text_inverse_of(tf_answer_text):$/;"	f
+get_type_number_for_custom_single_part_question	d2l_migrator/preprocessor.py	/^def get_type_number_for_custom_single_part_question(question):$/;"	f
+get_unassigned_questions	d2l_migrator/preprocessor.py	/^def get_unassigned_questions(source_etree):$/;"	f
+getopt	d2l_migrator/input_management.py	/^import sys, getopt, os.path$/;"	i
+image_processor	d2l_migrator/preprocessor.py	/^import image_processor$/;"	i
+init_sa_feedback	d2l_migrator/preprocessor.py	/^def init_sa_feedback():$/;"	f
+input_management	d2l_migrator/d2l_migrator.py	/^import input_management, packager, preprocessor, transformer$/;"	i
+insert_mc_sa_instruction	d2l_migrator/preprocessor.py	/^def insert_mc_sa_instruction(question_part):$/;"	f
+insert_tf_sa_instruction	d2l_migrator/preprocessor.py	/^def insert_tf_sa_instruction(question_part):$/;"	f
+is_compound_question	d2l_migrator/preprocessor.py	/^def is_compound_question(question):$/;"	f
+is_d2l_compatible_pe	d2l_migrator/preprocessor.py	/^def is_d2l_compatible_pe(parser_expression):$/;"	f
+is_d2l_compatible_pe_question	d2l_migrator/preprocessor.py	/^def is_d2l_compatible_pe_question(question):$/;"	f
+is_float	d2l_migrator/preprocessor.py	/^def is_float(val):$/;"	f
+is_format_statement	d2l_migrator/preprocessor.py	/^def is_format_statement(statement):$/;"	f
+is_function_call	d2l_migrator/preprocessor.py	/^def is_function_call(expression, function_name):$/;"	f
+is_incorrect_answer	d2l_migrator/preprocessor.py	/^def is_incorrect_answer(question_answer):$/;"	f
+is_int_function_call	d2l_migrator/preprocessor.py	/^def is_int_function_call(expression):$/;"	f
+is_matching_statement	d2l_migrator/preprocessor.py	/^def is_matching_statement(statement, match_text):$/;"	f
+is_mc_question_part	d2l_migrator/preprocessor.py	/^def is_mc_question_part(question_part):$/;"	f
+is_multiple_short_answer_question	d2l_migrator/preprocessor.py	/^def is_multiple_short_answer_question(question):$/;"	f
+is_parser_expression_question	d2l_migrator/preprocessor.py	/^def is_parser_expression_question(question):$/;"	f
+is_question_part_type	d2l_migrator/preprocessor.py	/^def is_question_part_type(question_part, question_part_type):$/;"	f
+is_random_pe_variable	d2l_migrator/preprocessor.py	/^def is_random_pe_variable(value):$/;"	f
+is_required_question	d2l_migrator/preprocessor.py	/^def is_required_question(question, question_list):$/;"	f
+is_round_function_call	d2l_migrator/preprocessor.py	/^def is_round_function_call(expression):$/;"	f
+is_round_statement	d2l_migrator/preprocessor.py	/^def is_round_statement(statement):$/;"	f
+is_sa_answer	d2l_migrator/preprocessor.py	/^def is_sa_answer(question_answer):$/;"	f
+is_sa_element	d2l_migrator/preprocessor.py	/^def is_sa_element(question_answer, element_name):$/;"	f
+is_sa_feedback	d2l_migrator/preprocessor.py	/^def is_sa_feedback(question_answer):$/;"	f
+is_sa_question_part	d2l_migrator/preprocessor.py	/^def is_sa_question_part(question_part):$/;"	f
+is_single_part_question	d2l_migrator/preprocessor.py	/^def is_single_part_question(question):$/;"	f
+is_sqrt_function_call	d2l_migrator/preprocessor.py	/^def is_sqrt_function_call(expression):$/;"	f
+is_substitute_statement	d2l_migrator/preprocessor.py	/^def is_substitute_statement(statement):$/;"	f
+is_tf_question_part	d2l_migrator/preprocessor.py	/^def is_tf_question_part(question_part):$/;"	f
+is_valid_pe_variable_statement	d2l_migrator/preprocessor.py	/^def is_valid_pe_variable_statement(statement):$/;"	f
+isnt_msa_question	d2l_migrator/preprocessor.py	/^def isnt_msa_question(question):$/;"	f
+linearize	d2l_migrator/preprocessor.py	/^def linearize(expression, pe_variables):$/;"	f
+log_converted_questions	d2l_migrator/preprocessor.py	/^def log_converted_questions(cpd_question_count, mc_question_count, mr_question_count, msa_question_count, pe_question_count, pe_incompat_question_count, sa_question_count, tf_question_count, unk_question_count):$/;"	f
+log_incompatible_questions	d2l_migrator/preprocessor.py	/^def log_incompatible_questions(incompatible_questions, outdir):$/;"	f
+log_input_questions	d2l_migrator/preprocessor.py	/^def log_input_questions(intree, questions):$/;"	f
+log_unrecognized_question	d2l_migrator/preprocessor.py	/^def log_unrecognized_question(question):$/;"	f
+logging	d2l_migrator/d2l_migrator.py	/^import logging, os.path, sys$/;"	i
+logging	d2l_migrator/preprocessor.py	/^import fnmatch, logging, os, sys$/;"	i
+main	d2l_migrator/d2l_migrator.py	/^def main(argv):$/;"	f
+make_image_outdir	d2l_migrator/image_processor.py	/^def make_image_outdir(outdir):$/;"	f
+make_temp_dir	d2l_migrator/packager.py	/^def make_temp_dir(name, outdir_path):$/;"	f
+os	d2l_migrator/d2l_migrator.py	/^import logging, os.path, sys$/;"	i
+os	d2l_migrator/image_processor.py	/^import sys, re, os, os.path, shutil, zipfile$/;"	i
+os	d2l_migrator/input_management.py	/^import sys, getopt, os.path$/;"	i
+os	d2l_migrator/packager.py	/^import sys, os.path, zipfile, shutil, re$/;"	i
+os	d2l_migrator/preprocessor.py	/^import fnmatch, logging, os, sys$/;"	i
+p2_unicode_utils	d2l_migrator/preprocessor.py	/^import p2_unicode_utils$/;"	i
+package_assessment	d2l_migrator/packager.py	/^def package_assessment(etree, index_of_assessment_to_package, outdir_path):$/;"	f
+package_assessments	d2l_migrator/packager.py	/^def package_assessments(etree, outdir_path):$/;"	f
+packager	d2l_migrator/d2l_migrator.py	/^import input_management, packager, preprocessor, transformer$/;"	i
+parse_question_source_file	d2l_migrator/preprocessor.py	/^def parse_question_source_file(infile_path):$/;"	f
+path	d2l_migrator/d2l_migrator.py	/^import logging, os.path, sys$/;"	i
+path	d2l_migrator/image_processor.py	/^import sys, re, os, os.path, shutil, zipfile$/;"	i
+path	d2l_migrator/input_management.py	/^import sys, getopt, os.path$/;"	i
+path	d2l_migrator/packager.py	/^import sys, os.path, zipfile, shutil, re$/;"	i
+preprocessor	d2l_migrator/d2l_migrator.py	/^import input_management, packager, preprocessor, transformer$/;"	i
+print_usage	d2l_migrator/d2l_migrator.py	/^def print_usage(msg='Usage:'):$/;"	f
+process	d2l_migrator/preprocessor.py	/^def process(infile_path, base_url, outdir, question_type_symbol, diffdir, question_list_file):$/;"	f
+process_cpd_question	d2l_migrator/preprocessor.py	/^def process_cpd_question(question):$/;"	f
+process_images	d2l_migrator/image_processor.py	/^def process_images(question, base_url, outdir):$/;"	f
+process_mc_answer	d2l_migrator/preprocessor.py	/^def process_mc_answer(question, question_choice):$/;"	f
+process_mc_question	d2l_migrator/preprocessor.py	/^def process_mc_question(question):$/;"	f
+process_mr_question	d2l_migrator/preprocessor.py	/^def process_mr_question(question):$/;"	f
+process_msa_question	d2l_migrator/preprocessor.py	/^def process_msa_question(question):$/;"	f
+process_pe_question	d2l_migrator/preprocessor.py	/^def process_pe_question(question):$/;"	f
+process_questions	d2l_migrator/preprocessor.py	/^def process_questions(intree, base_url, outdir, question_list_file):$/;"	f
+process_sa_answer	d2l_migrator/preprocessor.py	/^def process_sa_answer(question_answer):$/;"	f
+process_sa_answer_values	d2l_migrator/preprocessor.py	/^def process_sa_answer_values(question_answers, is_msa=False):$/;"	f
+process_sa_answers	d2l_migrator/preprocessor.py	/^def process_sa_answers(question_part):$/;"	f
+process_sa_question	d2l_migrator/preprocessor.py	/^def process_sa_question(question):$/;"	f
+process_tf_answer	d2l_migrator/preprocessor.py	/^def process_tf_answer(question, question_answer):$/;"	f
+process_tf_question	d2l_migrator/preprocessor.py	/^def process_tf_question(question):$/;"	f
+question_type_not_found	d2l_migrator/input_management.py	/^def question_type_not_found(question_type):$/;"	f
+random	d2l_migrator/preprocessor.py	/^import random$/;"	i
+re	d2l_migrator/image_processor.py	/^import sys, re, os, os.path, shutil, zipfile$/;"	i
+re	d2l_migrator/packager.py	/^import sys, os.path, zipfile, shutil, re$/;"	i
+re	d2l_migrator/preprocessor.py	/^import re$/;"	i
+record_question	d2l_migrator/preprocessor.py	/^def record_question(question):$/;"	f
+remove_all_incorrect_question_answers	d2l_migrator/preprocessor.py	/^def remove_all_incorrect_question_answers(question_part):$/;"	f
+remove_assessments_without_question_type	d2l_migrator/preprocessor.py	/^def remove_assessments_without_question_type(question_type_symbol, source_etree):$/;"	f
+remove_choices	d2l_migrator/preprocessor.py	/^def remove_choices(question_part):$/;"	f
+remove_duplicate_questions_from_module	d2l_migrator/preprocessor.py	/^def remove_duplicate_questions_from_module(module_etree, existing_question_titles):$/;"	f
+remove_duplicate_questions_from_source	d2l_migrator/preprocessor.py	/^def remove_duplicate_questions_from_source(source_etree, diffdir=''):$/;"	f
+remove_empty_assessments	d2l_migrator/d2l_migrator.py	/^def remove_empty_assessments(transformed_etree):$/;"	f
+remove_empty_assessments_from_modules	d2l_migrator/preprocessor.py	/^def remove_empty_assessments_from_modules(source_etree):$/;"	f
+remove_questions_other_than	d2l_migrator/preprocessor.py	/^def remove_questions_other_than(question_type_symbol, source_etree):$/;"	f
+rename_image_file	d2l_migrator/image_processor.py	/^def rename_image_file(image_file_path, image_id):$/;"	f
+replace_correct_mc_answer_elts_with_sa	d2l_migrator/preprocessor.py	/^def replace_correct_mc_answer_elts_with_sa(question_part):$/;"	f
+replace_illegal_formula_variable_names	d2l_migrator/preprocessor.py	/^def replace_illegal_formula_variable_names(question):$/;"	f
+replace_illegal_pe_variable_names	d2l_migrator/preprocessor.py	/^def replace_illegal_pe_variable_names(question):$/;"	f
+replace_illegal_variable_names	d2l_migrator/preprocessor.py	/^def replace_illegal_variable_names(question):$/;"	f
+replace_illegal_variable_names_in_text	d2l_migrator/preprocessor.py	/^def replace_illegal_variable_names_in_text(text):$/;"	f
+replace_incorrect_tf_question_answer_text	d2l_migrator/preprocessor.py	/^def replace_incorrect_tf_question_answer_text(question_part):$/;"	f
+replace_int_function_call	d2l_migrator/preprocessor.py	/^def replace_int_function_call(expression):$/;"	f
+replace_mc_answer_elts_with_sa	d2l_migrator/preprocessor.py	/^def replace_mc_answer_elts_with_sa(question_part):$/;"	f
+replace_mc_question_part_with_sa	d2l_migrator/preprocessor.py	/^def replace_mc_question_part_with_sa(question_part):$/;"	f
+replace_question_part_properties_with_sa	d2l_migrator/preprocessor.py	/^def replace_question_part_properties_with_sa(question_part):$/;"	f
+replace_sqrt_function_call	d2l_migrator/preprocessor.py	/^def replace_sqrt_function_call(expression):$/;"	f
+search_expression_for_variable_names	d2l_migrator/preprocessor.py	/^def search_expression_for_variable_names(expression):$/;"	f
+set_child_element_text	d2l_migrator/preprocessor.py	/^def set_child_element_text(parent_elt, child_elt_name, text_value):$/;"	f
+set_custom_question_subtypes	d2l_migrator/preprocessor.py	/^def set_custom_question_subtypes(source_etree):$/;"	f
+set_question_type	d2l_migrator/preprocessor.py	/^def set_question_type(custom_question, subtype_number):$/;"	f
+set_question_type_to_msa	d2l_migrator/preprocessor.py	/^def set_question_type_to_msa(question):$/;"	f
+set_up_logging	d2l_migrator/preprocessor.py	/^def set_up_logging(source_etree, infile_path):$/;"	f
+set_variable_properties	d2l_migrator/preprocessor.py	/^def set_variable_properties(variable, random_variable_name, random_params):$/;"	f
+setup	setup.py	/^    from distutils.core import setup$/;"	i
+setup	setup.py	/^    from setuptools import setup$/;"	i
+setup	tests/r.l_migrator.py	/^def setup():$/;"	f
+shutil	d2l_migrator/image_processor.py	/^import sys, re, os, os.path, shutil, zipfile$/;"	i
+shutil	d2l_migrator/packager.py	/^import sys, os.path, zipfile, shutil, re$/;"	i
+skip_question	d2l_migrator/preprocessor.py	/^def skip_question(num_questions):$/;"	f
+split_int_call	d2l_migrator/preprocessor.py	/^def split_int_call(expression):$/;"	f
+sys	d2l_migrator/d2l_migrator.py	/^import logging, os.path, sys$/;"	i
+sys	d2l_migrator/image_processor.py	/^import sys, re, os, os.path, shutil, zipfile$/;"	i
+sys	d2l_migrator/input_management.py	/^import sys, getopt, os.path$/;"	i
+sys	d2l_migrator/packager.py	/^import sys, os.path, zipfile, shutil, re$/;"	i
+sys	d2l_migrator/preprocessor.py	/^import fnmatch, logging, os, sys$/;"	i
+teardown	tests/r.l_migrator.py	/^def teardown():$/;"	f
+test_basic	tests/r.l_migrator.py	/^def test_basic():$/;"	f
+to_str	d2l_migrator/p2_unicode_utils.py	/^def to_str(unicode_or_str):$/;"	f
+to_unicode	d2l_migrator/p2_unicode_utils.py	/^def to_unicode(unicode_or_str):$/;"	f
+transform_data	d2l_migrator/transformer.py	/^def transform_data(source_etree, stylesheet):$/;"	f
+transformer	d2l_migrator/d2l_migrator.py	/^import input_management, packager, preprocessor, transformer$/;"	i
+transformer	d2l_migrator/packager.py	/^import transformer$/;"	i
+update_sa_feedback	d2l_migrator/preprocessor.py	/^def update_sa_feedback(question_answer, pp_feedback):$/;"	f
+validate_input	d2l_migrator/input_management.py	/^def validate_input(infile, stylesheet, outdir, base_url, question_type, diffdir, question_list_file):$/;"	f
+write_archive	d2l_migrator/packager.py	/^def write_archive(assessment_xml_doc_path, manifest_file_path, archive_path):$/;"	f
+write_assessment_xml_doc	d2l_migrator/packager.py	/^def write_assessment_xml_doc(assessment_etree, outdir_path):$/;"	f
+write_it	d2l_migrator/preprocessor.py	/^def write_it():$/;"	f
+write_manifest_file	d2l_migrator/packager.py	/^def write_manifest_file(assessment_ident, assessment_title, assessment_xml_doc_path, temp_dir_path):$/;"	f
+write_outfile	d2l_migrator/d2l_migrator.py	/^def write_outfile(dom, outfile_path):$/;"	f
+zipfile	d2l_migrator/image_processor.py	/^import sys, re, os, os.path, shutil, zipfile$/;"	i
+zipfile	d2l_migrator/packager.py	/^import sys, os.path, zipfile, shutil, re$/;"	i
