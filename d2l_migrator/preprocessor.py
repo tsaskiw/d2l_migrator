@@ -545,7 +545,7 @@ def process_msa_question(question):
         question_part.insert(0, pp_regex)
         pp_value = etree.Element('pp_value')
         value = 100.0 / len(question_parts)
-        pp_value.text = "{:13.10f}".format(value)
+        pp_value.text = "{:13.2f}".format(value)
         question_part.insert(1, pp_value)
     pp_feedback = etree.Element('pp_feedback')
     pp_feedback.text = ''.join(feedback)
