@@ -7,275 +7,283 @@
 BASE_URL	image_processor.py	/^BASE_URL = None$/;"	v
 BadQuestionError	image_processor.py	/^from migration_exceptions import BadQuestionError$/;"	i
 BadQuestionError	migratios.pxceptions.py	/^class BadQuestionError(Exception):$/;"	c
-COUNT_ONLY	preprocessor.py	/^COUNT_ONLY = False$/;"	v
-HTML	preprocessor.py	/^from html import HTML$/;"	i
+COUNT_ONLY	oreprocessor.py	/^COUNT_ONLY = False$/;"	v
+HTML	oreprocessor.py	/^from html import HTML$/;"	i
 IMAGE_OUTDIR_PATH	image_processor.py	/^IMAGE_OUTDIR_PATH = None$/;"	v
-LC_FALSE_VALUES	preprocessor.py	/^LC_FALSE_VALUES = ['f', 'false', 'n']$/;"	v
-LC_TRUE_VALUES	preprocessor.py	/^LC_TRUE_VALUES = ['t', 'true', 'y']$/;"	v
-MANIFEST_STYLESHEET_PATH	../d2l_migra.pr/packager.py	/^MANIFEST_STYLESHEET_PATH = '..\/..\/stylesheets\/imsmanifest.xsl'$/;"	v
+LC_FALSE_VALUES	oreprocessor.py	/^LC_FALSE_VALUES = ['f', 'false', 'n']$/;"	v
+LC_TRUE_VALUES	oreprocessor.py	/^LC_TRUE_VALUES = ['t', 'true', 'y']$/;"	v
+MANIFEST_STYLESHEET_PATH	packager.py	/^MANIFEST_STYLESHEET_PATH = '\/Users\/todds\/Otira\/Projects\/SAIT Test Bank Migration\/d2l_migrator\/stylesheets\/imsmanifest.xsl'$/;"	v
 QUESTION	image_processor.py	/^QUESTION = None$/;"	v
-Q_TYPES	preprocessor.py	/^Q_TYPES = {$/;"	v
-Q_TYPE_ALL	preprocessor.py	/^Q_TYPE_ALL = 'ALL'$/;"	v
-Q_TYPE_COMPOUND	preprocessor.py	/^Q_TYPE_COMPOUND = 'COMPOUND'$/;"	v
-Q_TYPE_CUSTOM	preprocessor.py	/^Q_TYPE_CUSTOM = 'CUSTOM'$/;"	v
-Q_TYPE_MULTICHOICE	preprocessor.py	/^Q_TYPE_MULTICHOICE = 'MULTICHOICE'$/;"	v
-Q_TYPE_MULTIRESPONSE	preprocessor.py	/^Q_TYPE_MULTIRESPONSE = 'MULTIRESPONSE'$/;"	v
-Q_TYPE_MULTISHORTANSWER	preprocessor.py	/^Q_TYPE_MULTISHORTANSWER = 'MULTISHORTANSWER'$/;"	v
-Q_TYPE_NUMBER	preprocessor.py	/^Q_TYPE_NUMBER = 'q_type_number'$/;"	v
-Q_TYPE_PARSEREXPRESSION	preprocessor.py	/^Q_TYPE_PARSEREXPRESSION = 'PARSEREXPRESSION'$/;"	v
-Q_TYPE_SHORTANSWER	preprocessor.py	/^Q_TYPE_SHORTANSWER = 'SHORTANSWER'$/;"	v
-Q_TYPE_SYMBOL	preprocessor.py	/^Q_TYPE_SYMBOL = 'q_type_symbol'$/;"	v
-Q_TYPE_TRUEFALSE	preprocessor.py	/^Q_TYPE_TRUEFALSE = 'TRUEFALSE'$/;"	v
-Q_TYPE_UNKNOWN	preprocessor.py	/^Q_TYPE_UNKNOWN = 'UNKNOWN'$/;"	v
-RE_PATTERN_VARIABLE	preprocessor.py	/^RE_PATTERN_VARIABLE = r'\\b([a-zA-Z]+[\\d_]*[\\w\\d]*)'$/;"	v
+Q_TYPES	oreprocessor.py	/^Q_TYPES = {$/;"	v
+Q_TYPE_ALL	oreprocessor.py	/^Q_TYPE_ALL = 'ALL'$/;"	v
+Q_TYPE_COMPOUND	oreprocessor.py	/^Q_TYPE_COMPOUND = 'COMPOUND'$/;"	v
+Q_TYPE_CUSTOM	oreprocessor.py	/^Q_TYPE_CUSTOM = 'CUSTOM'$/;"	v
+Q_TYPE_MULTICHOICE	oreprocessor.py	/^Q_TYPE_MULTICHOICE = 'MULTICHOICE'$/;"	v
+Q_TYPE_MULTIRESPONSE	oreprocessor.py	/^Q_TYPE_MULTIRESPONSE = 'MULTIRESPONSE'$/;"	v
+Q_TYPE_MULTISHORTANSWER	oreprocessor.py	/^Q_TYPE_MULTISHORTANSWER = 'MULTISHORTANSWER'$/;"	v
+Q_TYPE_NUMBER	oreprocessor.py	/^Q_TYPE_NUMBER = 'q_type_number'$/;"	v
+Q_TYPE_PARSEREXPRESSION	oreprocessor.py	/^Q_TYPE_PARSEREXPRESSION = 'PARSEREXPRESSION'$/;"	v
+Q_TYPE_SHORTANSWER	oreprocessor.py	/^Q_TYPE_SHORTANSWER = 'SHORTANSWER'$/;"	v
+Q_TYPE_SYMBOL	oreprocessor.py	/^Q_TYPE_SYMBOL = 'q_type_symbol'$/;"	v
+Q_TYPE_TRUEFALSE	oreprocessor.py	/^Q_TYPE_TRUEFALSE = 'TRUEFALSE'$/;"	v
+Q_TYPE_UNKNOWN	oreprocessor.py	/^Q_TYPE_UNKNOWN = 'UNKNOWN'$/;"	v
+RE_PATTERN_VARIABLE	oreprocessor.py	/^RE_PATTERN_VARIABLE = r'\\b([a-zA-Z]+[\\d_]*[\\w\\d]*)'$/;"	v
 TEMP	image_processor.py	/^TEMP = None$/;"	v
 VALID_QUESTION_TYPES	input_management.py	/^VALID_QUESTION_TYPES = ('all', 'cpd', 'mc', 'mr', 'msa', 'pe', 'sa', 'tf')$/;"	v
-VARIABLE_REPLACEMENT_E	preprocessor.py	/^VARIABLE_REPLACEMENT_E = 'e_e'$/;"	v
-WRITE_INTERMEDIATE_FILES	d2l_migrator.py	/^WRITE_INTERMEDIATE_FILES = True$/;"	v
-__custom_question_titles	preprocessor.py	/^__custom_question_titles = {}$/;"	v
+VARIABLE_REPLACEMENT_E	oreprocessor.py	/^VARIABLE_REPLACEMENT_E = 'e_e'$/;"	v
+WRITE_INTERMEDIATE_FILES	orl_migrator.py	/^WRITE_INTERMEDIATE_FILES = True$/;"	v
+__custom_question_titles	oreprocessor.py	/^__custom_question_titles = {}$/;"	v
 __init__	migratios.pxceptions.py	/^    def __init__(self, value):$/;"	m	class:BadQuestionError
 __str__	migratios.pxceptions.py	/^    def __str__(self):$/;"	m	class:BadQuestionError	file:
-add_answer_elt	preprocessor.py	/^def add_answer_elt(question_choice, pp_answer, src_elt_name, dest_elt_name):$/;"	f
-add_decimal_places	preprocessor.py	/^def add_decimal_places(parser_expression):$/;"	f
-add_feedback	preprocessor.py	/^def add_feedback(question):$/;"	f
-add_formula	preprocessor.py	/^def add_formula(formula_text, parser_expression):$/;"	f
-add_incompatible_question	preprocessor.py	/^def add_incompatible_question(question, d2l_incompatible_questions):$/;"	f
-add_initial_br_tag	preprocessor.py	/^def add_initial_br_tag(question_part):$/;"	f
-add_mc_answer_letter	preprocessor.py	/^def add_mc_answer_letter(question_choice, pp_answer):$/;"	f
-add_mc_response_type	preprocessor.py	/^def add_mc_response_type(pp_answer):$/;"	f
-add_mc_value_and_feedback	preprocessor.py	/^def add_mc_value_and_feedback(question, pp_answer, choice_letter):$/;"	f
-add_module_assessments	preprocessor.py	/^def add_module_assessments(assessments, source_etree):$/;"	f
-add_question_to_assessment	preprocessor.py	/^def add_question_to_assessment(na_question, assessment):$/;"	f
-add_question_to_module_assessment	preprocessor.py	/^def add_question_to_module_assessment(question, module_assessment):$/;"	f
-add_sa_answer_text	preprocessor.py	/^def add_sa_answer_text(question_answer, pp_answer):$/;"	f
-add_sa_answer_value	preprocessor.py	/^def add_sa_answer_value(question_answer, pp_answer):$/;"	f
-add_sa_feedback_text	preprocessor.py	/^def add_sa_feedback_text(question_answer, pp_answer):$/;"	f
-add_sa_text	preprocessor.py	/^def add_sa_text(question_answer, pp_answer, text_elt_name):$/;"	f
-add_sa_text_value_and_feedback	preprocessor.py	/^def add_sa_text_value_and_feedback(question, pp_answer):$/;"	f
-add_tf_flag	preprocessor.py	/^def add_tf_flag(question_part):$/;"	f
-add_tf_question_feedback_elts	preprocessor.py	/^def add_tf_question_feedback_elts(question_answer_elt, pp_answer):$/;"	f
-add_tf_question_letter_elt	preprocessor.py	/^def add_tf_question_letter_elt(question_answer_elt, pp_answer):$/;"	f
-add_tf_question_text_elt	preprocessor.py	/^def add_tf_question_text_elt(pp_answer):$/;"	f
-add_tf_question_value_elt	preprocessor.py	/^def add_tf_question_value_elt(question_answer_elt, pp_answer):$/;"	f
-add_tf_response_number	preprocessor.py	/^def add_tf_response_number(question_answer, pp_answer):$/;"	f
-add_tf_response_text	preprocessor.py	/^def add_tf_response_text(question_answer, pp_answer):$/;"	f
-add_tf_response_type	preprocessor.py	/^def add_tf_response_type(pp_answer):$/;"	f
-add_variables	preprocessor.py	/^def add_variables(parser_expression):$/;"	f
-append_to_question_text	preprocessor.py	/^def append_to_question_text(question_part, string_to_append):$/;"	f
+add_answer_elt	oreprocessor.py	/^def add_answer_elt(question_choice, pp_answer, src_elt_name, dest_elt_name):$/;"	f
+add_decimal_places	oreprocessor.py	/^def add_decimal_places(parser_expression):$/;"	f
+add_feedback	oreprocessor.py	/^def add_feedback(question):$/;"	f
+add_formula	oreprocessor.py	/^def add_formula(formula_text, parser_expression):$/;"	f
+add_incompatible_question	oreprocessor.py	/^def add_incompatible_question(question, d2l_incompatible_questions):$/;"	f
+add_initial_br_tag	oreprocessor.py	/^def add_initial_br_tag(question_part):$/;"	f
+add_mc_answer_letter	oreprocessor.py	/^def add_mc_answer_letter(question_choice, pp_answer):$/;"	f
+add_mc_response_type	oreprocessor.py	/^def add_mc_response_type(pp_answer):$/;"	f
+add_mc_value_and_feedback	oreprocessor.py	/^def add_mc_value_and_feedback(question, pp_answer, choice_letter):$/;"	f
+add_module_assessments	oreprocessor.py	/^def add_module_assessments(assessments, source_etree):$/;"	f
+add_question_to_assessment	oreprocessor.py	/^def add_question_to_assessment(na_question, assessment):$/;"	f
+add_question_to_module_assessment	oreprocessor.py	/^def add_question_to_module_assessment(question, module_assessment):$/;"	f
+add_sa_answer_text	oreprocessor.py	/^def add_sa_answer_text(question_answer, pp_answer):$/;"	f
+add_sa_answer_value	oreprocessor.py	/^def add_sa_answer_value(question_answer, pp_answer):$/;"	f
+add_sa_feedback_text	oreprocessor.py	/^def add_sa_feedback_text(question_answer, pp_answer):$/;"	f
+add_sa_text	oreprocessor.py	/^def add_sa_text(question_answer, pp_answer, text_elt_name):$/;"	f
+add_sa_text_value_and_feedback	oreprocessor.py	/^def add_sa_text_value_and_feedback(question, pp_answer):$/;"	f
+add_tf_flag	oreprocessor.py	/^def add_tf_flag(question_part):$/;"	f
+add_tf_question_feedback_elts	oreprocessor.py	/^def add_tf_question_feedback_elts(question_answer_elt, pp_answer):$/;"	f
+add_tf_question_letter_elt	oreprocessor.py	/^def add_tf_question_letter_elt(question_answer_elt, pp_answer):$/;"	f
+add_tf_question_text_elt	oreprocessor.py	/^def add_tf_question_text_elt(pp_answer):$/;"	f
+add_tf_question_value_elt	oreprocessor.py	/^def add_tf_question_value_elt(question_answer_elt, pp_answer):$/;"	f
+add_tf_response_number	oreprocessor.py	/^def add_tf_response_number(question_answer, pp_answer):$/;"	f
+add_tf_response_text	oreprocessor.py	/^def add_tf_response_text(question_answer, pp_answer):$/;"	f
+add_tf_response_type	oreprocessor.py	/^def add_tf_response_type(pp_answer):$/;"	f
+add_variables	oreprocessor.py	/^def add_variables(parser_expression):$/;"	f
+append_to_question_text	oreprocessor.py	/^def append_to_question_text(question_part, string_to_append):$/;"	f
 archive_contains_image_file	image_processor.py	/^def archive_contains_image_file(archive_path, image_file_name):$/;"	f
-balance_parens	preprocessor.py	/^def balance_parens(expression):$/;"	f
+balance_parens	oreprocessor.py	/^def balance_parens(expression):$/;"	f
 build_archive_path	image_processor.py	/^def build_archive_path(image_id):$/;"	f
-build_assessment_etree	../d2l_migra.pr/packager.py	/^def build_assessment_etree(etree, index_of_assessment_to_package):$/;"	f
-build_manifest_etree	../d2l_migra.pr/packager.py	/^def build_manifest_etree(assessment_ident, assessment_title, file_name):$/;"	f
-build_module_assessment	preprocessor.py	/^def build_module_assessment(assessment_title):$/;"	f
-build_module_assessments	preprocessor.py	/^def build_module_assessments(unassigned_questions):$/;"	f
-build_question_list	preprocessor.py	/^def build_question_list(question_list_file):$/;"	f
-build_random_variable	preprocessor.py	/^def build_random_variable():$/;"	f
-check_tf_answer_order	preprocessor.py	/^def check_tf_answer_order(pp_answers):$/;"	f
-clean_title	../d2l_migra.pr/packager.py	/^def clean_title(assessment_title):$/;"	f
+build_assessment_etree	packager.py	/^def build_assessment_etree(etree, index_of_assessment_to_package):$/;"	f
+build_manifest_etree	packager.py	/^def build_manifest_etree(assessment_ident, assessment_title, file_name):$/;"	f
+build_module_assessment	oreprocessor.py	/^def build_module_assessment(assessment_title):$/;"	f
+build_module_assessments	oreprocessor.py	/^def build_module_assessments(unassigned_questions):$/;"	f
+build_question_list	oreprocessor.py	/^def build_question_list(question_list_file):$/;"	f
+build_random_variable	oreprocessor.py	/^def build_random_variable():$/;"	f
+check_tf_answer_order	oreprocessor.py	/^def check_tf_answer_order(pp_answers):$/;"	f
+clean_title	packager.py	/^def clean_title(assessment_title):$/;"	f
 collect_input	input_management.py	/^def collect_input(argv):$/;"	f
-collect_unassigned_questions	preprocessor.py	/^def collect_unassigned_questions(source_etree):$/;"	f
-contains_multiple_part_types	preprocessor.py	/^def contains_multiple_part_types(question):$/;"	f
-contains_multiple_question_parts	preprocessor.py	/^def contains_multiple_question_parts(question):$/;"	f
-contains_multiple_short_answer_parts	preprocessor.py	/^def contains_multiple_short_answer_parts(question):$/;"	f
-contains_parser_expression	preprocessor.py	/^def contains_parser_expression(question):$/;"	f
-contains_single_part_type	preprocessor.py	/^def contains_single_part_type(question):$/;"	f
-convert_all_question_parts_to_sa	preprocessor.py	/^def convert_all_question_parts_to_sa(question):$/;"	f
-convert_cpd_question_to_msa	preprocessor.py	/^def convert_cpd_question_to_msa(question):$/;"	f
-convert_mc_question_part_to_sa	preprocessor.py	/^def convert_mc_question_part_to_sa(question_part):$/;"	f
-convert_tf_question_part_to_sa	preprocessor.py	/^def convert_tf_question_part_to_sa(question_part):$/;"	f
+collect_unassigned_questions	oreprocessor.py	/^def collect_unassigned_questions(source_etree):$/;"	f
+contains_multiple_part_types	oreprocessor.py	/^def contains_multiple_part_types(question):$/;"	f
+contains_multiple_question_parts	oreprocessor.py	/^def contains_multiple_question_parts(question):$/;"	f
+contains_multiple_short_answer_parts	oreprocessor.py	/^def contains_multiple_short_answer_parts(question):$/;"	f
+contains_parser_expression	oreprocessor.py	/^def contains_parser_expression(question):$/;"	f
+contains_single_part_type	oreprocessor.py	/^def contains_single_part_type(question):$/;"	f
+convert_all_question_parts_to_sa	oreprocessor.py	/^def convert_all_question_parts_to_sa(question):$/;"	f
+convert_cpd_question_to_msa	oreprocessor.py	/^def convert_cpd_question_to_msa(question):$/;"	f
+convert_mc_question_part_to_sa	oreprocessor.py	/^def convert_mc_question_part_to_sa(question_part):$/;"	f
+convert_tf_question_part_to_sa	oreprocessor.py	/^def convert_tf_question_part_to_sa(question_part):$/;"	f
+copy_header_image_file	image_processor.py	/^def copy_header_image_file(question, header_id):$/;"	f
 copy_image_file	image_processor.py	/^def copy_image_file(image_id):$/;"	f
 copy_image_file_and_replace_img_src	image_processor.py	/^def copy_image_file_and_replace_img_src(image_text_match):$/;"	f
 copy_image_files_and_replace_img_srcs	image_processor.py	/^def copy_image_files_and_replace_img_srcs(question_text_elt):$/;"	f
-create_assessment	preprocessor.py	/^def create_assessment(content_module_title):$/;"	f
-create_node	preprocessor.py	/^def create_node(title):$/;"	f
-csv	preprocessor.py	/^import csv$/;"	i
-custom_count	preprocessor.py	/^custom_count = 0$/;"	v
+create_assessment	oreprocessor.py	/^def create_assessment(content_module_title):$/;"	f
+create_node	oreprocessor.py	/^def create_node(title):$/;"	f
+csv	oreprocessor.py	/^import csv$/;"	i
+custom_count	oreprocessor.py	/^custom_count = 0$/;"	v
 d2l_migrator	input_management.py	/^import d2l_migrator$/;"	i
-deepcopy	../d2l_migra.pr/packager.py	/^from copy import deepcopy$/;"	i
-delete_temp_dir	../d2l_migra.pr/packager.py	/^def delete_temp_dir(temp_dir_path):$/;"	f
+deepcopy	packager.py	/^from copy import deepcopy$/;"	i
+delete_temp_dir	packager.py	/^def delete_temp_dir(temp_dir_path):$/;"	f
 dir_doesnt_exist	input_management.py	/^def dir_doesnt_exist(dir_path):$/;"	f
-doesnt_contain_parser_expression	preprocessor.py	/^def doesnt_contain_parser_expression(question):$/;"	f
-etree	../d2l_migra.pr/packager.py	/^from lxml import etree$/;"	i
-etree	d2l_migrator.py	/^from lxml import etree$/;"	i
+doesnt_contain_parser_expression	oreprocessor.py	/^def doesnt_contain_parser_expression(question):$/;"	f
+etree	../d2l_migratorer.ansformer.py	/^from lxml import etree$/;"	i
 etree	image_processor.py	/^from lxml import etree$/;"	i
-etree	preprocessor.py	/^from lxml import etree$/;"	i
-etree	transformer.py	/^from lxml import etree$/;"	i
+etree	oreprocessor.py	/^from lxml import etree$/;"	i
+etree	orl_migrator.py	/^from lxml import etree$/;"	i
+etree	packager.py	/^from lxml import etree$/;"	i
 file_doesnt_exist	input_management.py	/^def file_doesnt_exist(file_path):$/;"	f
-find_default_feedback	preprocessor.py	/^def find_default_feedback(question):$/;"	f
-find_existing_question_titles	preprocessor.py	/^def find_existing_question_titles(diffdir):$/;"	f
-find_greatest_question_answer_value	preprocessor.py	/^def find_greatest_question_answer_value(question_answers):$/;"	f
-find_last_paren_index	preprocessor.py	/^def find_last_paren_index(expression):$/;"	f
-find_pe_value_for_name	preprocessor.py	/^def find_pe_value_for_name(name, pe_variables):$/;"	f
-find_question_answer_elt_by_text_value	preprocessor.py	/^def find_question_answer_elt_by_text_value(question, text_val):$/;"	f
-find_subtype_number_for_custom_question	preprocessor.py	/^def find_subtype_number_for_custom_question(custom_question):$/;"	f
-find_var_names	preprocessor.py	/^def find_var_names(text):$/;"	f
-fnmatch	preprocessor.py	/^import fnmatch, logging, os, sys$/;"	i
-get_answer_text	preprocessor.py	/^def get_answer_text(question):$/;"	f
-get_answer_text_node	preprocessor.py	/^def get_answer_text_node(question):$/;"	f
-get_assessment_selection_node	preprocessor.py	/^def get_assessment_selection_node():$/;"	f
-get_choices	preprocessor.py	/^def get_choices(question_part):$/;"	f
-get_choices_as_ordered_list	preprocessor.py	/^def get_choices_as_ordered_list(question_part):$/;"	f
-get_content_selection_sets_node	preprocessor.py	/^def get_content_selection_sets_node():$/;"	f
-get_custom_questions	preprocessor.py	/^def get_custom_questions(source_etree):$/;"	f
-get_existing_file_paths	preprocessor.py	/^def get_existing_file_paths(diffdir):$/;"	f
-get_formula	preprocessor.py	/^def get_formula(question, pe_variables):$/;"	f
-get_id_node	preprocessor.py	/^def get_id_node():$/;"	f
-get_ignore_case	preprocessor.py	/^def get_ignore_case(question):$/;"	f
+find_default_feedback	oreprocessor.py	/^def find_default_feedback(question):$/;"	f
+find_existing_question_titles	oreprocessor.py	/^def find_existing_question_titles(diffdir):$/;"	f
+find_greatest_question_answer_value	oreprocessor.py	/^def find_greatest_question_answer_value(question_answers):$/;"	f
+find_last_paren_index	oreprocessor.py	/^def find_last_paren_index(expression):$/;"	f
+find_pe_value_for_name	oreprocessor.py	/^def find_pe_value_for_name(name, pe_variables):$/;"	f
+find_question_answer_elt_by_text_value	oreprocessor.py	/^def find_question_answer_elt_by_text_value(question, text_val):$/;"	f
+find_subtype_number_for_custom_question	oreprocessor.py	/^def find_subtype_number_for_custom_question(custom_question):$/;"	f
+find_var_names	oreprocessor.py	/^def find_var_names(text):$/;"	f
+fnmatch	oreprocessor.py	/^import fnmatch, logging, os, sys$/;"	i
+get_answer_text	oreprocessor.py	/^def get_answer_text(question):$/;"	f
+get_answer_text_node	oreprocessor.py	/^def get_answer_text_node(question):$/;"	f
+get_assessment_selection_node	oreprocessor.py	/^def get_assessment_selection_node():$/;"	f
+get_choices	oreprocessor.py	/^def get_choices(question_part):$/;"	f
+get_choices_as_ordered_list	oreprocessor.py	/^def get_choices_as_ordered_list(question_part):$/;"	f
+get_content_selection_sets_node	oreprocessor.py	/^def get_content_selection_sets_node():$/;"	f
+get_custom_questions	oreprocessor.py	/^def get_custom_questions(source_etree):$/;"	f
+get_existing_file_paths	oreprocessor.py	/^def get_existing_file_paths(diffdir):$/;"	f
+get_formula	oreprocessor.py	/^def get_formula(question, pe_variables):$/;"	f
+get_header_body_text	image_processor.py	/^def get_header_body_text(question, header_id):$/;"	f
+get_header_id	image_processor.py	/^def get_header_id(question):$/;"	f
+get_header_image_id	image_processor.py	/^def get_header_image_id(question, header_id):$/;"	f
+get_id_node	oreprocessor.py	/^def get_id_node():$/;"	f
+get_ignore_case	oreprocessor.py	/^def get_ignore_case(question):$/;"	f
 get_image_file_name_by_asset_id	image_processor.py	/^def get_image_file_name_by_asset_id(asset_id):$/;"	f
-get_input	d2l_migrator.py	/^def get_input(argv):$/;"	f
-get_int_call_replacement	preprocessor.py	/^def get_int_call_replacement(args_string):$/;"	f
-get_mantissa_length	preprocessor.py	/^def get_mantissa_length(number):$/;"	f
-get_max_decimal_places	preprocessor.py	/^def get_max_decimal_places(parser_expression):$/;"	f
-get_module_assessment	preprocessor.py	/^def get_module_assessment(question, assessments):$/;"	f
-get_module_assessment_title	preprocessor.py	/^def get_module_assessment_title(question):$/;"	f
-get_module_assessment_title_node	preprocessor.py	/^def get_module_assessment_title_node(assessment_title):$/;"	f
-get_next_name	preprocessor.py	/^def get_next_name(expression):$/;"	f
-get_pe_statements	preprocessor.py	/^def get_pe_statements(parser_expression):$/;"	f
-get_pe_variables	preprocessor.py	/^def get_pe_variables(parser_expression):$/;"	f
-get_question_answers	preprocessor.py	/^def get_question_answers(question_part):$/;"	f
+get_image_id	image_processor.py	/^def get_image_id(image_text):$/;"	f
+get_input	orl_migrator.py	/^def get_input(argv):$/;"	f
+get_int_call_replacement	oreprocessor.py	/^def get_int_call_replacement(args_string):$/;"	f
+get_mantissa_length	oreprocessor.py	/^def get_mantissa_length(number):$/;"	f
+get_max_decimal_places	oreprocessor.py	/^def get_max_decimal_places(parser_expression):$/;"	f
+get_module_assessment	oreprocessor.py	/^def get_module_assessment(question, assessments):$/;"	f
+get_module_assessment_title	oreprocessor.py	/^def get_module_assessment_title(question):$/;"	f
+get_module_assessment_title_node	oreprocessor.py	/^def get_module_assessment_title_node(assessment_title):$/;"	f
+get_next_name	oreprocessor.py	/^def get_next_name(expression):$/;"	f
+get_pe_statements	oreprocessor.py	/^def get_pe_statements(parser_expression):$/;"	f
+get_pe_variables	oreprocessor.py	/^def get_pe_variables(parser_expression):$/;"	f
+get_question_answers	oreprocessor.py	/^def get_question_answers(question_part):$/;"	f
 get_question_text_elt	image_processor.py	/^def get_question_text_elt(question):$/;"	f
-get_question_type_name_for_number	preprocessor.py	/^def get_question_type_name_for_number(question_type_number_as_string):$/;"	f
-get_question_type_name_for_property	preprocessor.py	/^def get_question_type_name_for_property(property_type, property_value):$/;"	f
-get_question_type_name_for_symbol	preprocessor.py	/^def get_question_type_name_for_symbol(question_type_symbol):$/;"	f
-get_question_type_number_as_string_for_name	preprocessor.py	/^def get_question_type_number_as_string_for_name(question_type_name):$/;"	f
-get_question_types_string	preprocessor.py	/^def get_question_types_string():$/;"	f
-get_random_params	preprocessor.py	/^def get_random_params(random_variable_value):$/;"	f
-get_random_variable_decimal_places	preprocessor.py	/^def get_random_variable_decimal_places(random_min, random_max, random_step):$/;"	f
-get_random_variables	preprocessor.py	/^def get_random_variables(parser_expression):$/;"	f
-get_re_pattern_variable	preprocessor.py	/^def get_re_pattern_variable():$/;"	f
-get_selections_node	preprocessor.py	/^def get_selections_node():$/;"	f
-get_tf_text_for_blank_value	preprocessor.py	/^def get_tf_text_for_blank_value(question_answer):$/;"	f
-get_tf_text_inverse_of	preprocessor.py	/^def get_tf_text_inverse_of(tf_answer_text):$/;"	f
-get_type_number_for_custom_single_part_question	preprocessor.py	/^def get_type_number_for_custom_single_part_question(question):$/;"	f
-get_unassigned_questions	preprocessor.py	/^def get_unassigned_questions(source_etree):$/;"	f
+get_question_type_name_for_number	oreprocessor.py	/^def get_question_type_name_for_number(question_type_number_as_string):$/;"	f
+get_question_type_name_for_property	oreprocessor.py	/^def get_question_type_name_for_property(property_type, property_value):$/;"	f
+get_question_type_name_for_symbol	oreprocessor.py	/^def get_question_type_name_for_symbol(question_type_symbol):$/;"	f
+get_question_type_number_as_string_for_name	oreprocessor.py	/^def get_question_type_number_as_string_for_name(question_type_name):$/;"	f
+get_question_types_string	oreprocessor.py	/^def get_question_types_string():$/;"	f
+get_random_params	oreprocessor.py	/^def get_random_params(random_variable_value):$/;"	f
+get_random_variable_decimal_places	oreprocessor.py	/^def get_random_variable_decimal_places(random_min, random_max, random_step):$/;"	f
+get_random_variables	oreprocessor.py	/^def get_random_variables(parser_expression):$/;"	f
+get_re_pattern_variable	oreprocessor.py	/^def get_re_pattern_variable():$/;"	f
+get_selections_node	oreprocessor.py	/^def get_selections_node():$/;"	f
+get_tf_text_for_blank_value	oreprocessor.py	/^def get_tf_text_for_blank_value(question_answer):$/;"	f
+get_tf_text_inverse_of	oreprocessor.py	/^def get_tf_text_inverse_of(tf_answer_text):$/;"	f
+get_type_number_for_custom_single_part_question	oreprocessor.py	/^def get_type_number_for_custom_single_part_question(question):$/;"	f
+get_unassigned_questions	oreprocessor.py	/^def get_unassigned_questions(source_etree):$/;"	f
 getopt	input_management.py	/^import sys, getopt, os.path$/;"	i
-image_processor	preprocessor.py	/^import image_processor$/;"	i
-init_sa_feedback	preprocessor.py	/^def init_sa_feedback():$/;"	f
-input_management	d2l_migrator.py	/^import input_management, packager, preprocessor, transformer$/;"	i
-insert_mc_sa_instruction	preprocessor.py	/^def insert_mc_sa_instruction(question_part):$/;"	f
-insert_tf_sa_instruction	preprocessor.py	/^def insert_tf_sa_instruction(question_part):$/;"	f
-is_compound_question	preprocessor.py	/^def is_compound_question(question):$/;"	f
-is_d2l_compatible_pe	preprocessor.py	/^def is_d2l_compatible_pe(parser_expression):$/;"	f
-is_d2l_compatible_pe_question	preprocessor.py	/^def is_d2l_compatible_pe_question(question):$/;"	f
-is_float	preprocessor.py	/^def is_float(val):$/;"	f
-is_format_statement	preprocessor.py	/^def is_format_statement(statement):$/;"	f
-is_function_call	preprocessor.py	/^def is_function_call(expression, function_name):$/;"	f
-is_incorrect_answer	preprocessor.py	/^def is_incorrect_answer(question_answer):$/;"	f
-is_int_function_call	preprocessor.py	/^def is_int_function_call(expression):$/;"	f
-is_matching_statement	preprocessor.py	/^def is_matching_statement(statement, match_text):$/;"	f
-is_mc_question_part	preprocessor.py	/^def is_mc_question_part(question_part):$/;"	f
-is_multiple_short_answer_question	preprocessor.py	/^def is_multiple_short_answer_question(question):$/;"	f
-is_parser_expression_question	preprocessor.py	/^def is_parser_expression_question(question):$/;"	f
-is_question_part_type	preprocessor.py	/^def is_question_part_type(question_part, question_part_type):$/;"	f
-is_random_pe_variable	preprocessor.py	/^def is_random_pe_variable(value):$/;"	f
-is_required_question	preprocessor.py	/^def is_required_question(question, question_list):$/;"	f
-is_round_function_call	preprocessor.py	/^def is_round_function_call(expression):$/;"	f
-is_round_statement	preprocessor.py	/^def is_round_statement(statement):$/;"	f
-is_sa_answer	preprocessor.py	/^def is_sa_answer(question_answer):$/;"	f
-is_sa_element	preprocessor.py	/^def is_sa_element(question_answer, element_name):$/;"	f
-is_sa_feedback	preprocessor.py	/^def is_sa_feedback(question_answer):$/;"	f
-is_sa_question_part	preprocessor.py	/^def is_sa_question_part(question_part):$/;"	f
-is_single_part_question	preprocessor.py	/^def is_single_part_question(question):$/;"	f
-is_sqrt_function_call	preprocessor.py	/^def is_sqrt_function_call(expression):$/;"	f
-is_substitute_statement	preprocessor.py	/^def is_substitute_statement(statement):$/;"	f
-is_tf_question_part	preprocessor.py	/^def is_tf_question_part(question_part):$/;"	f
-is_valid_pe_variable_statement	preprocessor.py	/^def is_valid_pe_variable_statement(statement):$/;"	f
-isnt_msa_question	preprocessor.py	/^def isnt_msa_question(question):$/;"	f
-linearize	preprocessor.py	/^def linearize(expression, pe_variables):$/;"	f
-log_converted_questions	preprocessor.py	/^def log_converted_questions(cpd_question_count, mc_question_count, mr_question_count, msa_question_count, pe_question_count, pe_incompat_question_count, sa_question_count, tf_question_count, unk_question_count):$/;"	f
-log_incompatible_questions	preprocessor.py	/^def log_incompatible_questions(incompatible_questions, outdir):$/;"	f
-log_input_questions	preprocessor.py	/^def log_input_questions(intree, questions):$/;"	f
-log_unrecognized_question	preprocessor.py	/^def log_unrecognized_question(question):$/;"	f
-logging	d2l_migrator.py	/^import logging, os.path, sys$/;"	i
-logging	preprocessor.py	/^import fnmatch, logging, os, sys$/;"	i
-main	d2l_migrator.py	/^def main(argv):$/;"	f
+image_processor	oreprocessor.py	/^import image_processor$/;"	i
+init_sa_feedback	oreprocessor.py	/^def init_sa_feedback():$/;"	f
+input_management	orl_migrator.py	/^import input_management, packager, preprocessor, transformer$/;"	i
+insert_header_image_link	image_processor.py	/^def insert_header_image_link(question, image_file_name):$/;"	f
+insert_mc_sa_instruction	oreprocessor.py	/^def insert_mc_sa_instruction(question_part):$/;"	f
+insert_tf_sa_instruction	oreprocessor.py	/^def insert_tf_sa_instruction(question_part):$/;"	f
+is_compound_question	oreprocessor.py	/^def is_compound_question(question):$/;"	f
+is_d2l_compatible_pe	oreprocessor.py	/^def is_d2l_compatible_pe(parser_expression):$/;"	f
+is_d2l_compatible_pe_question	oreprocessor.py	/^def is_d2l_compatible_pe_question(question):$/;"	f
+is_float	oreprocessor.py	/^def is_float(val):$/;"	f
+is_format_statement	oreprocessor.py	/^def is_format_statement(statement):$/;"	f
+is_function_call	oreprocessor.py	/^def is_function_call(expression, function_name):$/;"	f
+is_incorrect_answer	oreprocessor.py	/^def is_incorrect_answer(question_answer):$/;"	f
+is_int_function_call	oreprocessor.py	/^def is_int_function_call(expression):$/;"	f
+is_matching_statement	oreprocessor.py	/^def is_matching_statement(statement, match_text):$/;"	f
+is_mc_question_part	oreprocessor.py	/^def is_mc_question_part(question_part):$/;"	f
+is_multiple_short_answer_question	oreprocessor.py	/^def is_multiple_short_answer_question(question):$/;"	f
+is_parser_expression_question	oreprocessor.py	/^def is_parser_expression_question(question):$/;"	f
+is_question_part_type	oreprocessor.py	/^def is_question_part_type(question_part, question_part_type):$/;"	f
+is_random_pe_variable	oreprocessor.py	/^def is_random_pe_variable(value):$/;"	f
+is_required_question	oreprocessor.py	/^def is_required_question(question, question_list):$/;"	f
+is_round_function_call	oreprocessor.py	/^def is_round_function_call(expression):$/;"	f
+is_round_statement	oreprocessor.py	/^def is_round_statement(statement):$/;"	f
+is_sa_answer	oreprocessor.py	/^def is_sa_answer(question_answer):$/;"	f
+is_sa_element	oreprocessor.py	/^def is_sa_element(question_answer, element_name):$/;"	f
+is_sa_feedback	oreprocessor.py	/^def is_sa_feedback(question_answer):$/;"	f
+is_sa_question_part	oreprocessor.py	/^def is_sa_question_part(question_part):$/;"	f
+is_single_part_question	oreprocessor.py	/^def is_single_part_question(question):$/;"	f
+is_sqrt_function_call	oreprocessor.py	/^def is_sqrt_function_call(expression):$/;"	f
+is_substitute_statement	oreprocessor.py	/^def is_substitute_statement(statement):$/;"	f
+is_tf_question_part	oreprocessor.py	/^def is_tf_question_part(question_part):$/;"	f
+is_valid_pe_variable_statement	oreprocessor.py	/^def is_valid_pe_variable_statement(statement):$/;"	f
+isnt_msa_question	oreprocessor.py	/^def isnt_msa_question(question):$/;"	f
+linearize	oreprocessor.py	/^def linearize(expression, pe_variables):$/;"	f
+log_converted_questions	oreprocessor.py	/^def log_converted_questions(cpd_question_count, mc_question_count, mr_question_count, msa_question_count, pe_question_count, pe_incompat_question_count, sa_question_count, tf_question_count, unk_question_count):$/;"	f
+log_incompatible_questions	oreprocessor.py	/^def log_incompatible_questions(incompatible_questions, outdir):$/;"	f
+log_input_questions	oreprocessor.py	/^def log_input_questions(intree, questions):$/;"	f
+log_unrecognized_question	oreprocessor.py	/^def log_unrecognized_question(question):$/;"	f
+logging	oreprocessor.py	/^import fnmatch, logging, os, sys$/;"	i
+logging	orl_migrator.py	/^import logging, os.path, sys$/;"	i
+main	orl_migrator.py	/^def main(argv):$/;"	f
 make_image_outdir	image_processor.py	/^def make_image_outdir(outdir):$/;"	f
-make_temp_dir	../d2l_migra.pr/packager.py	/^def make_temp_dir(name, outdir_path):$/;"	f
-os	../d2l_migra.pr/packager.py	/^import sys, os.path, zipfile, shutil, re$/;"	i
-os	d2l_migrator.py	/^import logging, os.path, sys$/;"	i
+make_temp_dir	packager.py	/^def make_temp_dir(name, outdir_path):$/;"	f
 os	image_processor.py	/^import sys, re, os, os.path, shutil, zipfile$/;"	i
 os	input_management.py	/^import sys, getopt, os.path$/;"	i
-os	preprocessor.py	/^import fnmatch, logging, os, sys$/;"	i
-p2_unicode_utils	preprocessor.py	/^import p2_unicode_utils$/;"	i
-package_assessment	../d2l_migra.pr/packager.py	/^def package_assessment(etree, index_of_assessment_to_package, outdir_path):$/;"	f
-package_assessments	../d2l_migra.pr/packager.py	/^def package_assessments(etree, outdir_path):$/;"	f
-packager	d2l_migrator.py	/^import input_management, packager, preprocessor, transformer$/;"	i
-parse_question_source_file	preprocessor.py	/^def parse_question_source_file(infile_path):$/;"	f
-path	../d2l_migra.pr/packager.py	/^import sys, os.path, zipfile, shutil, re$/;"	i
-path	d2l_migrator.py	/^import logging, os.path, sys$/;"	i
+os	oreprocessor.py	/^import fnmatch, logging, os, sys$/;"	i
+os	orl_migrator.py	/^import logging, os.path, sys$/;"	i
+os	packager.py	/^import sys, os.path, zipfile, shutil, re$/;"	i
+p2_unicode_utils	oreprocessor.py	/^import p2_unicode_utils$/;"	i
+package_assessment	packager.py	/^def package_assessment(etree, index_of_assessment_to_package, outdir_path):$/;"	f
+package_assessments	packager.py	/^def package_assessments(etree, outdir_path):$/;"	f
+packager	orl_migrator.py	/^import input_management, packager, preprocessor, transformer$/;"	i
+parse_question_source_file	oreprocessor.py	/^def parse_question_source_file(infile_path):$/;"	f
 path	image_processor.py	/^import sys, re, os, os.path, shutil, zipfile$/;"	i
 path	input_management.py	/^import sys, getopt, os.path$/;"	i
-preprocessor	d2l_migrator.py	/^import input_management, packager, preprocessor, transformer$/;"	i
-print_usage	d2l_migrator.py	/^def print_usage(msg='Usage:'):$/;"	f
-process	preprocessor.py	/^def process(infile_path, base_url, outdir, question_type_symbol, diffdir, question_list_file):$/;"	f
-process_cpd_question	preprocessor.py	/^def process_cpd_question(question):$/;"	f
+path	orl_migrator.py	/^import logging, os.path, sys$/;"	i
+path	packager.py	/^import sys, os.path, zipfile, shutil, re$/;"	i
+preprocessor	orl_migrator.py	/^import input_management, packager, preprocessor, transformer$/;"	i
+print_usage	orl_migrator.py	/^def print_usage(msg='Usage:'):$/;"	f
+process	oreprocessor.py	/^def process(infile_path, base_url, outdir, question_type_symbol, diffdir, question_list_file):$/;"	f
+process_cpd_question	oreprocessor.py	/^def process_cpd_question(question):$/;"	f
 process_images	image_processor.py	/^def process_images(question, base_url, outdir):$/;"	f
-process_mc_answer	preprocessor.py	/^def process_mc_answer(question, question_choice):$/;"	f
-process_mc_question	preprocessor.py	/^def process_mc_question(question):$/;"	f
-process_mr_question	preprocessor.py	/^def process_mr_question(question):$/;"	f
-process_msa_question	preprocessor.py	/^def process_msa_question(question):$/;"	f
-process_pe_question	preprocessor.py	/^def process_pe_question(question):$/;"	f
-process_questions	preprocessor.py	/^def process_questions(intree, base_url, outdir, question_list_file):$/;"	f
-process_sa_answer	preprocessor.py	/^def process_sa_answer(question_answer):$/;"	f
-process_sa_answer_values	preprocessor.py	/^def process_sa_answer_values(question_answers, is_msa=False):$/;"	f
-process_sa_answers	preprocessor.py	/^def process_sa_answers(question_part):$/;"	f
-process_sa_question	preprocessor.py	/^def process_sa_question(question):$/;"	f
-process_tf_answer	preprocessor.py	/^def process_tf_answer(question, question_answer):$/;"	f
-process_tf_question	preprocessor.py	/^def process_tf_question(question):$/;"	f
+process_images_in_headers	image_processor.py	/^def process_images_in_headers(question):$/;"	f
+process_images_in_question_text	image_processor.py	/^def process_images_in_question_text(question):$/;"	f
+process_mc_answer	oreprocessor.py	/^def process_mc_answer(question, question_choice):$/;"	f
+process_mc_question	oreprocessor.py	/^def process_mc_question(question):$/;"	f
+process_mr_question	oreprocessor.py	/^def process_mr_question(question):$/;"	f
+process_msa_question	oreprocessor.py	/^def process_msa_question(question):$/;"	f
+process_pe_question	oreprocessor.py	/^def process_pe_question(question):$/;"	f
+process_questions	oreprocessor.py	/^def process_questions(intree, base_url, outdir, question_list_file):$/;"	f
+process_sa_answer	oreprocessor.py	/^def process_sa_answer(question_answer):$/;"	f
+process_sa_answer_values	oreprocessor.py	/^def process_sa_answer_values(question_answers, is_msa=False):$/;"	f
+process_sa_answers	oreprocessor.py	/^def process_sa_answers(question_part):$/;"	f
+process_sa_question	oreprocessor.py	/^def process_sa_question(question):$/;"	f
+process_tf_answer	oreprocessor.py	/^def process_tf_answer(question, question_answer):$/;"	f
+process_tf_question	oreprocessor.py	/^def process_tf_question(question):$/;"	f
 question_type_not_found	input_management.py	/^def question_type_not_found(question_type):$/;"	f
-random	preprocessor.py	/^import random$/;"	i
-re	../d2l_migra.pr/packager.py	/^import sys, os.path, zipfile, shutil, re$/;"	i
+random	oreprocessor.py	/^import random$/;"	i
 re	image_processor.py	/^import sys, re, os, os.path, shutil, zipfile$/;"	i
-re	preprocessor.py	/^import re$/;"	i
-record_question	preprocessor.py	/^def record_question(question):$/;"	f
-remove_all_incorrect_question_answers	preprocessor.py	/^def remove_all_incorrect_question_answers(question_part):$/;"	f
-remove_assessments_without_question_type	preprocessor.py	/^def remove_assessments_without_question_type(question_type_symbol, source_etree):$/;"	f
-remove_choices	preprocessor.py	/^def remove_choices(question_part):$/;"	f
-remove_duplicate_questions_from_module	preprocessor.py	/^def remove_duplicate_questions_from_module(module_etree, existing_question_titles):$/;"	f
-remove_duplicate_questions_from_source	preprocessor.py	/^def remove_duplicate_questions_from_source(source_etree, diffdir=''):$/;"	f
-remove_empty_assessments	d2l_migrator.py	/^def remove_empty_assessments(transformed_etree):$/;"	f
-remove_empty_assessments_from_modules	preprocessor.py	/^def remove_empty_assessments_from_modules(source_etree):$/;"	f
-remove_questions_other_than	preprocessor.py	/^def remove_questions_other_than(question_type_symbol, source_etree):$/;"	f
+re	oreprocessor.py	/^import re$/;"	i
+re	packager.py	/^import sys, os.path, zipfile, shutil, re$/;"	i
+record_question	oreprocessor.py	/^def record_question(question):$/;"	f
+remove_all_incorrect_question_answers	oreprocessor.py	/^def remove_all_incorrect_question_answers(question_part):$/;"	f
+remove_assessments_without_question_type	oreprocessor.py	/^def remove_assessments_without_question_type(question_type_symbol, source_etree):$/;"	f
+remove_choices	oreprocessor.py	/^def remove_choices(question_part):$/;"	f
+remove_duplicate_questions_from_module	oreprocessor.py	/^def remove_duplicate_questions_from_module(module_etree, existing_question_titles):$/;"	f
+remove_duplicate_questions_from_source	oreprocessor.py	/^def remove_duplicate_questions_from_source(source_etree, diffdir=''):$/;"	f
+remove_empty_assessments	orl_migrator.py	/^def remove_empty_assessments(transformed_etree):$/;"	f
+remove_empty_assessments_from_modules	oreprocessor.py	/^def remove_empty_assessments_from_modules(source_etree):$/;"	f
+remove_questions_other_than	oreprocessor.py	/^def remove_questions_other_than(question_type_symbol, source_etree):$/;"	f
 rename_image_file	image_processor.py	/^def rename_image_file(image_file_path, image_id):$/;"	f
-replace_correct_mc_answer_elts_with_sa	preprocessor.py	/^def replace_correct_mc_answer_elts_with_sa(question_part):$/;"	f
-replace_illegal_formula_variable_names	preprocessor.py	/^def replace_illegal_formula_variable_names(question):$/;"	f
-replace_illegal_pe_variable_names	preprocessor.py	/^def replace_illegal_pe_variable_names(question):$/;"	f
-replace_illegal_variable_names	preprocessor.py	/^def replace_illegal_variable_names(question):$/;"	f
-replace_illegal_variable_names_in_text	preprocessor.py	/^def replace_illegal_variable_names_in_text(text):$/;"	f
-replace_incorrect_tf_question_answer_text	preprocessor.py	/^def replace_incorrect_tf_question_answer_text(question_part):$/;"	f
-replace_int_function_call	preprocessor.py	/^def replace_int_function_call(expression):$/;"	f
-replace_mc_answer_elts_with_sa	preprocessor.py	/^def replace_mc_answer_elts_with_sa(question_part):$/;"	f
-replace_mc_question_part_with_sa	preprocessor.py	/^def replace_mc_question_part_with_sa(question_part):$/;"	f
-replace_question_part_properties_with_sa	preprocessor.py	/^def replace_question_part_properties_with_sa(question_part):$/;"	f
-replace_sqrt_function_call	preprocessor.py	/^def replace_sqrt_function_call(expression):$/;"	f
-search_expression_for_variable_names	preprocessor.py	/^def search_expression_for_variable_names(expression):$/;"	f
-set_child_element_text	preprocessor.py	/^def set_child_element_text(parent_elt, child_elt_name, text_value):$/;"	f
-set_custom_question_subtypes	preprocessor.py	/^def set_custom_question_subtypes(source_etree):$/;"	f
-set_question_type	preprocessor.py	/^def set_question_type(custom_question, subtype_number):$/;"	f
-set_question_type_to_msa	preprocessor.py	/^def set_question_type_to_msa(question):$/;"	f
-set_up_logging	preprocessor.py	/^def set_up_logging(source_etree, infile_path):$/;"	f
-set_variable_properties	preprocessor.py	/^def set_variable_properties(variable, random_variable_name, random_params):$/;"	f
-shutil	../d2l_migra.pr/packager.py	/^import sys, os.path, zipfile, shutil, re$/;"	i
+replace_correct_mc_answer_elts_with_sa	oreprocessor.py	/^def replace_correct_mc_answer_elts_with_sa(question_part):$/;"	f
+replace_illegal_formula_variable_names	oreprocessor.py	/^def replace_illegal_formula_variable_names(question):$/;"	f
+replace_illegal_pe_variable_names	oreprocessor.py	/^def replace_illegal_pe_variable_names(question):$/;"	f
+replace_illegal_variable_names	oreprocessor.py	/^def replace_illegal_variable_names(question):$/;"	f
+replace_illegal_variable_names_in_text	oreprocessor.py	/^def replace_illegal_variable_names_in_text(text):$/;"	f
+replace_incorrect_tf_question_answer_text	oreprocessor.py	/^def replace_incorrect_tf_question_answer_text(question_part):$/;"	f
+replace_int_function_call	oreprocessor.py	/^def replace_int_function_call(expression):$/;"	f
+replace_mc_answer_elts_with_sa	oreprocessor.py	/^def replace_mc_answer_elts_with_sa(question_part):$/;"	f
+replace_mc_question_part_with_sa	oreprocessor.py	/^def replace_mc_question_part_with_sa(question_part):$/;"	f
+replace_question_part_properties_with_sa	oreprocessor.py	/^def replace_question_part_properties_with_sa(question_part):$/;"	f
+replace_sqrt_function_call	oreprocessor.py	/^def replace_sqrt_function_call(expression):$/;"	f
+search_expression_for_variable_names	oreprocessor.py	/^def search_expression_for_variable_names(expression):$/;"	f
+set_child_element_text	oreprocessor.py	/^def set_child_element_text(parent_elt, child_elt_name, text_value):$/;"	f
+set_custom_question_subtypes	oreprocessor.py	/^def set_custom_question_subtypes(source_etree):$/;"	f
+set_question_type	oreprocessor.py	/^def set_question_type(custom_question, subtype_number):$/;"	f
+set_question_type_to_msa	oreprocessor.py	/^def set_question_type_to_msa(question):$/;"	f
+set_up_logging	oreprocessor.py	/^def set_up_logging(source_etree, infile_path):$/;"	f
+set_variable_properties	oreprocessor.py	/^def set_variable_properties(variable, random_variable_name, random_params):$/;"	f
 shutil	image_processor.py	/^import sys, re, os, os.path, shutil, zipfile$/;"	i
-skip_question	preprocessor.py	/^def skip_question(num_questions):$/;"	f
-split_int_call	preprocessor.py	/^def split_int_call(expression):$/;"	f
-sys	../d2l_migra.pr/packager.py	/^import sys, os.path, zipfile, shutil, re$/;"	i
-sys	d2l_migrator.py	/^import logging, os.path, sys$/;"	i
+shutil	packager.py	/^import sys, os.path, zipfile, shutil, re$/;"	i
+skip_question	oreprocessor.py	/^def skip_question(num_questions):$/;"	f
+split_int_call	oreprocessor.py	/^def split_int_call(expression):$/;"	f
 sys	image_processor.py	/^import sys, re, os, os.path, shutil, zipfile$/;"	i
 sys	input_management.py	/^import sys, getopt, os.path$/;"	i
-sys	preprocessor.py	/^import fnmatch, logging, os, sys$/;"	i
+sys	oreprocessor.py	/^import fnmatch, logging, os, sys$/;"	i
+sys	orl_migrator.py	/^import logging, os.path, sys$/;"	i
+sys	packager.py	/^import sys, os.path, zipfile, shutil, re$/;"	i
 to_str	p2_unicode_utils.py	/^def to_str(unicode_or_str):$/;"	f
 to_unicode	p2_unicode_utils.py	/^def to_unicode(unicode_or_str):$/;"	f
-transform_data	transformer.py	/^def transform_data(source_etree, stylesheet):$/;"	f
-transformer	../d2l_migra.pr/packager.py	/^import transformer$/;"	i
-transformer	d2l_migrator.py	/^import input_management, packager, preprocessor, transformer$/;"	i
-update_sa_feedback	preprocessor.py	/^def update_sa_feedback(question_answer, pp_feedback):$/;"	f
+transform_data	../d2l_migratorer.ansformer.py	/^def transform_data(source_etree, stylesheet):$/;"	f
+transformer	orl_migrator.py	/^import input_management, packager, preprocessor, transformer$/;"	i
+transformer	packager.py	/^import transformer$/;"	i
+update_sa_feedback	oreprocessor.py	/^def update_sa_feedback(question_answer, pp_feedback):$/;"	f
 validate_input	input_management.py	/^def validate_input(infile, stylesheet, outdir, base_url, question_type, diffdir, question_list_file):$/;"	f
-write_archive	../d2l_migra.pr/packager.py	/^def write_archive(assessment_xml_doc_path, manifest_file_path, archive_path):$/;"	f
-write_assessment_xml_doc	../d2l_migra.pr/packager.py	/^def write_assessment_xml_doc(assessment_etree, outdir_path):$/;"	f
-write_it	preprocessor.py	/^def write_it():$/;"	f
-write_manifest_file	../d2l_migra.pr/packager.py	/^def write_manifest_file(assessment_ident, assessment_title, assessment_xml_doc_path, temp_dir_path):$/;"	f
-write_outfile	d2l_migrator.py	/^def write_outfile(dom, outfile_path):$/;"	f
-zipfile	../d2l_migra.pr/packager.py	/^import sys, os.path, zipfile, shutil, re$/;"	i
+write_archive	packager.py	/^def write_archive(assessment_xml_doc_path, manifest_file_path, archive_path):$/;"	f
+write_assessment_xml_doc	packager.py	/^def write_assessment_xml_doc(assessment_etree, outdir_path):$/;"	f
+write_it	oreprocessor.py	/^def write_it():$/;"	f
+write_manifest_file	packager.py	/^def write_manifest_file(assessment_ident, assessment_title, assessment_xml_doc_path, temp_dir_path):$/;"	f
+write_outfile	orl_migrator.py	/^def write_outfile(dom, outfile_path):$/;"	f
 zipfile	image_processor.py	/^import sys, re, os, os.path, shutil, zipfile$/;"	i
+zipfile	packager.py	/^import sys, os.path, zipfile, shutil, re$/;"	i

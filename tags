@@ -12,7 +12,7 @@ HTML	d2l_migrator/preprocessor.py	/^from html import HTML$/;"	i
 IMAGE_OUTDIR_PATH	d2l_migrator/image_processor.py	/^IMAGE_OUTDIR_PATH = None$/;"	v
 LC_FALSE_VALUES	d2l_migrator/preprocessor.py	/^LC_FALSE_VALUES = ['f', 'false', 'n']$/;"	v
 LC_TRUE_VALUES	d2l_migrator/preprocessor.py	/^LC_TRUE_VALUES = ['t', 'true', 'y']$/;"	v
-MANIFEST_STYLESHEET_PATH	d2l_migrator/packager.py	/^MANIFEST_STYLESHEET_PATH = '..\/stylesheets\/imsmanifest.xsl'$/;"	v
+MANIFEST_STYLESHEET_PATH	d2l_migrator/packager.py	/^MANIFEST_STYLESHEET_PATH = '\/Users\/todds\/Otira\/Projects\/SAIT Test Bank Migration\/d2l_migrator\/stylesheets\/imsmanifest.xsl'$/;"	v
 NAME	tests/r.l_migrator.py	/^import NAME$/;"	i
 QUESTION	d2l_migrator/image_processor.py	/^QUESTION = None$/;"	v
 Q_TYPES	d2l_migrator/preprocessor.py	/^Q_TYPES = {$/;"	v
@@ -213,6 +213,7 @@ print_usage	d2l_migrator/d2l_migrator.py	/^def print_usage(msg='Usage:'):$/;"	f
 process	d2l_migrator/preprocessor.py	/^def process(infile_path, base_url, outdir, question_type_symbol, diffdir, question_list_file):$/;"	f
 process_cpd_question	d2l_migrator/preprocessor.py	/^def process_cpd_question(question):$/;"	f
 process_images	d2l_migrator/image_processor.py	/^def process_images(question, base_url, outdir):$/;"	f
+process_images_in_question_text	d2l_migrator/image_processor.py	/^def process_images_in_question_text(question):$/;"	f
 process_mc_answer	d2l_migrator/preprocessor.py	/^def process_mc_answer(question, question_choice):$/;"	f
 process_mc_question	d2l_migrator/preprocessor.py	/^def process_mc_question(question):$/;"	f
 process_mr_question	d2l_migrator/preprocessor.py	/^def process_mr_question(question):$/;"	f

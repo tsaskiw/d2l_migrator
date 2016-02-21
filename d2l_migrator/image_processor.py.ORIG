@@ -16,15 +16,10 @@ def process_images(question, base_url, outdir):
     global IMAGE_OUTDIR_PATH
     IMAGE_OUTDIR_PATH = make_image_outdir(outdir)
     try:
-        process_images_in_question_text(question)
-        process_images_in_headers(question)
+        question_text_elt = get_question_text_elt(question)
+        copy_image_files_and_replace_img_srcs(question_text_elt)
     except BadQuestionError:
         pass
-
-
-def process_images_in_question_text(question):
-    question_text_elt = get_question_text_elt(question)
-    copy_image_files_and_replace_img_srcs(question_text_elt)
 
 
 def make_image_outdir(outdir):
@@ -32,49 +27,6 @@ def make_image_outdir(outdir):
     if not os.path.isdir(image_outdir_path):
         os.makedirs(image_outdir_path)
     return image_outdir_path
-
-
-def process_images_in_headers(question):
-    header_id = get_header_id(question)
-    if header_id:
-        image_file_name = copy_header_image_file(question, header_id)
-        insert_header_image_link(question, image_file_name)
-
-
-def get_header_id(question):
-    header_id = question.findtext('HeaderID')
-    if header_id:
-        if int(header_id) > 0:
-            return header_id
-    return None
-
-
-def copy_header_image_file(question, header_id):
-        image_id = get_header_image_id(question, header_id)
-        return copy_image_file(image_id)
-
-
-def get_header_image_id(question, header_id):
-    body_text = get_header_body_text(question, header_id)
-    return get_image_id(body_text)
-
-
-def get_header_body_text(question, header_id):
-    query = "//QuestionHeader[ID={}]".format(header_id)
-    header = question.xpath(query)[0]
-    return header.findtext('Body')
-
-
-def get_image_id(image_text):
-    pattern = '(IMG\s.*src=[\"\'])(.*getassetfile\.aspx\?id\s*=\s*)(\d+)([\"\'])'
-    result = re.search(pattern, image_text, re.IGNORECASE)
-    return result.group(3)
-
-
-def insert_header_image_link(question, image_file_name):
-    question_text_elt = get_question_text_elt(question)
-    img_tag = "<img src='{}'/>".format(image_file_name)
-    question_text_elt.text = img_tag + question_text_elt.text
 
 
 def get_question_text_elt(question):
@@ -119,14 +71,7 @@ def copy_image_file(image_id):
 
 def get_image_file_name_by_asset_id(asset_id):
     image_file_name = None
-    #file_name_elts = QUESTION.xpath('//Asset[ID=' + asset_id + ']/FileName')
-    try:
-        query = "//Asset[ID={}]/FileName".format(str(asset_id))
-        file_name_elts = QUESTION.xpath(query)
-    except:
-        print(query)
-        print(asset_id)
-        sys.exit()
+    file_name_elts = QUESTION.xpath('//Asset[ID=' + asset_id + ']/FileName')
     if file_name_elts:
         image_file_name = file_name_elts[0].text
     return image_file_name

@@ -4,7 +4,7 @@ from lxml import etree
 import transformer
 
 
-MANIFEST_STYLESHEET_PATH = '../../stylesheets/imsmanifest.xsl'
+MANIFEST_STYLESHEET_PATH = '/Users/todds/Otira/Projects/SAIT Test Bank Migration/d2l_migrator/stylesheets/imsmanifest.xsl'
 
 
 def package_assessments(etree, outdir_path):

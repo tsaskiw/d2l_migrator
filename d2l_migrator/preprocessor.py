@@ -1070,47 +1070,6 @@ def is_d2l_compatible_pe(parser_expression):
     return no_braces and no_if
 
 
-#insert block below in function
-#    if skip_question(num):
-#        return
-#    else:
-#        record_question(question)
-custom_count = 0
-def skip_question(num_questions):
-    global custom_count
-    custom_count += 1
-    return custom_count > num_questions
-
-
-__custom_question_titles = {}
-def record_question(question):
-    count = 0
-    for titles in __custom_question_titles:
-        count += len(__custom_question_titles[titles])
-    module_title = p2_unicode_utils.to_str(question.xpath('ancestor::Assessment/Title/text()')[0])
-    module_title += '-'
-    module_title += p2_unicode_utils.to_str(question.xpath('ancestor::Assessment/ID/text()')[0])
-    question_title = p2_unicode_utils.to_str(question.findtext('Title'))
-#    question_title += ' : '
-#    question_title += str(count + 1)
-
-    if module_title not in __custom_question_titles:
-        __custom_question_titles[module_title] = []
-    __custom_question_titles[module_title].append(question_title)
-
-
-def write_it():
-    with open('custom questions.txt', 'w') as f:
-        f.truncate()
-        for line in __custom_question_titles:
-            f.write(line)
-            f.write("\n")
-            for title in __custom_question_titles[line]:
-                f.write("\t")
-                f.write(title)
-                f.write("\n")
-            f.write("\n")
-
 
 def process_mr_question(question):
     '''Seems the few MR question coming in from TLM are mistakes. Should be MC questions.'''
@@ -1316,7 +1275,6 @@ def add_tf_question_value_elt(question_answer_elt, pp_answer):
     return pp_answer
 
 
-
 def add_tf_question_feedback_elts(question_answer_elt, pp_answer):
     question_fb_elt = etree.Element('feedback')
     question_fb_elt.text = question_answer_elt.findtext('Feedback')
@@ -1454,3 +1412,46 @@ def is_float(val):
 def get_re_pattern_variable():
     global RE_PATTERN_VARIABLE
     return RE_PATTERN_VARIABLE
+
+
+#insert block below in function
+#    if skip_question(num):
+#        return
+#    else:
+#        record_question(question)
+custom_count = 0
+def skip_question(num_questions):
+    global custom_count
+    custom_count += 1
+    return custom_count > num_questions
+
+
+__custom_question_titles = {}
+def record_question(question):
+    count = 0
+    for titles in __custom_question_titles:
+        count += len(__custom_question_titles[titles])
+    module_title = p2_unicode_utils.to_str(question.xpath('ancestor::Assessment/Title/text()')[0])
+    module_title += '-'
+    module_title += p2_unicode_utils.to_str(question.xpath('ancestor::Assessment/ID/text()')[0])
+    question_title = p2_unicode_utils.to_str(question.findtext('Title'))
+#    question_title += ' : '
+#    question_title += str(count + 1)
+
+    if module_title not in __custom_question_titles:
+        __custom_question_titles[module_title] = []
+    __custom_question_titles[module_title].append(question_title)
+
+
+def write_it():
+    with open('custom questions.txt', 'w') as f:
+        f.truncate()
+        for line in __custom_question_titles:
+            f.write(line)
+            f.write("\n")
+            for title in __custom_question_titles[line]:
+                f.write("\t")
+                f.write(title)
+                f.write("\n")
+            f.write("\n")
+

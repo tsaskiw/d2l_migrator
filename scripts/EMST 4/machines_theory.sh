@@ -1,9 +1,9 @@
 #!/usr/bin/env sh
 
-INFILE='/Users/todds/Otira/Projects/SAIT Test Bank Migration/TLM/tlm_exports/Period 2/code_2015/ObjectPackage_code.xml'
+INFILE='/Users/todds/Otira/Projects/SAIT Test Bank Migration/TLM/tlm_exports/EMST_4/machines_theory/ObjectPackage_machines_theory.xml'
 STYLESHEET='/Users/todds/Otira/Projects/SAIT Test Bank Migration/d2l_migrator/stylesheets/assessments.xsl'
-OUTDIR='/Users/todds/Otira/Projects/SAIT Test Bank Migration/output/Period 2/code'
-BASEURL='/Users/todds/Otira/Projects/SAIT Test Bank Migration/TLM/tlm_exports/Period 2/code_2015/'
+OUTDIR='/Users/todds/Otira/Projects/SAIT Test Bank Migration/output/EMST 4/machines_theory'
+BASEURL='/Users/todds/Otira/Projects/SAIT Test Bank Migration/TLM/tlm_exports/EMST_4/machines_theory'
 # acceptible types include: all, cpd, mc, mr, msa, pe, sa, tf
 QUESTIONTYPE='all'
 DIFFDIR=''
